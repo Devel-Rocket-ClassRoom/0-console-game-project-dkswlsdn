@@ -19,7 +19,20 @@ public class Player : Entity, IMoveable, IJumpable, IHealthHaveable
     public Dictionary<int, long> ImmunityList { get; set; }
 
 
-
+    private string[] pixels = // C = Cyan, D = DarkBlue, B = Black, G = DarkGray
+    {
+        " DDD ",
+        " DCC ",
+        " DCC ",
+        "BBBBB",
+        "BGGGB",
+        "BGGGB",
+        "DBBBD",
+        " B B ",
+        " B B ",
+        " B B ",
+        " D D "
+    };
 
     public Player(Scene scene) : base(scene)
     {
@@ -99,6 +112,35 @@ public class Player : Entity, IMoveable, IJumpable, IHealthHaveable
 
     public void DrawPlayer(ScreenBuffer buffer)
     {
+        for (int i = -2; i <= 2; i++)
+        {
+            for (int j = -10; j <= 0; j++)
+            {
+                ConsoleColor color = ConsoleColor.Black;
+
+                switch (pixels[j + 10][i * _aim + 2])
+                {
+                    case 'C':
+                        color = ConsoleColor.Cyan;
+                        break;
+                    case 'D':
+                        color = ConsoleColor.DarkBlue;
+                        break;
+                    case 'B':
+                        color = ConsoleColor.Black;
+                        break;
+                    case 'G':
+                        color = ConsoleColor.DarkGray;
+                        break;
+                    default:
+                        continue;
+                }
+
+                buffer.SetCell(Position + (i, j), color);
+            }
+        }
+
+        /*
         //머리
         buffer.SetCell(Position + (0, -8), ConsoleColor.Cyan);
         buffer.SetCell(Position + (0, -9), ConsoleColor.Cyan);
@@ -149,6 +191,7 @@ public class Player : Entity, IMoveable, IJumpable, IHealthHaveable
         //발
         buffer.SetCell(Position + (1, 0), ConsoleColor.DarkBlue);
         buffer.SetCell(Position + (-1, 0), ConsoleColor.DarkBlue);
+        */
     }
 
     public Point GetNextPosition(int lowerForce)
