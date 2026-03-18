@@ -5,15 +5,16 @@ using Framework.Engine;
 
 public abstract class Entity : GameObject
 {
-    protected Point _position;
+    public Point Position { get; protected set; }
 
     public int ID { get; private set; }
-    public int Health { get; set; }
 
 
     public Entity(Scene scene) : base(scene)
     {
+        if (scene is GameScene g_scene)
+        {
+            g_scene.EntityList.Add(this);
+        }
     }
-
-
 }

@@ -93,6 +93,27 @@ namespace Framework.Engine
             return null;
         }
 
+        public IEnumerable<GameObject> FindGameObject<T>()
+        {
+            for (int i = 0; i < _gameObjects.Count; i++)
+            {
+                if (_gameObjects[i] is T)
+                {
+                    yield return _gameObjects[i];
+                }
+            }
+
+            for (int i = 0; i < _pendingAdd.Count; i++)
+            {
+                if (_gameObjects[i] is T)
+                {
+                    yield return _pendingAdd[i];
+                }
+            }
+
+            yield break;
+        }
+
         private void FlushPending()
         {
             if (_pendingRemove.Count > 0)

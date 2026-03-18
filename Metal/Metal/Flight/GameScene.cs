@@ -6,6 +6,10 @@ using Framework.Engine;
 
 public class GameScene : Scene
 {
+    public event GameAction ToTitleRequest;
+
+    public List<Entity> EntityList = new List<Entity>();
+
     Player player;
     Ground ground;
 
@@ -56,5 +60,10 @@ public class GameScene : Scene
         }
 
         return result;
+    }
+
+    public void Error()
+    {
+        ToTitleRequest?.Invoke();
     }
 }

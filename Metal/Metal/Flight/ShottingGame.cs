@@ -57,7 +57,8 @@ public class ShottingGame : GameApp
 
     private void ChangeToGame()
     {
-        var menu = new GameScene();
-        scene.ChangeScene(menu);
+        var game = new GameScene();
+        game.ToTitleRequest += ChangeToTitle;
+        scene.ChangeScene(game);
     }
 }
