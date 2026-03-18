@@ -1,0 +1,1 @@
+﻿new ShottingGame(80,40).Run();
