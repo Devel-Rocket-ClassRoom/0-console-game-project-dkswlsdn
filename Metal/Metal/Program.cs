@@ -1,3 +1,3 @@
-﻿
+﻿using Framework.Engine;
 
-new ShottingGame(160, 40).Run();
+new ShottingGame(ShottingGame.k_Width, ShottingGame.k_Height).Run();

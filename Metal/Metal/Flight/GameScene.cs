@@ -30,15 +30,31 @@ public class GameScene : Scene
 
     public override void Draw(ScreenBuffer buffer)
     {
-        buffer.DrawBox(0, 0, 160, 40);
-        buffer.WriteText(1, 1, "GameScene");
+        buffer.FillRect(0, 0, ShottingGame.k_Width, ShottingGame.k_Height, bgColor:ConsoleColor.DarkCyan);
+        buffer.WriteText(1, 1, "GameScene", bgColor:ConsoleColor.DarkCyan);
 
         DrawGameObjects(buffer);
     }
 
     private bool IsOnGround()
     {
-        return true;
-        //return ground.GroundPosition.Contains(player.NextPosition);
+        if (player.IsOnGround)
+        {
+            return true;
+        }
+
+        bool result = false;
+
+        for (int i = 0; i < -player.JumpForce; i++)
+        {
+            if (ground.GroundPosition.Contains(player.GetNextPosition(i)))
+            {
+                result = true;
+                player.JumpCooldown = 0.05f;
+                break;
+            }
+        }
+
+        return result;
     }
 }

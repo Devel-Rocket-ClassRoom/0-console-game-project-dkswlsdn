@@ -26,7 +26,7 @@ public class TitleScene : Scene
 
     public override void Draw(ScreenBuffer buffer)
     {
-        buffer.DrawBox(0, 0, 160, 40);
+        buffer.DrawBox(0, 0, ShottingGame.k_Width, ShottingGame.k_Height);
 
         buffer.WriteTextCentered(10, "F L I G H T");
     }

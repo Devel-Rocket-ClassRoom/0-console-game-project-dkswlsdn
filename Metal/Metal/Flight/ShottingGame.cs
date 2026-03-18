@@ -5,6 +5,9 @@ using Framework.Engine;
 
 public class ShottingGame : GameApp
 {
+    public static int k_Width = 320;
+    public static int k_Height = 80;
+
     private readonly SceneManager<Scene> scene = new SceneManager<Scene>();
 
 

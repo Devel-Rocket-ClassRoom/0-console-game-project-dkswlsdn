@@ -4,6 +4,6 @@ using System.Text;
 
 public interface IMoveable
 {
-    (int x, int y) NextPosition { get; }
-    void Move();
+    Point NextPosition { get; }
+    void Move(int speed);
 }

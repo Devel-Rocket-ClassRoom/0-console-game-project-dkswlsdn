@@ -6,6 +6,7 @@ public interface IJumpable
 {
     bool IsOnGround { get; set; }
     int JumpForce { get; }
-    float BlockPerSecond { get; }
-    void Jump();
+    void Jump(float deltaTime);
+
+    Point GetNextPosition(int lowerForce);
 }

@@ -6,11 +6,16 @@ using Framework.Engine;
 
 public class Ground : GameObject
 {
-    public List<(int x, int y)> GroundPosition;
+    public List<Point> GroundPosition;
 
     public Ground(Scene scene) : base(scene)
     {
-        GroundPosition = new List<(int x, int y)>();
+        GroundPosition = new List<Point>();
+
+        for (int i = -800; i < 800; i++)
+        {
+            GroundPosition.Add((i, ShottingGame.k_Height - 2));
+        }
     }
 
     public override void Draw(ScreenBuffer buffer)
