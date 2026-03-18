@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using Framework.Engine;
 
-public class TitleScene : Scene
+public class MenuScene : Scene
 {
-    public event GameAction StartRequested;
+    public event GameAction ToTitleRequest;
+    public event GameAction GameStartRequest;
 
 
     public override void Load()
@@ -20,14 +21,13 @@ public class TitleScene : Scene
     {
         if (Input.IsKeyDown(ConsoleKey.Enter))
         {
-            StartRequested?.Invoke();
+            GameStartRequest?.Invoke();
         }
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
         buffer.DrawBox(0, 0, 160, 40);
-
-        buffer.WriteTextCentered(10, "F L I G H T");
+        buffer.DrawBox(0, 5, 160, 30);
     }
 }

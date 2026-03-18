@@ -1,1 +1,3 @@
-﻿new ShottingGame(80,40).Run();
+﻿
+
+new ShottingGame(160, 40).Run();
