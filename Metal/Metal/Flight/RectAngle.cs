@@ -31,26 +31,19 @@ public class RectAngle
 
     public bool IsOverrap(RectAngle rectAngle)
     {
-        return !(Position.X + Rect.b.X < rectAngle.Position.X + rectAngle.Rect.a.X 
-            || Position.X + Rect.a.X > rectAngle.Position.X + rectAngle.Rect.b.X
-            || Position.Y + Rect.b.Y < rectAngle.Position.Y + rectAngle.Rect.a.Y
-            || Position.Y + Rect.a.Y > rectAngle.Position.Y + rectAngle.Rect.b.Y);
+        return !(Rect.b.X < rectAngle.Rect.a.X || Rect.a.X > rectAngle.Rect.b.X
+            || Rect.b.Y < rectAngle.Rect.a.Y || Rect.a.Y > rectAngle.Rect.b.Y);
     }
 
     public bool IsOverrap(Point a, Point b)
     {
-        return !(Position.X + Rect.b.X < a.X 
-            || Position.X + Rect.a.X > b.X
-            || Position.Y + Rect.b.Y < a.Y 
-            || Position.Y + Rect.a.Y > b.Y);
+        return !(Position.X + Rect.b.X < a.X || Position.X + Rect.a.X > b.X
+            || Position.Y + Rect.b.Y < a.Y || Position.Y + Rect.a.Y > b.Y);
     }
 
     public bool IsOverrap(Point point)
     {
-        return !(point.X < Position.X + Rect.a.X 
-            || point.X > Position.X + Rect.b.X 
-            || point.Y < Position.Y + Rect.a.Y 
-            || point.X > Position.Y + Rect.b.Y);
+        return !(point.X < Position.X + Rect.a.X || point.X > Position.X + Rect.b.X || point.Y < Position.Y + Rect.a.Y || point.X > Position.Y + Rect.b.Y);
     }
 
     public int HeightDiff(Point point)
