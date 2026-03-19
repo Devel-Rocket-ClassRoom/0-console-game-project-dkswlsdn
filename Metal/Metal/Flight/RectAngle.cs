@@ -15,17 +15,17 @@ public class RectAngle
     // a : 좌하단
     // b : 우상단
 
-    public RectAngle(Entity chase, (Point a, Point b) rect)
+    public RectAngle(Entity chase, Point a, Point b)
     {
         _chase = chase;
         Position = chase.Position;
-        Rect = rect;
+        Rect = (a, b);
     }
 
-    public RectAngle((Point a, Point b) rect)
+    public RectAngle(Point a, Point b)
     {
         Position = (0, 0);
-        Rect = rect;
+        Rect = (a, b);
     }
 
 
@@ -52,6 +52,26 @@ public class RectAngle
             || point.Y < Position.Y + Rect.a.Y 
             || point.X > Position.Y + Rect.b.Y);
     }
+
+    public RectAngle SpinRect(Point dir)
+    {
+        if (dir.Y == 1)
+        {
+            return new RectAngle(Position + (-Rect.b.Y, Rect.a.X), Position + (-Rect.a.Y, Rect.b.X));
+        }
+        else if (dir.Y == -1)
+        {
+            return new RectAngle(Position + (Rect.a.Y, -Rect.b.X), Position + (Rect.b.Y, -Rect.a.X));
+        }
+        
+        if (dir.X == -1)
+        {
+            return new RectAngle(Position + (-Rect.b.X, Rect.a.Y), Position + (-Rect.a.X, Rect.b.Y));
+        }
+
+        return new RectAngle(Position + Rect.a, Position + Rect.b);
+    }
+
 
     public int HeightDiff(Point point)
     {

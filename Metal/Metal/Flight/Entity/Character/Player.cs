@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 {
-    private RectAngle _standingGround = new RectAngle(((0,0),(0,0)));
+    private RectAngle _standingGround = new RectAngle((0, 0), (0, 0));
     private bool _isLand = false;
     public bool IsLand { get { return _isLand; } set { _isLand = value; } }
     private bool _isRight = true;
@@ -21,7 +21,6 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
     public Point NextPosition { get { return (Position.X, Position.Y - 6); } }
     public Point GroundChecker { get { return Position - (0, 1); } }
     public int JumpForce { get { if (_jumpForce < 0 && IsLand) _jumpForce = 0; return _jumpForce; } set { _jumpForce = value; } }
-    public Dictionary<int, long> ImmunityList { get; set; } = new Dictionary<int, long>();
 
 
 
@@ -46,7 +45,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 
         Health = 100;
 
-        RectAngle = new RectAngle( this, ((-2, 0), (2, 10)));
+        RectAngle = new RectAngle( this, (-2, 0), (2, 10));
     }
 
     public override void Draw(ScreenBuffer buffer)

@@ -20,8 +20,10 @@ public class BulletEntity : AttackEntity
         _life = 1f;
     }
 
-    public override void UpdateFrame(float deltaTime)
+    public override void Update(float deltaTime)
     {
+        base.Update(deltaTime);
+
         _life -= deltaTime;
 
         if (_life <= 0)

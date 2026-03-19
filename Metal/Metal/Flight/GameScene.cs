@@ -24,7 +24,6 @@ public class GameScene : Scene
         ground = new Ground(this, (0, 5), 800);
         ground2 = new Ground(this, (40, 25), 40);
         ground3 = new Ground(this, (120, 40), 80);
-        entity = new DamagableEntity(this, -1, (40, 40), 10);
         box = new Box(this, (100, 41));
 
         AddGameObject(ground);

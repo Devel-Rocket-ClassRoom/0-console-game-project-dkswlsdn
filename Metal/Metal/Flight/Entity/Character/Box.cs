@@ -11,7 +11,7 @@ public class Box : CharacterEntity
     {
         Health = 100;
 
-        RectAngle = new RectAngle(this, ((-2, 0), (2, 10)));
+        RectAngle = new RectAngle(this, (-2, 0), (2, 10));
     }
 
     public override void Draw(ScreenBuffer buffer)

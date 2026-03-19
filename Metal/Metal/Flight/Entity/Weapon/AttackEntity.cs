@@ -23,10 +23,7 @@ public abstract class AttackEntity : Entity
     public override void Update(float deltaTime)
     {
         DealDamage();
-        UpdateFrame(deltaTime);
     }
-
-    public virtual void UpdateFrame(float deltaTime) { }
 
     protected virtual void DealDamage()
     {
