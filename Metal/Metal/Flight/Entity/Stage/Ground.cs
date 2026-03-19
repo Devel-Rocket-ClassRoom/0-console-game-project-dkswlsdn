@@ -8,7 +8,7 @@ public class Ground : GroundEntity
 {
     public Ground(Scene scene, Point point, int Width) : base(scene, point)
     {
-        RectAngle = new RectAngle(this, ((point.X - Width / 2, 0), (point.X + Width / 2, 0)));
+        RectAngle = new RectAngle(this, ((-Width / 2, 0), (Width / 2, 0)));
     }
 
     public override void Draw(ScreenBuffer buffer)

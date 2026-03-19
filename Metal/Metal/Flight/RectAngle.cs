@@ -22,6 +22,12 @@ public class RectAngle
         Rect = rect;
     }
 
+    public RectAngle((Point a, Point b) rect)
+    {
+        Position = (0, 0);
+        Rect = rect;
+    }
+
 
     public bool IsOverrap(RectAngle rectAngle)
     {
@@ -37,12 +43,12 @@ public class RectAngle
 
     public bool IsOverrap(Point point)
     {
-        return !(point.X < Rect.a.X || point.X > Rect.b.X || point.Y < Rect.a.Y || point.X > Rect.b.Y);
+        return !(point.X < Position.X + Rect.a.X || point.X > Position.X + Rect.b.X || point.Y < Position.Y + Rect.a.Y || point.X > Position.Y + Rect.b.Y);
     }
 
     public int HeightDiff(Point point)
     {
-        return Math.Abs(point.Y - Rect.b.Y);
+        return Math.Abs(point.Y - Position.Y + Rect.b.Y);
     }
 
     public void Follow()

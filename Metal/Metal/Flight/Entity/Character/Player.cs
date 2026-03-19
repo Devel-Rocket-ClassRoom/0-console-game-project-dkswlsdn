@@ -7,7 +7,9 @@ using System.Text.RegularExpressions;
 
 public class Player : CharacterEntity, IMoveable, IJumpable
 {
+    private RectAngle _standingGround = new RectAngle(((0,0),(0,0)));
     private bool _isLand = false;
+    public bool IsLand { get { return _isLand; } set { _isLand = value; } }
     private int _aim = 1;
     private int _jumpForce = 0;
     private Point _direction;
@@ -17,9 +19,9 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
     public Point NextPosition { get { return (Position.X, Position.Y - 6); } }
     public Point GroundChecker { get { return Position - (0, 1); } }
-    public int JumpForce { get { if (_jumpForce < 0 && _isLand) _jumpForce = 0; return _jumpForce; } set { _jumpForce = value; } }
+    public int JumpForce { get { if (_jumpForce < 0 && IsLand) _jumpForce = 0; return _jumpForce; } set { _jumpForce = value; } }
     public int Health { get; private set; }
-    public Dictionary<int, long> ImmunityList { get; set; }
+    public Dictionary<int, long> ImmunityList { get; set; } = new Dictionary<int, long>();
 
 
 
@@ -59,12 +61,14 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         buffer.WriteText(1, 4, $"HP : {Health}");
         buffer.WriteText(1, 5, $"Jump : {JumpForce}");
         //buffer.WriteText(1, 4, $"IsOnGround : {IsOnGround}");
-        buffer.WriteText(1, 6, $"isLand : {_isLand}");
+        buffer.WriteText(1, 6, $"isLand : {IsLand}");
     }
 
     public override void Update(float deltaTime)
     {
-        if (_isLand)
+        IsLand = IsOnGround();
+
+        if (IsLand)
         {
             JumpForce = 0;
             Jump(deltaTime);
@@ -84,19 +88,19 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         {
             _aim = 1;
 
-            if (_isLand)
+            if (IsLand)
                 _direction = (1, 0);
         }
         else if (Input.IsKey(ConsoleKey.A))
         {
             _aim = -1;
 
-            if (_isLand)
+            if (IsLand)
                 _direction = (-1, 0);
         }
         else
         {
-            if (_isLand)
+            if (IsLand)
                 _direction = (0, 0);
         }
         
@@ -119,7 +123,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         if (Input.IsKey(ConsoleKey.Spacebar))
         {
             JumpForce = 7;
-            _isLand = false;
+            IsLand = false;
         }
     }
 
@@ -132,9 +136,10 @@ public class Player : CharacterEntity, IMoveable, IJumpable
                 if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X, Position.Y + JumpForce), Position))
                 {
                     JumpCooldown = 0.1f;
-                    _isLand = true;
+                    IsLand = true;
                     JumpForce = 0;
                     Position.Y = g.GroundEntitiyList[i].Position.Y + 1;
+                    _standingGround = g.GroundEntitiyList[i].RectAngle;
                     return;
                 }
             }
@@ -243,6 +248,23 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
         Health -= damage;
         ImmunityList[attackId] =  currentTime + immuneDuration;
+    }
+
+    private bool IsOnGround()
+    {
+        if (Scene is GameScene g)
+        {
+            for (int i = 0; i < g.GroundEntitiyList.Count; i++)
+            {
+                if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X, Position.Y - 1), Position))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
     }
 
 

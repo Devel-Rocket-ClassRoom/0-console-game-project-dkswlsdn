@@ -7,13 +7,14 @@ public class DamagableEntity : AttackEntity
 {
     public DamagableEntity(Scene scene, Point point, int damage) : base(scene, point, damage)
     {
-        Position = (200, 70);
+        Position = point;
         Range = 10;
-        RectAngle = new RectAngle(this, ((4, -2), (-4, 2)));
+        RectAngle = new RectAngle(this, ((-2 , -2), (2, 2)));
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
-        
+        RectAngle.DrawRectAngle(buffer);
+        buffer.WriteText(Position.WinXY.X, Position.WinXY.Y, Position.ToString());
     }
 }

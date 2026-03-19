@@ -14,17 +14,20 @@ public class GameScene : Scene
     Player player;
     Ground ground;
     Ground ground2;
+    Ground ground3;
     DamagableEntity entity;
 
     public override void Load()
     {
         player = new Player(this, (30, 30));
         ground = new Ground(this, (0, 5), 800);
-        ground2 = new Ground(this, (50, 25), 40);
-        entity = new DamagableEntity(this, (100, 15), 10);
+        ground2 = new Ground(this, (40, 25), 40);
+        ground3 = new Ground(this, (100, 40), 40);
+        entity = new DamagableEntity(this, (40, 40), 10);
 
         AddGameObject(ground);
         AddGameObject(ground2);
+        AddGameObject(ground3);
         AddGameObject(player);
         AddGameObject(entity);
     }
