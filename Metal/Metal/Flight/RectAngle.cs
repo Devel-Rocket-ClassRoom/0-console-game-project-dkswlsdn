@@ -22,6 +22,12 @@ public class RectAngle
         Rect = (a, b);
     }
 
+    public RectAngle(Point point, Point a, Point b)
+    {
+        Position = point;
+        Rect = (a, b);
+    }
+
     public RectAngle(Point a, Point b)
     {
         Position = (0, 0);

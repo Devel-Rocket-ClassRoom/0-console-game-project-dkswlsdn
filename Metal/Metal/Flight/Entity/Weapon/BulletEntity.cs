@@ -11,7 +11,7 @@ public class BulletEntity : AttackEntity
     protected int _bulletSpeed;
     protected float _life;
 
-    public BulletEntity(Scene scene, int id, Point point, int damage, int bulletSpeed, Point direction) : base(scene, id, point, damage)
+    public BulletEntity(Scene scene, Entity id, Point point, int damage, int bulletSpeed, Point direction) : base(scene, id, point, damage)
     {
         _direction = direction;
         _bulletSpeed = bulletSpeed;

@@ -7,14 +7,14 @@ using Framework.Engine;
 public abstract class AttackEntity : Entity
 {
     protected float _interval = 0;
-    protected int ownerId;
+    protected Entity ownerId;
     protected int _damage;
     protected List<CharacterEntity> _targetsBuffer = new List<CharacterEntity>(10);
 
     public int Range { get; protected set; }
 
 
-    public AttackEntity(Scene scene, int id, Point point, int damage) :base(scene, point)
+    public AttackEntity(Scene scene, Entity id, Point point, int damage) :base(scene, point)
     {
         ownerId = id;
         _damage = damage;
@@ -44,7 +44,7 @@ public abstract class AttackEntity : Entity
             int dx = target.Position.X - Position.X;
             int dy = target.Position.Y - Position.Y;
 
-            if (dx * dx + dy * dy <= rangeSq && target.ID != ownerId)
+            if (dx * dx + dy * dy <= rangeSq && target.ID != ownerId.ID)
             {
                 _targetsBuffer.Add(target);
             }
