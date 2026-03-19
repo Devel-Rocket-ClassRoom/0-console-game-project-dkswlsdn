@@ -25,11 +25,17 @@ public class Point
         return new Point(a.X - b.X, a.Y - b.Y);
     }
 
+    public static Point operator *(Point a, int b)
+    {
+        return new Point(a.X * b, a.Y * b);
+    }
+
 
     public static Point operator +(Point a, (int x, int y) b)
     {
         return new Point(a.X + b.x, a.Y + b.y);
     }
+
 
     public static implicit operator Point((int x, int y) tuple)
     {

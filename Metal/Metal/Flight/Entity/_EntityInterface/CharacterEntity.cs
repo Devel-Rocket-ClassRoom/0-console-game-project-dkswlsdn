@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public abstract class CharacterEntity : Entity
 {
-    public int Health { get; }
+    public int Health { get; protected set; }
     protected Dictionary<int, long> ImmunityList { get; }
 
     public CharacterEntity(Scene scene, Point point) : base(scene, point)

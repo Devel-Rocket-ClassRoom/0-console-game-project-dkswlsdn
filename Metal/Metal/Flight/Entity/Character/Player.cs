@@ -10,7 +10,8 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
     private RectAngle _standingGround = new RectAngle(((0,0),(0,0)));
     private bool _isLand = false;
     public bool IsLand { get { return _isLand; } set { _isLand = value; } }
-    private int _aim = 1;
+    private bool _isRight = true;
+    private Point _aim = (1, 0);
     private int _jumpForce = 0;
     private Point _direction;
 
@@ -20,7 +21,6 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
     public Point NextPosition { get { return (Position.X, Position.Y - 6); } }
     public Point GroundChecker { get { return Position - (0, 1); } }
     public int JumpForce { get { if (_jumpForce < 0 && IsLand) _jumpForce = 0; return _jumpForce; } set { _jumpForce = value; } }
-    public int Health { get; private set; }
     public Dictionary<int, long> ImmunityList { get; set; } = new Dictionary<int, long>();
 
 
@@ -77,6 +77,8 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
         }
 
         Move(2);
+        Aimming();
+        Attack();
         RectAngle.Follow();
     }
 
@@ -84,14 +86,14 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
     {
         if (Input.IsKey(ConsoleKey.D))
         {
-            _aim = 1;
+            _isRight = true;
 
             if (IsLand)
                 _direction = (1, 0);
         }
         else if (Input.IsKey(ConsoleKey.A))
         {
-            _aim = -1;
+            _isRight = false;
 
             if (IsLand)
                 _direction = (-1, 0);
@@ -133,7 +135,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
             {
                 if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X, Position.Y + JumpForce), Position))
                 {
-                    JumpCooldown = 0.1f;
+                    JumpCooldown = 0.2f;
                     IsLand = true;
                     JumpForce = 0;
                     Position.Y = g.GroundEntitiyList[i].Position.Y + 1;
@@ -153,8 +155,9 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
             for (int j = 0; j <= 10; j++)
             {
                 ConsoleColor color = ConsoleColor.Black;
+                int n = _isRight ? 1 : -1;
 
-                switch (pixels[j][i * _aim + 2])
+                switch (pixels[j][i * n + 2])
                 {
                     case 'C':
                         color = ConsoleColor.Cyan;
@@ -230,23 +233,6 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
         */
     }
 
-    public override void TakeDamage(int attackId, int damage, int immuneDuration = 100)
-    {
-        long currentTime = Environment.TickCount64;
-
-        if (ImmunityList.TryGetValue(attackId, out long endTime))
-        {
-            if (currentTime < endTime)
-            {
-                return;
-            }
-
-            ImmunityList.Remove(attackId);
-        }
-
-        Health -= damage;
-        ImmunityList[attackId] =  currentTime + immuneDuration;
-    }
 
     private bool IsOnGround()
     {
@@ -265,14 +251,62 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 
     }
 
+    public override void TakeDamage(int attackId, int damage, int immuneDuration = 100)
+    {
+        long currentTime = Environment.TickCount64;
+
+        if (ImmunityList.TryGetValue(attackId, out long endTime))
+        {
+            if (currentTime < endTime)
+            {
+                return;
+            }
+
+            ImmunityList.Remove(attackId);
+        }
+
+        Health -= damage;
+        ImmunityList[attackId] = currentTime + immuneDuration;
+    }
 
     public Point GetNextPosition(int lowerForce)
     {
         throw new NotImplementedException();
     }
 
+    public void Aimming()
+    {
+        if (Input.IsKey(ConsoleKey.D))
+        {
+            _aim.X = 1;
+        }
+        else if (Input.IsKey(ConsoleKey.A))
+        {
+            _aim.X = -1;
+        }
+
+        if (Input.IsKey(ConsoleKey.W))
+        {
+            _aim.Y = 1;
+        }
+        else if (Input.IsKey(ConsoleKey.S))
+        {
+            if (!_isLand)
+            {
+                _aim.Y = -1;
+            }
+        }
+        else
+        {
+            _aim.Y = 0;
+        }
+    }
+
     public void Attack()
     {
-        Scene.AddGameObject(new Bullet(Scene, Position, 1, 1, _direction));
+        if (Input.IsKeyDown(ConsoleKey.LeftArrow))
+        {
+            Scene.AddGameObject(new Bullet(Scene, Position + (0, 5), 1, 4, _aim));
+        }
     }
 }

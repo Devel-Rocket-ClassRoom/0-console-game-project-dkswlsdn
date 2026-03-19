@@ -16,6 +16,7 @@ public class GameScene : Scene
     Ground ground2;
     Ground ground3;
     DamagableEntity entity;
+    Box box;
 
     public override void Load()
     {
@@ -24,11 +25,13 @@ public class GameScene : Scene
         ground2 = new Ground(this, (40, 25), 40);
         ground3 = new Ground(this, (100, 40), 40);
         entity = new DamagableEntity(this, (40, 40), 10);
+        box = new Box(this, (100, 41));
 
         AddGameObject(ground);
         AddGameObject(ground2);
         AddGameObject(ground3);
         AddGameObject(player);
+        AddGameObject(box);
         //AddGameObject(entity);
     }
 
@@ -44,7 +47,7 @@ public class GameScene : Scene
     public override void Draw(ScreenBuffer buffer)
     {
         buffer.FillRect(0, 0, ShottingGame.k_Width, ShottingGame.k_Height, bgColor:ConsoleColor.DarkCyan);
-        buffer.WriteText(1, 1, "GameScene", bgColor:ConsoleColor.DarkCyan);
+        buffer.WriteText(1, 1, $"GameScene : count: {EntityList.Count}", bgColor:ConsoleColor.DarkCyan);
         buffer.WriteText(1, 7, ground.Position.ToString());
         buffer.WriteText(1, 8, ground2.Position.ToString());
 
