@@ -6,6 +6,7 @@ using Framework.Engine;
 
 public abstract class AttackEntity : Entity
 {
+    protected float _interval = 0;
     protected int ownerId;
     protected int _damage;
     protected List<CharacterEntity> _targetsBuffer = new List<CharacterEntity>(10);
@@ -22,7 +23,10 @@ public abstract class AttackEntity : Entity
     public override void Update(float deltaTime)
     {
         DealDamage();
+        UpdateFrame(deltaTime);
     }
+
+    public virtual void UpdateFrame(float deltaTime) { }
 
     protected virtual void DealDamage()
     {
@@ -54,7 +58,7 @@ public abstract class AttackEntity : Entity
         {
             if (RectAngle.IsOverrap(_targetsBuffer[i].RectAngle))
             {
-                _targetsBuffer[i].TakeDamage(ID, _damage, 100);
+                _targetsBuffer[i].TakeDamage(ID, _damage, (int)(_interval * 1000));
                 AfterDealDamage();
             }
         }

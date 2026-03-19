@@ -6,9 +6,10 @@ using Framework.Engine;
 
 public class BulletEntity : AttackEntity
 {
-    private (int x, int y) _direction;
-    private int _bulletSpeed;
-    private float _life;
+    protected bool _isOnlyTarget = false;
+    protected (int x, int y) _direction;
+    protected int _bulletSpeed;
+    protected float _life;
 
     public BulletEntity(Scene scene, int id, Point point, int damage, int bulletSpeed, Point direction) : base(scene, id, point, damage)
     {
@@ -16,15 +17,11 @@ public class BulletEntity : AttackEntity
         _bulletSpeed = bulletSpeed;
 
         Range = 10;
-
-        RectAngle = new RectAngle(this, ((0, 0), (0, 0)));
         _life = 1f;
     }
 
-
-    public override void Update(float deltaTime)
+    public override void UpdateFrame(float deltaTime)
     {
-        DealDamage();
         _life -= deltaTime;
 
         if (_life <= 0)
@@ -40,7 +37,7 @@ public class BulletEntity : AttackEntity
         RectAngle.DrawRectAngle(buffer);
     }
 
-    private void Go()
+    protected virtual void Go()
     {
         Position.X += _bulletSpeed * _direction.x;
     }
@@ -49,7 +46,8 @@ public class BulletEntity : AttackEntity
     {
         if (Scene is GameScene g)
         {
-            g.RemoveGameObject(this);
+            if (_isOnlyTarget)
+                g.RemoveGameObject(this);
         }
     }
 }

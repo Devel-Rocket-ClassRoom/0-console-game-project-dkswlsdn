@@ -289,7 +289,12 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
     {
         if (Input.IsKeyDown(ConsoleKey.LeftArrow))
         {
-            Scene.AddGameObject(new Bullet(Scene, ID, Position + (0, 5), 1, 4, _aim));
+            Scene.AddGameObject(new HandgunBullet(Scene, ID, Position + (0, 5), _aim));
+        }
+
+        if (Input.IsKeyDown(ConsoleKey.RightArrow))
+        {
+            Scene.AddGameObject(new ShotgunBullet(Scene, ID, Position + (0, 5), _aim));
         }
     }
 }
