@@ -4,13 +4,13 @@ using System.Text;
 using Framework.Engine;
 
 
-public class Bullet : AttackEntity
+public class BulletEntity : AttackEntity
 {
     private (int x, int y) _direction;
     private int _bulletSpeed;
     private float _life;
 
-    public Bullet(Scene scene, Point point, int damage, int bulletSpeed, Point direction) : base(scene, point, damage)
+    public BulletEntity(Scene scene, int id, Point point, int damage, int bulletSpeed, Point direction) : base(scene, id, point, damage)
     {
         _direction = direction;
         _bulletSpeed = bulletSpeed;
@@ -24,6 +24,7 @@ public class Bullet : AttackEntity
 
     public override void Update(float deltaTime)
     {
+        DealDamage();
         _life -= deltaTime;
 
         if (_life <= 0)
@@ -42,5 +43,13 @@ public class Bullet : AttackEntity
     private void Go()
     {
         Position.X += _bulletSpeed * _direction.x;
+    }
+
+    protected override void AfterDealDamage()
+    {
+        if (Scene is GameScene g)
+        {
+            g.RemoveGameObject(this);
+        }
     }
 }

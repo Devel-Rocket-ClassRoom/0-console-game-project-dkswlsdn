@@ -24,7 +24,7 @@ public class GameScene : Scene
         ground = new Ground(this, (0, 5), 800);
         ground2 = new Ground(this, (40, 25), 40);
         ground3 = new Ground(this, (100, 40), 40);
-        entity = new DamagableEntity(this, (40, 40), 10);
+        entity = new DamagableEntity(this, -1, (40, 40), 10);
         box = new Box(this, (100, 41));
 
         AddGameObject(ground);
@@ -32,7 +32,7 @@ public class GameScene : Scene
         AddGameObject(ground3);
         AddGameObject(player);
         AddGameObject(box);
-        //AddGameObject(entity);
+        AddGameObject(entity);
     }
 
     public override void Unload()

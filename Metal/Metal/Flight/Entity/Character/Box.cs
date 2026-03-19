@@ -6,6 +6,7 @@ using Framework.Engine;
 
 public class Box : CharacterEntity
 {
+    int a = 0;
     public Box(Scene scene, Point point) : base(scene, point)
     {
         Health = 100;
@@ -16,29 +17,17 @@ public class Box : CharacterEntity
     public override void Draw(ScreenBuffer buffer)
     {
         RectAngle.DrawRectAngle(buffer);
-        buffer.WriteText(Position.WinXY.X, Position.WinXY.Y, Health.ToString());
-    }
-
-    public override void TakeDamage(int attackId, int damage, int immuneDuration)
-    {
-        long currentTime = Environment.TickCount64;
-
-        if (ImmunityList.TryGetValue(attackId, out long endTime))
-        {
-            if (currentTime < endTime)
-            {
-                return;
-            }
-
-            ImmunityList.Remove(attackId);
-        }
-
-        Health -= damage;
-        ImmunityList[attackId] = currentTime + immuneDuration;
+        buffer.WriteText(Position.WinXY.X, Position.WinXY.Y - 1, Health.ToString());
+        buffer.WriteText(Position.WinXY.X, Position.WinXY.Y, a.ToString(), ConsoleColor.Red);
     }
 
     public override void Update(float deltaTime)
     {
         RectAngle.Follow();
+    }
+
+    protected override void temp()
+    {
+        a++;
     }
 }

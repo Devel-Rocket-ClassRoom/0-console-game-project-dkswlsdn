@@ -6,14 +6,16 @@ using Framework.Engine;
 
 public abstract class AttackEntity : Entity
 {
+    protected int ownerId;
     protected int _damage;
     protected List<CharacterEntity> _targetsBuffer = new List<CharacterEntity>(10);
 
     public int Range { get; protected set; }
 
 
-    public AttackEntity(Scene scene, Point point, int damage) :base(scene, point)
+    public AttackEntity(Scene scene, int id, Point point, int damage) :base(scene, point)
     {
+        ownerId = id;
         _damage = damage;
     }
 
@@ -41,7 +43,7 @@ public abstract class AttackEntity : Entity
             int dx = target.Position.X - Position.X;
             int dy = target.Position.Y - Position.Y;
 
-            if (dx * dx + dy * dy <= rangeSq)
+            if (dx * dx + dy * dy <= rangeSq && target.ID != ownerId)
             {
                 _targetsBuffer.Add(target);
             }
@@ -52,8 +54,11 @@ public abstract class AttackEntity : Entity
         {
             if (RectAngle.IsOverrap(_targetsBuffer[i].RectAngle))
             {
-                _targetsBuffer[i].TakeDamage(ID, _damage, 1000);
+                _targetsBuffer[i].TakeDamage(ID, _damage, 100);
+                AfterDealDamage();
             }
         }
     }
+
+    protected virtual void AfterDealDamage() { }
 }

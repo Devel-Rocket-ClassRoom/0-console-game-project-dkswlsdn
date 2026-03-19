@@ -109,7 +109,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 
     public void VirticalMove(int force)
     {
-        Position += (0, force);
+        Position += (0, force / 2);
     }
 
     public void Jump(float deltaTime)
@@ -122,7 +122,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 
         if (Input.IsKey(ConsoleKey.Spacebar))
         {
-            JumpForce = 7;
+            JumpForce = 10;
             IsLand = false;
         }
     }
@@ -135,7 +135,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
             {
                 if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X, Position.Y + JumpForce), Position))
                 {
-                    JumpCooldown = 0.2f;
+                    JumpCooldown = 0.1f;
                     IsLand = true;
                     JumpForce = 0;
                     Position.Y = g.GroundEntitiyList[i].Position.Y + 1;
@@ -251,23 +251,6 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 
     }
 
-    public override void TakeDamage(int attackId, int damage, int immuneDuration = 100)
-    {
-        long currentTime = Environment.TickCount64;
-
-        if (ImmunityList.TryGetValue(attackId, out long endTime))
-        {
-            if (currentTime < endTime)
-            {
-                return;
-            }
-
-            ImmunityList.Remove(attackId);
-        }
-
-        Health -= damage;
-        ImmunityList[attackId] = currentTime + immuneDuration;
-    }
 
     public Point GetNextPosition(int lowerForce)
     {
@@ -306,7 +289,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
     {
         if (Input.IsKeyDown(ConsoleKey.LeftArrow))
         {
-            Scene.AddGameObject(new Bullet(Scene, Position + (0, 5), 1, 4, _aim));
+            Scene.AddGameObject(new Bullet(Scene, ID, Position + (0, 5), 1, 4, _aim));
         }
     }
 }
