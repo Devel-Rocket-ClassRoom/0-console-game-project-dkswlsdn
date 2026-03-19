@@ -59,23 +59,20 @@ public class RectAngle
             || point.X > Position.Y + Rect.b.Y);
     }
 
-    public RectAngle SpinRect(Point dir)
+    public void SpinRect(Point dir)
     {
         if (dir.Y == 1)
         {
-            return new RectAngle(Position + (-Rect.b.Y, Rect.a.X), Position + (-Rect.a.Y, Rect.b.X));
+            Rect = ((-Rect.b.Y, Rect.a.X), (-Rect.a.Y, Rect.b.X));
         }
         else if (dir.Y == -1)
         {
-            return new RectAngle(Position + (Rect.a.Y, -Rect.b.X), Position + (Rect.b.Y, -Rect.a.X));
+            Rect = ((Rect.a.Y, -Rect.b.X), (Rect.b.Y, -Rect.a.X));
         }
-        
-        if (dir.X == -1)
+        else if (dir.X == -1)
         {
-            return new RectAngle(Position + (-Rect.b.X, Rect.a.Y), Position + (-Rect.a.X, Rect.b.Y));
+            Rect = ((-Rect.b.X, Rect.a.Y), (-Rect.a.X, Rect.b.Y));
         }
-
-        return new RectAngle(Position + Rect.a, Position + Rect.b);
     }
 
 
