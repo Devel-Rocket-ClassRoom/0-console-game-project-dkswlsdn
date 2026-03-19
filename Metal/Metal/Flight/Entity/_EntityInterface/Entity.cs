@@ -5,7 +5,7 @@ using Framework.Engine;
 
 public abstract class Entity : GameObject
 {
-    public static int nextId = 0;
+    public static int nextId = 1;
 
     public Point Position { get; set; }
     public RectAngle RectAngle { get; protected set; }

@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-public class Player : CharacterEntity, IMoveable, IJumpable
+public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 {
     private RectAngle _standingGround = new RectAngle(((0,0),(0,0)));
     private bool _isLand = false;
@@ -47,7 +47,6 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         Health = 100;
 
         RectAngle = new RectAngle( this, ((-2, 0), (2, 10)));
-        
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -59,8 +58,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         buffer.WriteText(1, 3, $"{RectAngle.Position.X}, {RectAngle.Position.Y}");
 
         buffer.WriteText(1, 4, $"HP : {Health}");
-        buffer.WriteText(1, 5, $"Jump : {JumpForce}");
-        //buffer.WriteText(1, 4, $"IsOnGround : {IsOnGround}");
+        buffer.WriteText(1, 5, $"ID : {ID}");
         buffer.WriteText(1, 6, $"isLand : {IsLand}");
     }
 
@@ -271,5 +269,10 @@ public class Player : CharacterEntity, IMoveable, IJumpable
     public Point GetNextPosition(int lowerForce)
     {
         throw new NotImplementedException();
+    }
+
+    public void Attack()
+    {
+        Scene.AddGameObject(new Bullet(Scene, Position, 1, 1, _direction));
     }
 }

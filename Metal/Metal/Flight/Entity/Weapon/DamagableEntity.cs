@@ -10,6 +10,7 @@ public class DamagableEntity : AttackEntity
         Position = point;
         Range = 10;
         RectAngle = new RectAngle(this, ((-2 , -2), (2, 2)));
+        _damage = damage;
     }
 
     public override void Draw(ScreenBuffer buffer)

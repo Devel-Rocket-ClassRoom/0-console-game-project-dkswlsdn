@@ -29,7 +29,7 @@ public class GameScene : Scene
         AddGameObject(ground2);
         AddGameObject(ground3);
         AddGameObject(player);
-        AddGameObject(entity);
+        //AddGameObject(entity);
     }
 
     public override void Unload()

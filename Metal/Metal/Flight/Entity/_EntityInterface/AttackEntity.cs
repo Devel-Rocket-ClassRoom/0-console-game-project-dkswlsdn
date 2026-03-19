@@ -14,7 +14,7 @@ public abstract class AttackEntity : Entity
 
     public AttackEntity(Scene scene, Point point, int damage) :base(scene, point)
     {
-        
+        _damage = damage;
     }
 
     public override void Update(float deltaTime)
@@ -25,10 +25,11 @@ public abstract class AttackEntity : Entity
     protected virtual void DealDamage()
     {
         List<CharacterEntity> allEntities = null;
+        _targetsBuffer.Clear();
 
-        if (Scene is GameScene s)
+        if (Scene is GameScene g)
         {
-            allEntities = s.EntityList;
+            allEntities = g.EntityList;
         }
 
         float rangeSq = Range * Range;
@@ -51,7 +52,7 @@ public abstract class AttackEntity : Entity
         {
             if (RectAngle.IsOverrap(_targetsBuffer[i].RectAngle))
             {
-                _targetsBuffer[i].TakeDamage(ID, _damage, 100);
+                _targetsBuffer[i].TakeDamage(ID, _damage, 1000);
             }
         }
     }
