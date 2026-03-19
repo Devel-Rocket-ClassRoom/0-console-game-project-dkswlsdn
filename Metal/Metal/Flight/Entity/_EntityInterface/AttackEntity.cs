@@ -4,21 +4,17 @@ using System.Diagnostics;
 using System.Text;
 using Framework.Engine;
 
-public abstract class AttackEntity : GameObject
+public abstract class AttackEntity : Entity
 {
-    protected int _ownerId;
-    protected int _attackId;
-
     protected int _damage;
-    protected List<Point> _hitbox;
-    protected List<Entity> _targetsBuffer = new List<Entity>(10);
+    protected List<CharacterEntity> _targetsBuffer = new List<CharacterEntity>(10);
 
-    public int Range { get; }
+    public int Range { get; protected set; }
 
 
-    public AttackEntity(Scene scene, Point position, int ownerId, int damage) :base(scene)
+    public AttackEntity(Scene scene, int id, int damage) :base(scene, id)
     {
-        SetHitbox(position);
+        
     }
 
     public override void Update(float deltaTime)
@@ -26,11 +22,9 @@ public abstract class AttackEntity : GameObject
         DealDamage();
     }
 
-    protected abstract void SetHitbox(Point position);
-
     protected virtual void DealDamage()
     {
-        List<Entity> allEntities = null;
+        List<CharacterEntity> allEntities = null;
 
         if (Scene is GameScene s)
         {
@@ -43,12 +37,21 @@ public abstract class AttackEntity : GameObject
         {
             var target = allEntities[i];
 
-            int dx = target.Position.x - _hitbox[0].x;
-            int dy = target.Position.y - _hitbox[0].y;
+            int dx = target.Position.X - Position.X;
+            int dy = target.Position.Y - Position.Y;
 
             if (dx * dx + dy * dy <= rangeSq)
             {
                 _targetsBuffer.Add(target);
+            }
+        }
+
+
+        for (int i = 0; i < _targetsBuffer.Count; i++)
+        {
+            if (RectAngle.IsOverrap(_targetsBuffer[i].RectAngle))
+            {
+                _targetsBuffer[i].TakeDamage(ID, _damage, 100);
             }
         }
     }

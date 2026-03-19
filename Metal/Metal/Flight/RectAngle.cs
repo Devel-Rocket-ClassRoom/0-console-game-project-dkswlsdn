@@ -3,13 +3,51 @@ using System.Collections.Generic;
 using System.Text;
 using Framework.Engine;
 
-public class RectAngle
+public class RectAngle : Entity
 {
-    private Point pointA;
-    private Point pointB;
+    private Entity _chase;
+    private List<(Point a, Point b)> _rect = new List<(Point a, Point b)>();
 
-    public bool IsOverrap(RectAngle rect)
+
+    public RectAngle(Scene scene, Entity chase, params List<(Point a, Point b)> rect) : base(scene, chase.ID)
     {
-        return !(pointB.x < rect.pointA.x || pointA.y < rect.pointB.y || pointA.x < rect.pointB.x || pointB.y < rect.pointA.y);
+        _chase = chase;
+
+        for (int i = 0; i < rect.Count; i++)
+        {
+            _rect.Add(rect[i]);
+        }
+    }
+
+    public override void Draw(ScreenBuffer buffer)
+    {
+        for (int i = 0; i < _rect.Count; i++)
+        {
+            buffer.DrawBox(
+                _rect[i].a.X * 2 + Position.X,
+                _rect[i].a.Y + Position.Y,
+                (_rect[i].b.X * 2 - _rect[i].a.X) + 2,
+                (_rect[i].b.Y - _rect[i].a.Y) + 1,
+                ConsoleColor.Blue);
+        }
+    }
+
+    public bool IsOverrap(RectAngle rectAngle)
+    {
+        for (int i = 0; i < _rect.Count; i++)
+        {
+            for (int j = 0; j < rectAngle._rect.Count; j++)
+            {
+                return !(_rect[i].b.X < rectAngle._rect[j].a.X || _rect[i].a.X > rectAngle._rect[j].b.X
+                    || _rect[i].b.Y > rectAngle._rect[j].a.Y || _rect[i].a.Y < rectAngle._rect[j].b.Y);
+            }
+        }
+
+        return false;
+    }
+
+    public override void Update(float deltaTime)
+    {
+        Position = _chase.Position;
     }
 }

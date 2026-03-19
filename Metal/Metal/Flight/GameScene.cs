@@ -6,19 +6,27 @@ using Framework.Engine;
 
 public class GameScene : Scene
 {
+    static int nextId = 0;
+
     public event GameAction ToTitleRequest;
 
-    public List<Entity> EntityList = new List<Entity>();
+    public List<CharacterEntity> EntityList = new List<CharacterEntity>();
 
     Player player;
     Ground ground;
+    DamagableEntity entity;
 
     public override void Load()
     {
-        player = new Player(this);
+        player = new Player(this, nextId++);
         ground = new Ground(this);
+        entity = new DamagableEntity(this, nextId++, 10);
+
         AddGameObject(player);
+        AddGameObject(player.RectAngle);
         AddGameObject(ground);
+        AddGameObject(entity);
+        AddGameObject(entity.RectAngle);
     }
 
     public override void Unload()

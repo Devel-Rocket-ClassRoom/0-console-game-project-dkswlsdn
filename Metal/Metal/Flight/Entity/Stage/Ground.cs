@@ -14,7 +14,7 @@ public class Ground : GameObject
 
         for (int i = -800; i < 800; i++)
         {
-            GroundPosition.Add((i, ShottingGame.k_Height - 2));
+            GroundPosition.Add((i, 2));
         }
     }
 

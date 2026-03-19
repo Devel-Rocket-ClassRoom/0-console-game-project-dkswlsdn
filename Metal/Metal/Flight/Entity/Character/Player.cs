@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Framework.Engine;
 
-public class Player : Entity, IMoveable, IJumpable, IHealthHaveable
+public class Player : CharacterEntity, IMoveable, IJumpable
 {
     private int _aim = 1;
     private Point _direction;
@@ -11,8 +11,7 @@ public class Player : Entity, IMoveable, IJumpable, IHealthHaveable
     public float JumpCooldown { private get;  set; } = 0.1f;
 
 
-    public (Point, Point) RectAngle { get; }
-    public Point NextPosition { get { return (Position.x, Position.y - JumpForce); } }
+    public Point NextPosition { get { return (Position.X, Position.Y - JumpForce); } }
     public bool IsOnGround { get; set; } = false;
     public int JumpForce { get; private set; } = 0;
     public int Health { get; private set; }
@@ -34,21 +33,21 @@ public class Player : Entity, IMoveable, IJumpable, IHealthHaveable
         " D D "
     };
 
-    public Player(Scene scene) : base(scene)
+    public Player(Scene scene, int id) : base(scene, id)
     {
-        Position = (10, 37);
+        Position = (10, 0);
         _direction = (1, 0);
 
         Health = 100;
 
-        RectAngle = (Position + (-2, -10), Position + (2, 0));
+        RectAngle = new RectAngle(Scene, this, ((-2, 10), (2, 0)));
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
         DrawPlayer(buffer);
 
-        buffer.WriteText(1, 2, $"{Position.x}, {Position.y}");
+        buffer.WriteText(1, 2, $"{Position.X}, {Position.Y}");
         buffer.WriteText(1, 3, $"HP : {Health}");
     }
 
@@ -56,7 +55,7 @@ public class Player : Entity, IMoveable, IJumpable, IHealthHaveable
     {
         Jump(deltaTime);
 
-        Move(2);
+        Move(4);
 
         VirticalMove(JumpForce--);
         
@@ -84,14 +83,14 @@ public class Player : Entity, IMoveable, IJumpable, IHealthHaveable
                 _direction = (0, 0);
         }
         
-        Position += (speed * _direction.x, 0);
+        Position += (speed * _direction.X, 0);
     }
 
     public void VirticalMove(int force)
     {
         if (!IsOnGround)
         {
-            Position += (0, -force);
+            Position += (0, force);
         }
     }
 
@@ -114,11 +113,11 @@ public class Player : Entity, IMoveable, IJumpable, IHealthHaveable
     {
         for (int i = -2; i <= 2; i++)
         {
-            for (int j = -10; j <= 0; j++)
+            for (int j = 0; j <= 10; j++)
             {
                 ConsoleColor color = ConsoleColor.Black;
 
-                switch (pixels[j + 10][i * _aim + 2])
+                switch (pixels[j][i * _aim + 2])
                 {
                     case 'C':
                         color = ConsoleColor.Cyan;
@@ -136,7 +135,7 @@ public class Player : Entity, IMoveable, IJumpable, IHealthHaveable
                         continue;
                 }
 
-                buffer.SetCell(Position + (i, j), color);
+                buffer.SetCell((_position + (i, j)).WinXY, color);
             }
         }
 
@@ -196,10 +195,10 @@ public class Player : Entity, IMoveable, IJumpable, IHealthHaveable
 
     public Point GetNextPosition(int lowerForce)
     {
-        return (Position.x, Position.y + lowerForce);
+        return (Position.X, Position.Y - lowerForce);
     }
 
-    public void TakeDamage(int attackId, int damage, int immuneDuration = 100)
+    public override void TakeDamage(int attackId, int damage, int immuneDuration = 100)
     {
         long currentTime = Environment.TickCount64;
 
