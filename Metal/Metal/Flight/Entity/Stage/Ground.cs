@@ -4,11 +4,11 @@ using System.Text;
 using Framework.Engine;
 
 
-public class Ground : GameObject
+public class Ground : Entity
 {
     public List<Point> GroundPosition;
 
-    public Ground(Scene scene) : base(scene)
+    public Ground(Scene scene, int id) : base(scene, id)
     {
         GroundPosition = new List<Point>();
 
@@ -20,6 +20,7 @@ public class Ground : GameObject
 
     public override void Draw(ScreenBuffer buffer)
     {
+        buffer.FillRect(Position.WinXY.X, Position.WinXY.Y, )
     }
 
     public override void Update(float deltaTime)

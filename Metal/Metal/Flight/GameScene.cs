@@ -19,12 +19,12 @@ public class GameScene : Scene
     public override void Load()
     {
         player = new Player(this, nextId++);
-        ground = new Ground(this);
+        ground = new Ground(this, nextId++);
         entity = new DamagableEntity(this, nextId++, 10);
 
+        AddGameObject(ground);
         AddGameObject(player);
         AddGameObject(player.RectAngle);
-        AddGameObject(ground);
         AddGameObject(entity);
         AddGameObject(entity.RectAngle);
     }
@@ -57,7 +57,7 @@ public class GameScene : Scene
 
         bool result = false;
 
-        for (int i = 0; i < -player.JumpForce; i++)
+        for (int i = 0; i > player.JumpForce; i--)
         {
             if (ground.GroundPosition.Contains(player.GetNextPosition(i)))
             {

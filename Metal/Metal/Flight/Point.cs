@@ -8,7 +8,7 @@ public struct Point
     public int X;
     public int Y;
 
-    public Point WinXY { get { return (X * 2, -Y + ShottingGame.k_Width); } set{ X = value.X / 2; Y = -value.Y + ShottingGame.k_Width; } }
+    public Point WinXY { get { return (X * 2, -Y + ShottingGame.k_Height - 1); } set{ X = value.X / 2; Y = -value.Y + ShottingGame.k_Height - 1; } }
 
     public Point(int x, int y)
     {

@@ -11,9 +11,9 @@ public class Player : CharacterEntity, IMoveable, IJumpable
     public float JumpCooldown { private get;  set; } = 0.1f;
 
 
-    public Point NextPosition { get { return (Position.X, Position.Y - JumpForce); } }
+    public Point NextPosition { get { return (Position.X, Position.Y + JumpForce); } }
     public bool IsOnGround { get; set; } = false;
-    public int JumpForce { get; private set; } = 0;
+    public int JumpForce { get; set; } = 0;
     public int Health { get; private set; }
     public Dictionary<int, long> ImmunityList { get; set; }
 
@@ -35,12 +35,12 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
     public Player(Scene scene, int id) : base(scene, id)
     {
-        Position = (10, 0);
+        Position = (10, 10);
         _direction = (1, 0);
 
         Health = 100;
 
-        RectAngle = new RectAngle(Scene, this, ((-2, 10), (2, 0)));
+        RectAngle = new RectAngle(Scene, this, ((-2, 0), (2, 10)));
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -135,7 +135,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
                         continue;
                 }
 
-                buffer.SetCell((_position + (i, j)).WinXY, color);
+                buffer.SetCell((Position + new Point(i, -j + 10)).WinXY, color);
             }
         }
 
@@ -195,7 +195,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
     public Point GetNextPosition(int lowerForce)
     {
-        return (Position.X, Position.Y - lowerForce);
+        return (Position.X, Position.Y + lowerForce);
     }
 
     public override void TakeDamage(int attackId, int damage, int immuneDuration = 100)

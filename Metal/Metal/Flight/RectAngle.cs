@@ -7,7 +7,8 @@ public class RectAngle : Entity
 {
     private Entity _chase;
     private List<(Point a, Point b)> _rect = new List<(Point a, Point b)>();
-
+    // a : 좌하단
+    // b : 우상단
 
     public RectAngle(Scene scene, Entity chase, params List<(Point a, Point b)> rect) : base(scene, chase.ID)
     {
@@ -24,11 +25,11 @@ public class RectAngle : Entity
         for (int i = 0; i < _rect.Count; i++)
         {
             buffer.DrawBox(
-                _rect[i].a.X * 2 + Position.X,
-                _rect[i].a.Y + Position.Y,
-                (_rect[i].b.X * 2 - _rect[i].a.X) + 2,
-                (_rect[i].b.Y - _rect[i].a.Y) + 1,
-                ConsoleColor.Blue);
+                new Point(Position.X + _rect[i].a.X, 0).WinXY.X,
+                new Point(0, Position.Y + _rect[i].a.Y).WinXY.Y,
+                _rect[i].b.WinXY.X - _rect[i].a.WinXY.X + 2,
+                _rect[i].b.WinXY.Y - _rect[i].a.WinXY.Y + 1,
+                ConsoleColor.Blue, ConsoleColor.Black);
         }
     }
 
