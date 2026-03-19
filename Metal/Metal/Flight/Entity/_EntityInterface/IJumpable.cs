@@ -4,8 +4,7 @@ using System.Text;
 
 public interface IJumpable
 {
-    bool IsOnGround { get; set; }
-    int JumpForce { get; }
+    int JumpForce { get; set; }
     void Jump(float deltaTime);
     void VirticalMove(int force);
 

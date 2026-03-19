@@ -1,21 +1,26 @@
-﻿using System;
+﻿using Framework.Engine;
+using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
-using Framework.Engine;
+using System.Text.RegularExpressions;
 
 public class Player : CharacterEntity, IMoveable, IJumpable
 {
+    private bool _isLand = false;
     private int _aim = 1;
+    private int _jumpForce = 0;
     private Point _direction;
 
     public float JumpCooldown { private get;  set; } = 0.1f;
 
 
-    public Point NextPosition { get { return (Position.X, Position.Y + JumpForce); } }
-    public bool IsOnGround { get; set; } = false;
-    public int JumpForce { get; set; } = 0;
+    public Point NextPosition { get { return (Position.X, Position.Y - 6); } }
+    public Point GroundChecker { get { return Position - (0, 1); } }
+    public int JumpForce { get { if (_jumpForce < 0 && _isLand) _jumpForce = 0; return _jumpForce; } set { _jumpForce = value; } }
     public int Health { get; private set; }
     public Dictionary<int, long> ImmunityList { get; set; }
+
 
 
     private string[] pixels = // C = Cyan, D = DarkBlue, B = Black, G = DarkGray
@@ -33,14 +38,13 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         " D D "
     };
 
-    public Player(Scene scene, int id) : base(scene, id)
+    public Player(Scene scene, Point point) : base(scene, point)
     {
-        Position = (10, 10);
         _direction = (1, 0);
 
         Health = 100;
 
-        RectAngle = new RectAngle(Scene, this, ((-2, 0), (2, 10)));
+        RectAngle = new RectAngle( this, ((-2, 0), (2, 10)));
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -49,16 +53,24 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
         buffer.WriteText(1, 2, $"{Position.X}, {Position.Y}");
         buffer.WriteText(1, 3, $"HP : {Health}");
+        buffer.WriteText(1, 3, $"Jump : {JumpForce}");
+        //buffer.WriteText(1, 4, $"IsOnGround : {IsOnGround}");
+        buffer.WriteText(1, 5, $"isLand : {_isLand}");
     }
 
     public override void Update(float deltaTime)
     {
-        Jump(deltaTime);
+        if (_isLand)
+        {
+            JumpForce = 0;
+            Jump(deltaTime);
+        }
+        else
+        {
+            Land();
+        }
 
-        Move(4);
-
-        VirticalMove(JumpForce--);
-        
+        Move(2);
     }
 
     public void Move(int speed)
@@ -67,19 +79,19 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         {
             _aim = 1;
 
-            if (IsOnGround)
+            if (_isLand)
                 _direction = (1, 0);
         }
         else if (Input.IsKey(ConsoleKey.A))
         {
             _aim = -1;
 
-            if (IsOnGround)
+            if (_isLand)
                 _direction = (-1, 0);
         }
         else
         {
-            if (IsOnGround)
+            if (_isLand)
                 _direction = (0, 0);
         }
         
@@ -88,10 +100,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
     public void VirticalMove(int force)
     {
-        if (!IsOnGround)
-        {
-            Position += (0, force);
-        }
+        Position += (0, force);
     }
 
     public void Jump(float deltaTime)
@@ -102,11 +111,31 @@ public class Player : CharacterEntity, IMoveable, IJumpable
             return;
         }
 
-        if (Input.IsKey(ConsoleKey.Spacebar) && IsOnGround)
+        if (Input.IsKey(ConsoleKey.Spacebar))
         {
             JumpForce = 7;
-            IsOnGround = false;
+            _isLand = false;
         }
+    }
+
+    public void Land()
+    {
+        if (Scene is GameScene g)
+        {
+            for (int i = 0; i < g.GroundEntitiyList.Count; i++)
+            {
+                if (JumpForce < 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X, Position.Y + JumpForce), Position))
+                {
+                    JumpCooldown = 0.1f;
+                    _isLand = true;
+                    JumpForce = 0;
+                    Position.Y = g.GroundEntitiyList[i].Position.Y + 1;
+                    return;
+                }
+            }
+        }
+
+        VirticalMove(JumpForce--);
     }
 
     public void DrawPlayer(ScreenBuffer buffer)
@@ -193,11 +222,6 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         */
     }
 
-    public Point GetNextPosition(int lowerForce)
-    {
-        return (Position.X, Position.Y + lowerForce);
-    }
-
     public override void TakeDamage(int attackId, int damage, int immuneDuration = 100)
     {
         long currentTime = Environment.TickCount64;
@@ -214,5 +238,11 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
         Health -= damage;
         ImmunityList[attackId] =  currentTime + immuneDuration;
+    }
+
+
+    public Point GetNextPosition(int lowerForce)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -9,7 +9,7 @@ public abstract class CharacterEntity : Entity
     public int Health { get; }
     protected Dictionary<int, long> ImmunityList { get; }
 
-    public CharacterEntity(Scene scene, int id) : base(scene, id)
+    public CharacterEntity(Scene scene, Point point) : base(scene, point)
     {
         if (scene is GameScene g_scene)
         {

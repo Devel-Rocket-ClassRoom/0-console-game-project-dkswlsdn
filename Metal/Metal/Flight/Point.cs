@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-public struct Point
+public class Point
 {
     public int X;
     public int Y;
@@ -39,5 +39,10 @@ public struct Point
     public static implicit operator (int, int)(Point p)
     {
         return (p.X, p.Y);
+    }
+
+    public override string ToString()
+    {
+        return $"({X}, {Y})";
     }
 }

@@ -3,52 +3,55 @@ using System.Collections.Generic;
 using System.Text;
 using Framework.Engine;
 
-public class RectAngle : Entity
+public class RectAngle
 {
+    Point Position { get; set; }
     private Entity _chase;
-    private List<(Point a, Point b)> _rect = new List<(Point a, Point b)>();
+    public (Point a, Point b) Rect;
+
+    public int Width { get { return Rect.b.X - Rect.a.X + 1; } }
+    public int Height { get { return Rect.b.Y - Rect.a.Y + 1; } }
+    // Position 기준 상대 위치
     // a : 좌하단
     // b : 우상단
 
-    public RectAngle(Scene scene, Entity chase, params List<(Point a, Point b)> rect) : base(scene, chase.ID)
+    public RectAngle(Entity chase, (Point a, Point b) rect)
     {
         _chase = chase;
-
-        for (int i = 0; i < rect.Count; i++)
-        {
-            _rect.Add(rect[i]);
-        }
+        Position = chase.Position;
+        Rect = rect;
     }
 
-    public override void Draw(ScreenBuffer buffer)
-    {
-        for (int i = 0; i < _rect.Count; i++)
-        {
-            buffer.DrawBox(
-                new Point(Position.X + _rect[i].a.X, 0).WinXY.X,
-                new Point(0, Position.Y + _rect[i].a.Y).WinXY.Y,
-                _rect[i].b.WinXY.X - _rect[i].a.WinXY.X + 2,
-                _rect[i].b.WinXY.Y - _rect[i].a.WinXY.Y + 1,
-                ConsoleColor.Blue, ConsoleColor.Black);
-        }
-    }
 
     public bool IsOverrap(RectAngle rectAngle)
     {
-        for (int i = 0; i < _rect.Count; i++)
-        {
-            for (int j = 0; j < rectAngle._rect.Count; j++)
-            {
-                return !(_rect[i].b.X < rectAngle._rect[j].a.X || _rect[i].a.X > rectAngle._rect[j].b.X
-                    || _rect[i].b.Y > rectAngle._rect[j].a.Y || _rect[i].a.Y < rectAngle._rect[j].b.Y);
-            }
-        }
-
-        return false;
+        return !(Rect.b.X < rectAngle.Rect.a.X || Rect.a.X > rectAngle.Rect.b.X
+            || Rect.b.Y < rectAngle.Rect.a.Y || Rect.a.Y > rectAngle.Rect.b.Y);
     }
 
-    public override void Update(float deltaTime)
+    public bool IsOverrap(Point a, Point b)
+    {
+        return !(Rect.b.X < a.X || Rect.a.X > b.X
+            || Rect.b.Y < a.Y || Rect.a.Y > b.Y);
+    }
+
+    public bool IsOverrap(Point point)
+    {
+        return !(point.X < Rect.a.X || point.X > Rect.b.X || point.Y < Rect.a.Y || point.X > Rect.b.Y);
+    }
+
+    public int HeightDiff(Point point)
+    {
+        return Math.Abs(point.Y - Rect.b.Y);
+    }
+
+    public void Follow()
     {
         Position = _chase.Position;
+    }
+
+    public void DrawRectAngle(ScreenBuffer buffer)
+    {
+        buffer.DrawBox(new Point(Position.X + Rect.a.X, 0).WinXY.X, new Point(0, Position.Y + Rect.b.Y).WinXY.Y, Width * 2, Height, bgColor: ConsoleColor.DarkGray);
     }
 }

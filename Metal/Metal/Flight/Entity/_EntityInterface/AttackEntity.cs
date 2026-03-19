@@ -12,7 +12,7 @@ public abstract class AttackEntity : Entity
     public int Range { get; protected set; }
 
 
-    public AttackEntity(Scene scene, int id, int damage) :base(scene, id)
+    public AttackEntity(Scene scene, Point point, int damage) :base(scene, point)
     {
         
     }

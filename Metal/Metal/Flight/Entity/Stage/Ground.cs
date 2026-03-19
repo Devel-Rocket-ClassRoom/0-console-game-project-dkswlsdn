@@ -4,26 +4,20 @@ using System.Text;
 using Framework.Engine;
 
 
-public class Ground : Entity
+public class Ground : GroundEntity
 {
-    public List<Point> GroundPosition;
-
-    public Ground(Scene scene, int id) : base(scene, id)
+    public Ground(Scene scene, Point point, int Width) : base(scene, point)
     {
-        GroundPosition = new List<Point>();
-
-        for (int i = -800; i < 800; i++)
-        {
-            GroundPosition.Add((i, 2));
-        }
+        RectAngle = new RectAngle(this, ((point.X - Width / 2, 0), (point.X + Width / 2, 0)));
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
-        buffer.FillRect(Position.WinXY.X, Position.WinXY.Y, )
+        RectAngle.DrawRectAngle(buffer);
     }
 
     public override void Update(float deltaTime)
     {
+        RectAngle.Follow();
     }
 }

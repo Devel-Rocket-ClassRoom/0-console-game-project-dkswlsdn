@@ -6,27 +6,27 @@ using Framework.Engine;
 
 public class GameScene : Scene
 {
-    static int nextId = 0;
-
     public event GameAction ToTitleRequest;
 
     public List<CharacterEntity> EntityList = new List<CharacterEntity>();
+    public List<GroundEntity> GroundEntitiyList = new List<GroundEntity>();
 
     Player player;
     Ground ground;
+    Ground ground2;
     DamagableEntity entity;
 
     public override void Load()
     {
-        player = new Player(this, nextId++);
-        ground = new Ground(this, nextId++);
-        entity = new DamagableEntity(this, nextId++, 10);
+        player = new Player(this, (30, 30));
+        ground = new Ground(this, (0, 5), 800);
+        ground2 = new Ground(this, (50, 25), 40);
+        entity = new DamagableEntity(this, (100, 15), 10);
 
         AddGameObject(ground);
+        AddGameObject(ground2);
         AddGameObject(player);
-        AddGameObject(player.RectAngle);
         AddGameObject(entity);
-        AddGameObject(entity.RectAngle);
     }
 
     public override void Unload()
@@ -36,39 +36,19 @@ public class GameScene : Scene
     public override void Update(float deltaTime)
     {
         UpdateGameObjects(deltaTime);
-
-        player.IsOnGround = IsOnGround();
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
         buffer.FillRect(0, 0, ShottingGame.k_Width, ShottingGame.k_Height, bgColor:ConsoleColor.DarkCyan);
         buffer.WriteText(1, 1, "GameScene", bgColor:ConsoleColor.DarkCyan);
+        buffer.WriteText(1, 7, ground.Position.ToString());
+        buffer.WriteText(1, 8, ground2.Position.ToString());
 
         DrawGameObjects(buffer);
     }
 
-    private bool IsOnGround()
-    {
-        if (player.IsOnGround)
-        {
-            return true;
-        }
-
-        bool result = false;
-
-        for (int i = 0; i > player.JumpForce; i--)
-        {
-            if (ground.GroundPosition.Contains(player.GetNextPosition(i)))
-            {
-                result = true;
-                player.JumpCooldown = 0.05f;
-                break;
-            }
-        }
-
-        return result;
-    }
+    
 
     public void Error()
     {
