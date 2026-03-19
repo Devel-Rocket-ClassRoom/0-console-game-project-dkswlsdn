@@ -45,17 +45,21 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         Health = 100;
 
         RectAngle = new RectAngle( this, ((-2, 0), (2, 10)));
+        
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
         DrawPlayer(buffer);
+        //RectAngle.DrawRectAngle(buffer);
 
         buffer.WriteText(1, 2, $"{Position.X}, {Position.Y}");
-        buffer.WriteText(1, 3, $"HP : {Health}");
-        buffer.WriteText(1, 3, $"Jump : {JumpForce}");
+        buffer.WriteText(1, 3, $"{RectAngle.Position.X}, {RectAngle.Position.Y}");
+
+        buffer.WriteText(1, 4, $"HP : {Health}");
+        buffer.WriteText(1, 5, $"Jump : {JumpForce}");
         //buffer.WriteText(1, 4, $"IsOnGround : {IsOnGround}");
-        buffer.WriteText(1, 5, $"isLand : {_isLand}");
+        buffer.WriteText(1, 6, $"isLand : {_isLand}");
     }
 
     public override void Update(float deltaTime)
@@ -71,6 +75,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         }
 
         Move(2);
+        RectAngle.Follow();
     }
 
     public void Move(int speed)
@@ -124,7 +129,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         {
             for (int i = 0; i < g.GroundEntitiyList.Count; i++)
             {
-                if (JumpForce < 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X, Position.Y + JumpForce), Position))
+                if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X, Position.Y + JumpForce), Position))
                 {
                     JumpCooldown = 0.1f;
                     _isLand = true;

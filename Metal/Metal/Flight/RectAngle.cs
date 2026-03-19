@@ -5,7 +5,7 @@ using Framework.Engine;
 
 public class RectAngle
 {
-    Point Position { get; set; }
+    public Point Position { get; set; }
     private Entity _chase;
     public (Point a, Point b) Rect;
 
@@ -31,8 +31,8 @@ public class RectAngle
 
     public bool IsOverrap(Point a, Point b)
     {
-        return !(Rect.b.X < a.X || Rect.a.X > b.X
-            || Rect.b.Y < a.Y || Rect.a.Y > b.Y);
+        return !(Position.X + Rect.b.X < a.X || Position.X + Rect.a.X > b.X
+            || Position.Y + Rect.b.Y < a.Y || Position.Y + Rect.a.Y > b.Y);
     }
 
     public bool IsOverrap(Point point)
