@@ -20,7 +20,7 @@ public class ShotgunBullet : BulletEntity
     public override void Draw(ScreenBuffer buffer)
     {
         base.Draw(buffer);
-        buffer.WriteText(Position.WinXY.X, Position.WinXY.Y, Position.ToString());
+        buffer.WriteText(Position, Position.ToString());
     }
 
     public override void Update(float deltaTime)

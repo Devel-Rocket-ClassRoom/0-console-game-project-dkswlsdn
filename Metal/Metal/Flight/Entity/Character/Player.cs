@@ -53,12 +53,12 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
         DrawPlayer(buffer);
         //RectAngle.DrawRectAngle(buffer);
 
-        buffer.WriteText(1, 2, $"{Position.X}, {Position.Y}");
-        buffer.WriteText(1, 3, $"{RectAngle.Position.X}, {RectAngle.Position.Y}");
+        buffer.WriteText((1, 2), $"{Position.X}, {Position.Y}");
+        buffer.WriteText((1, 3), $"{RectAngle.Position.X}, {RectAngle.Position.Y}");
 
-        buffer.WriteText(1, 4, $"HP : {Health}");
-        buffer.WriteText(1, 5, $"ID : {ID}");
-        buffer.WriteText(1, 6, $"isLand : {IsLand}");
+        buffer.WriteText((1, 4), $"HP : {Health}");
+        buffer.WriteText((1, 5), $"ID : {ID}");
+        buffer.WriteText((1, 6), $"isLand : {IsLand}");
     }
 
     public override void Update(float deltaTime)
@@ -174,62 +174,9 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
                         continue;
                 }
 
-                buffer.SetCell((Position + new Point(i, -j + 10)).WinXY, color);
+                buffer.SetCell((Position + new Point(i, -j + 10)), color);
             }
         }
-
-        /*
-        //머리
-        buffer.SetCell(Position + (0, -8), ConsoleColor.Cyan);
-        buffer.SetCell(Position + (0, -9), ConsoleColor.Cyan);
-
-        buffer.SetCell(Position + (_aim, -8), ConsoleColor.Cyan);
-        buffer.SetCell(Position + (_aim, -9), ConsoleColor.Cyan);
-        buffer.SetCell(Position + (-_aim, -8), ConsoleColor.DarkBlue);
-        buffer.SetCell(Position + (-_aim, -9), ConsoleColor.DarkBlue);
-        
-        buffer.SetCell(Position + (-1, -10), ConsoleColor.DarkBlue);
-        buffer.SetCell(Position + (0, -10), ConsoleColor.DarkBlue);
-        buffer.SetCell(Position + (1, -10), ConsoleColor.DarkBlue);
-
-        //팔, 어깨
-        buffer.SetCell(Position + (2, -5), ConsoleColor.Black);
-        buffer.SetCell(Position + (-2, -5), ConsoleColor.Black);
-        buffer.SetCell(Position + (2, -6), ConsoleColor.Black);
-        buffer.SetCell(Position + (-2, -6), ConsoleColor.Black);
-        buffer.SetCell(Position + (-2, -7), ConsoleColor.Black);
-        buffer.SetCell(Position + (-1, -7), ConsoleColor.Black);
-        buffer.SetCell(Position + (0, -7), ConsoleColor.Black);
-        buffer.SetCell(Position + (1, -7), ConsoleColor.Black);
-        buffer.SetCell(Position + (2, -7), ConsoleColor.Black);
-
-        //손
-        buffer.SetCell(Position + (2, -4), ConsoleColor.DarkBlue);
-        buffer.SetCell(Position + (-2, -4), ConsoleColor.DarkBlue);
-
-        //몸통
-        buffer.SetCell(Position + (-1, -5), ' ', ' ', ConsoleColor.White, ConsoleColor.DarkGray);
-        buffer.SetCell(Position + (0, -5), ' ', ' ', ConsoleColor.White, ConsoleColor.DarkGray);
-        buffer.SetCell(Position + (1, -5), ' ', ' ', ConsoleColor.White, ConsoleColor.DarkGray);
-        buffer.SetCell(Position + (-1, -6), 'B', 'R', ConsoleColor.White, ConsoleColor.DarkGray);
-        buffer.SetCell(Position + (0, -6), 'U', 'T', ConsoleColor.White, ConsoleColor.DarkGray);
-        buffer.SetCell(Position + (1, -6), 'A', 'L', ConsoleColor.White, ConsoleColor.DarkGray);
-
-        //다리
-        buffer.SetCell(Position + (1, -1), ConsoleColor.Black);
-        buffer.SetCell(Position + (-1, -1), ConsoleColor.Black);
-        buffer.SetCell(Position + (1, -2), ConsoleColor.Black);
-        buffer.SetCell(Position + (-1, -2), ConsoleColor.Black);
-        buffer.SetCell(Position + (1, -3), ConsoleColor.Black);
-        buffer.SetCell(Position + (-1, -3), ConsoleColor.Black);
-        buffer.SetCell(Position + (1, -4), ConsoleColor.Black);
-        buffer.SetCell(Position + (-1, -4), ConsoleColor.Black);
-        buffer.SetCell(Position + (0, -4), ConsoleColor.Black);
-
-        //발
-        buffer.SetCell(Position + (1, 0), ConsoleColor.DarkBlue);
-        buffer.SetCell(Position + (-1, 0), ConsoleColor.DarkBlue);
-        */
     }
 
 

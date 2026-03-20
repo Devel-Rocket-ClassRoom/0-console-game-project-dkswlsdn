@@ -95,6 +95,8 @@ namespace Framework.Engine
 
         public void SetCell((int x, int y) position, ConsoleColor bgColor = ConsoleColor.Black)
         {
+            position = (position.x * 2, -position.y + ShottingGame.k_Height - 1);
+
             if (position.x >= 0 && position.x < _width && position.y >= 0 && position.y < _height)
             {
                 _chars[position.y, position.x ] = ' ';
@@ -105,25 +107,27 @@ namespace Framework.Engine
         }
 
 
-        public void WriteText(int x, int y, string text, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
+        public void WriteText((int x, int y) position, string text, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
+            position = (position.x * 2, -position.y + ShottingGame.k_Height - 1);
+
             for (int i = 0; i < text.Length; i++)
             {
-                SetCell(x + i, y, text[i], color, bgColor);
+                SetCell(position.x + i, position.y, text[i], color, bgColor);
             }
         }
 
         public void WriteTextCentered(int y, string text, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
             int x = (_width - text.Length) / 2;
-            WriteText(x, y, text, color, bgColor);
+            WriteText((x, y), text, color, bgColor);
         }
 
         public void WriteLines(int x, int y, string[] lines, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
             for (int i = 0; i < lines.Length; i++)
             {
-                WriteText(x, y + i, lines[i], color, bgColor);
+                WriteText((x, y + i), lines[i], color, bgColor);
             }
         }
 
@@ -143,17 +147,19 @@ namespace Framework.Engine
             }
         }
 
-        public void DrawBox(int x, int y, int width, int height, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
+        public void DrawBox((int x, int y) position, int width, int height, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
-            SetCell(x, y, '+', color, bgColor);
-            SetCell(x + width - 1, y, '+', color, bgColor);
-            SetCell(x, y + height - 1, '+', color, bgColor);
-            SetCell(x + width - 1, y + height - 1, '+', color, bgColor);
+            position = (position.x * 2, -position.y + ShottingGame.k_Height - 1);
 
-            DrawHLine(x + 1, y, width - 2, '-', color, bgColor);
-            DrawHLine(x + 1, y + height - 1, width - 2, '-', color, bgColor);
-            DrawVLine(x, y + 1, height - 2, '|', color, bgColor);
-            DrawVLine(x + width - 1, y + 1, height - 2, '|', color, bgColor);
+            SetCell(position.x, position.y, '+', color, bgColor);
+            SetCell(position.x + width - 1, position.y, '+', color, bgColor);
+            SetCell(position.x, position.y + height - 1, '+', color, bgColor);
+            SetCell(position.x + width - 1, position.y + height - 1, '+', color, bgColor);
+
+            DrawHLine(position.x + 1, position.y, width - 2, '-', color, bgColor);
+            DrawHLine(position.x + 1, position.y + height - 1, width - 2, '-', color, bgColor);
+            DrawVLine(position.x, position.y + 1, height - 2, '|', color, bgColor);
+            DrawVLine(position.x + width - 1, position.y + 1, height - 2, '|', color, bgColor);
         }
 
         public void FillRect(int x, int y, int width, int height, char ch = ' ', ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)

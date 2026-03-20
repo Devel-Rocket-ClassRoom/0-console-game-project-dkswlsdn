@@ -17,8 +17,8 @@ public class Box : CharacterEntity
     public override void Draw(ScreenBuffer buffer)
     {
         RectAngle.DrawRectAngle(buffer);
-        buffer.WriteText(Position.WinXY.X, Position.WinXY.Y - 1, Health.ToString());
-        buffer.WriteText(Position.WinXY.X, Position.WinXY.Y, a.ToString(), ConsoleColor.Red);
+        buffer.WriteText(Position - (0, 1), Health.ToString());
+        buffer.WriteText(Position, a.ToString(), ConsoleColor.Red);
     }
 
     public override void Update(float deltaTime)

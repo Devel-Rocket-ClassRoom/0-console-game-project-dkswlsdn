@@ -14,7 +14,7 @@ public class Ground : GroundEntity
     public override void Draw(ScreenBuffer buffer)
     {
         RectAngle.DrawRectAngle(buffer);
-        buffer.WriteText(Position.WinXY.X, Position.WinXY.Y, Position.ToString());
+        buffer.WriteText(Position, Position.ToString());
     }
 
     public override void Update(float deltaTime)
