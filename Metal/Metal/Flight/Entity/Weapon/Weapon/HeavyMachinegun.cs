@@ -17,7 +17,7 @@ public class HeavyMachinegun : Weapon
     {
         Name = "HeavyMachingun";
         Arms = 20000;
-        Cooldown = 0.35f;
+        Cooldown = 0.30f;
     }
 
     public override void Update(float deltaTime)
@@ -59,7 +59,7 @@ public class HeavyMachinegun : Weapon
 
             Scene.AddGameObject(new HeavyMachinegunBullet(Scene, _ownerID, _ownerID.BulletPoint, a, _bulletCount++, _priviousDirection));
             // 앉음시작 이벤트 발생 시 끊음
-            _nextBulletCooldown = 0.07f;
+            _nextBulletCooldown = 0.06f;
 
             if (_bulletCount == 4) _priviousDirection = a;
         }

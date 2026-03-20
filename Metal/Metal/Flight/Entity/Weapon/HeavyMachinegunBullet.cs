@@ -10,7 +10,7 @@ public class HeavyMachinegunBullet : BulletEntity
 
     private Point[] _spreadPattern = { (0.342f, 0.94f), (0.643f, 0.766f), (0.866f, 0.5f), (0.985f, 0.174f) };
     //private Point[] _spreadPattern = { (0.985f, 0.174f), (0.866f, 0.5f), (0.643f, 0.766f), (0.342f, 0.94f) };
-    private float[] _bulletPattern = { 0.1f, -0.3f, 0.3f, 0.1f };
+    private float[] _bulletPattern = { 0.02f, -0.06f, 0.06f, 0.02f };
     private int _bulletCount;
     private Point _previous;
 
@@ -19,7 +19,7 @@ public class HeavyMachinegunBullet : BulletEntity
     private Point speed;
 
     public HeavyMachinegunBullet(Scene scene, CharacterEntity id, Point point, Point aim, int count, Point previous, bool isEnemy = false) 
-        : base(scene, id, point + new Point(5, 0).DirectionConverter(aim), aim)
+        : base(scene, id, point + new Point(3, 0).DirectionConverter(id.Aim), aim)
     {
         RectAngle = new RectAngle(this, (4, 4));
 
@@ -36,7 +36,7 @@ public class HeavyMachinegunBullet : BulletEntity
 
         _bulletCount = count;
 
-        DicidePixel();
+        DicideDirection();
     }
 
     protected override void Go()
@@ -49,7 +49,7 @@ public class HeavyMachinegunBullet : BulletEntity
         NextBulletAngle = NextBulletAngle + 20 * isClockwise;
     }
 
-    private void DicidePixel()
+    private void DicideDirection()
     {
         if (_isRasing || _isLowering)
         {
@@ -70,7 +70,14 @@ public class HeavyMachinegunBullet : BulletEntity
         else
         {
             _currentPixels = _idelPixels;
-            speed = new Point(_bulletSpeed, _bulletPattern[_bulletCount]).DirectionConverter(Direction).Normalize();
+
+            if (Direction.Y != 0)
+            {
+                speed = (_bulletPattern[_bulletCount], Direction.Y);
+                return;
+            }
+
+            speed = (ownerId.Direction.X, _bulletPattern[_bulletCount]);
         }   
     }
 
