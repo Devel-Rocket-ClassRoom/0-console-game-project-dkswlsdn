@@ -13,9 +13,9 @@ public abstract class Weapon : GameObject
     protected CharacterEntity _ownerID;
     public AttackEntity Arm;
     public float Cooldown = 1;
-    private float _leftCooldown = 0;
+    protected float _leftCooldown = 0;
 
-    private ConsoleKey _key;
+    protected ConsoleKey _key;
 
     public Weapon(Scene scene, CharacterEntity id, bool isMain) : base(scene)
     {

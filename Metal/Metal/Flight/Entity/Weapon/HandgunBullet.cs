@@ -24,7 +24,6 @@ public class HandgunBullet : BulletEntity
     public override void Draw(ScreenBuffer buffer)
     {
         base.Draw(buffer);
-        buffer.WriteText(Camera.Position, Position.ToString());
     }
 
     protected override void Go()

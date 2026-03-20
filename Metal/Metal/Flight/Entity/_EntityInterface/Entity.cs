@@ -104,8 +104,9 @@ public abstract class Entity : GameObject
                 return ConsoleColor.Red;
             case 'Y':
                 return ConsoleColor.DarkYellow;
-            case 'A':
+            case 'g':
                 return ConsoleColor.DarkGreen;
+            case 'W':
             default:
                 return ConsoleColor.White;
         }
@@ -120,7 +121,7 @@ public abstract class Entity : GameObject
     public override void Draw(ScreenBuffer buffer)
     {
         DrawEntity(buffer);
-        RectAngle.DrawRectAngle(buffer);
+        //RectAngle.DrawRectAngle(buffer);
         //buffer.WriteText(Position + (0, 1), Direction.ToString());
     }
 }

@@ -4,11 +4,11 @@ using System.Text;
 using Framework.Engine;
 
 
-public class GetWeaponTemp : Entity
+public class GetShotgun : Entity
 {
-    public GetWeaponTemp(Scene scene, Point point) : base(scene, point)
+    public GetShotgun(Scene scene, Point point) : base(scene, point)
     {
-        RectAngle = new RectAngle((100, 20), (-3, 0), (3, 6));
+        RectAngle = new RectAngle(point, (-4, 0), (4, 8));
         _currentPixels = _idelPixels;
     }
 
@@ -44,12 +44,14 @@ public class GetWeaponTemp : Entity
 
     private string[] _idelPixels =
     {
-        "AAAAAAA",
-        "AYYYYYA",
-        "AYAAAAA",
-        "AYYYYYA",
-        "AAAAAYA",
-        "AYYYYYA",
-        "AAAAAAA",
+        "GGGGGGGGG",
+        "GgggggggG",
+        "GgYYYYYgG",
+        "GgYgggggG",
+        "GgYYYYYgG",
+        "GgggggYgG",
+        "GgYYYYYgG",
+        "GgggggggG",
+        "GGGGGGGGG",
     };
 }

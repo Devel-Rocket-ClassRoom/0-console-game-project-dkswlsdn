@@ -177,6 +177,17 @@ public class Player : CharacterEntity, IMoveable, IJumpable
                 Aim = (0, -1);
                 return;
             }
+            else
+            {
+                if (_currentIsRight)
+                {
+                    Aim = (1, 0);
+                }
+                else
+                {
+                    Aim = (-1, 0);
+                }
+            }
         }
         else
         {
