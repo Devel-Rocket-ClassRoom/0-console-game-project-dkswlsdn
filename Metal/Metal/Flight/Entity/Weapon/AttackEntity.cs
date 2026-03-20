@@ -6,9 +6,11 @@ using Framework.Engine;
 
 public abstract class AttackEntity : Entity
 {
-    protected float _interval = 0;
-    protected Entity ownerId;
     protected int _damage;
+    protected float _life;
+
+    protected float _interval = 0; // 다단히트 방지
+    protected Entity ownerId; // 피아구분
     protected List<CharacterEntity> _targetsBuffer = new List<CharacterEntity>(10);
 
     public int Range { get; protected set; }
@@ -22,6 +24,8 @@ public abstract class AttackEntity : Entity
 
     public override void Update(float deltaTime)
     {
+        base.Update(deltaTime);
+
         DealDamage();
     }
 
@@ -44,7 +48,7 @@ public abstract class AttackEntity : Entity
             int dx = target.Position.X - Position.X;
             int dy = target.Position.Y - Position.Y;
 
-            if (dx * dx + dy * dy <= rangeSq && target.ID != ownerId.ID)
+            if (dx * dx + dy * dy <= rangeSq && target.ID != ownerId.ID && target.IsActive)
             {
                 _targetsBuffer.Add(target);
             }

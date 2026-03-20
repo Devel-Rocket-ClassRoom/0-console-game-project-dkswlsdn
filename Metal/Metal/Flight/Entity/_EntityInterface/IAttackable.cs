@@ -6,5 +6,6 @@ using Framework.Engine;
 
 public interface IAttackable
 {
-    void Attack();
+    void Attack(float deltaTime);
+    void Aimming();
 }

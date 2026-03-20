@@ -6,6 +6,7 @@ using Framework.Engine;
 public class RectAngle
 {
     public Point Position { get; set; }
+    private int _direction;
     private Entity _chase;
     public (Point a, Point b) Rect;
 
@@ -59,20 +60,40 @@ public class RectAngle
             || point.X > Position.Y + Rect.b.Y);
     }
 
-    public void SpinRect(Point dir)
+    public void SpinRect(int dir, bool isReverse)
     {
-        if (dir.Y == 1)
+        int hw = Width / 2;
+        int h = Height;
+
+        if (dir == _direction)
+            return;
+
+        int delta = (dir - _direction + 4) % 4;
+
+        switch (dir)
         {
-            Rect = ((-Rect.b.Y, Rect.a.X), (-Rect.a.Y, Rect.b.X));
+            case 0:
+                Rect.a = new Point(-hw, 0);
+                Rect.b = new Point(hw, h);
+                break;
+
+            case 1:
+                Rect.a = new Point(0, -hw);
+                Rect.b = new Point(h, hw);
+                break;
+
+            case 2: 
+                Rect.a = new Point(-hw, -h);
+                Rect.b = new Point(hw, 0);
+                break;
+
+            case 3:
+                Rect.a = new Point(-h, -hw);
+                Rect.b = new Point(0, hw);
+                break;
         }
-        else if (dir.Y == -1)
-        {
-            Rect = ((Rect.a.Y, -Rect.b.X), (Rect.b.Y, -Rect.a.X));
-        }
-        else if (dir.X == -1)
-        {
-            Rect = ((-Rect.b.X, Rect.a.Y), (-Rect.a.X, Rect.b.Y));
-        }
+
+        _direction = dir;
     }
 
 
@@ -89,5 +110,14 @@ public class RectAngle
     public void DrawRectAngle(ScreenBuffer buffer)
     {
         buffer.DrawBox(Position + (Rect.a.X, Rect.b.Y), Width * 2, Height, bgColor: ConsoleColor.DarkGray);
+        buffer.SetCell(Position, ConsoleColor.Green);
     }
 }
+
+/*
+ * 
+ * 
+ * 
+ * 
+ * 
+ * * * * * * */

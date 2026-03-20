@@ -6,8 +6,14 @@ using Framework.Engine;
 
 public abstract class CharacterEntity : Entity
 {
+    protected bool _isDead;
     public int Health { get; protected set; }
     protected Dictionary<int, long> ImmunityList { get; } = new Dictionary<int, long>();
+    // 체력과 피격, 전투관련
+
+
+    protected float _motionTime = 1f;
+
 
     public CharacterEntity(Scene scene, Point point) : base(scene, point)
     {
@@ -15,12 +21,36 @@ public abstract class CharacterEntity : Entity
         {
             g_scene.EntityList.Add(this);
         }
+
+        Direction = 0;
+    }
+
+    
+    public override void Update(float deltaTime)
+    {
+        base.Update(deltaTime);
+
+        if (_isDead)
+        {
+            if (_motionTime > 0f)
+            {
+                _motionTime -= deltaTime;
+                DeadMotion(deltaTime);
+            }
+            else
+            {
+                Scene.RemoveGameObject(this);
+                RectAngle = null;
+                IsActive = false;
+            }
+        }
+
+        if (IsActive)
+            RectAngle.Follow();
     }
 
     public virtual void TakeDamage(int attackId, int damage, int immuneDuration)
     {
-        temp();
-
         long currentTime = Environment.TickCount64;
 
         if (ImmunityList.TryGetValue(attackId, out long endTime))
@@ -34,10 +64,16 @@ public abstract class CharacterEntity : Entity
         }
 
         Health -= damage;
+
+        if (Health <= 0)
+        {
+            _isDead = true;
+        }
+
         ImmunityList[attackId] = currentTime + immuneDuration;
     }
 
-    protected virtual void temp()
+    public virtual void DeadMotion(float deltaTime)
     {
 
     }

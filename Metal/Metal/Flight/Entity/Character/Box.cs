@@ -4,30 +4,88 @@ using System.Text;
 using Framework.Engine;
 
 
-public class Box : CharacterEntity
+public class Box : CharacterEntity, IAttackable
 {
     int a = 0;
+    private float _attackCooldown = 1f;
+    private float _currentCooldown = 0f;
+
     public Box(Scene scene, Point point) : base(scene, point)
     {
         Health = 100;
 
         RectAngle = new RectAngle(this, (-2, 0), (2, 10));
+
+        _currentPixels = _idlePixels;
+        _currentIsRight = false;
+    }
+
+    public Point Aim { get; set; } = (-1, 0);
+
+    public void Aimming()
+    {
+        Aim = (-1, 0);
+    }
+
+    public void Attack(float deltaTime)
+    {
+        if (_currentCooldown <= 0 && !_isDead)
+        {
+            Scene.AddGameObject(new HandgunBullet(Scene, this, (Position.X, Position.Y), Aim, true));
+            _currentCooldown = _attackCooldown;
+        }
+        else
+        {
+            _currentCooldown -= deltaTime;
+        }
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
-        RectAngle.DrawRectAngle(buffer);
+        base.Draw(buffer);
+
         buffer.WriteText(Position - (0, 1), Health.ToString());
-        buffer.WriteText(Position, a.ToString(), ConsoleColor.Red);
+        buffer.WriteText(Position, _currentCooldown.ToString());
     }
 
     public override void Update(float deltaTime)
     {
-        RectAngle.Follow();
+        base.Update(deltaTime);
+        Attack(deltaTime);
+        Aimming();
     }
 
-    protected override void temp()
+    public override void DeadMotion(float deltaTime)
     {
-        a++;
+        _currentPixels = _deadPixels;
     }
+
+
+    private string[] _idlePixels =
+    {
+        "DDDDD",
+        "DDDDD",
+        "DDDDD",
+        "DDDDD",
+        "DDDDD",
+        "DDDDD",
+        "DDDDD",
+        "DDDDD",
+        "DDDDD",
+        "DDDDD",
+    };
+
+    private string[] _deadPixels =
+    {
+        "GGGGG",
+        "GGGGG",
+        "GGGGG",
+        "GGGGG",
+        "GGGGG",
+        "GGGGG",
+        "GGGGG",
+        "GGGGG",
+        "GGGGG",
+        "GGGGG",
+    };
 }

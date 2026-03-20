@@ -6,28 +6,44 @@ using Framework.Engine;
 
 public class HandgunBullet : BulletEntity
 {
-    public HandgunBullet(Scene scene, Entity id, Point point, Point direction) : base(scene, id, point, 1, 6, direction)
+    public HandgunBullet(Scene scene, Entity id, Point point, Point direction, bool isEnemy = false) : base(scene, id, point, 1, direction)
     {
-        RectAngle = new RectAngle(point, (0, 0), (2, 0));
-        RectAngle.SpinRect(direction);
+        RectAngle = new RectAngle(Position, (-2, 0), (2, 6));
+
+        _life = isEnemy ? 3f : 1f;
+        _bulletSpeed = isEnemy ? 2 : 6;
 
         _isOnlyTarget = true;
         _interval = 0.2f;
+
+        _currentPixels = _idelPixels;
     }
+
 
     public override void Draw(ScreenBuffer buffer)
     {
         base.Draw(buffer);
+        buffer.WriteText(Camera.Position, Position.ToString());
     }
 
     protected override void Go()
     {
-        if (_direction.y != 0)
+        if (_runningDirection.Y != 0)
         {
-            Position.Y += _direction.y * _bulletSpeed;
+            Position.Y += _runningDirection.Y * _bulletSpeed;
             return;
         }
 
-        Position.X += _direction.x * _bulletSpeed;
+        Position.X += _runningDirection.X * _bulletSpeed;
     }
+
+
+    private string[] _idelPixels =
+    {
+        "Y",
+        "R",
+        "R",
+        "B",
+    };
 }
+

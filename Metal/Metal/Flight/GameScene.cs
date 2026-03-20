@@ -49,9 +49,6 @@ public class GameScene : Scene
     public override void Draw(ScreenBuffer buffer)
     {
         buffer.FillRect(0, 0, ShottingGame.k_Width, ShottingGame.k_Height, bgColor:ConsoleColor.DarkCyan);
-        buffer.WriteText((1, 1), $"GameScene : count: {EntityList.Count}", bgColor:ConsoleColor.DarkCyan);
-        buffer.WriteText((1, 7), ground.Position.ToString());
-        buffer.WriteText((1, 8), ground2.Position.ToString());
 
         DrawGameObjects(buffer);
     }

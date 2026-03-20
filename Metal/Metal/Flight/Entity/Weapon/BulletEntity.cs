@@ -7,21 +7,23 @@ using Framework.Engine;
 public class BulletEntity : AttackEntity
 {
     protected bool _isOnlyTarget = false;
-    protected (int x, int y) _direction;
     protected int _bulletSpeed;
-    protected float _life;
 
-    public BulletEntity(Scene scene, Entity id, Point point, int damage, int bulletSpeed, Point direction) : base(scene, id, point, damage)
+    protected int _width;
+    protected int _height;
+
+    public BulletEntity(Scene scene, Entity id, Point point, int damage, Point direction) : base(scene, id, point, damage)
     {
-        _direction = direction;
-        _bulletSpeed = bulletSpeed;
-
-        Range = 10;
+        _runningDirection = new Point(direction);
+        Direction = direction.ConvertToInt();
+        Range = 100;
         _life = 1f;
     }
 
     public override void Update(float deltaTime)
     {
+        Go();
+
         base.Update(deltaTime);
 
         _life -= deltaTime;
@@ -30,18 +32,11 @@ public class BulletEntity : AttackEntity
         {
             Scene.RemoveGameObject(this);
         }
-
-        Go();
-    }
-
-    public override void Draw(ScreenBuffer buffer)
-    {
-        RectAngle.DrawRectAngle(buffer);
     }
 
     protected virtual void Go()
     {
-        Position.X += _bulletSpeed * _direction.x;
+        Position.X += _bulletSpeed * _runningDirection.X;
     }
 
     protected override void AfterDealDamage()

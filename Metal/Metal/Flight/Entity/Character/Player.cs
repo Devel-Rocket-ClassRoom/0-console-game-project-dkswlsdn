@@ -7,13 +7,19 @@ using System.Text.RegularExpressions;
 
 public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 {
-    private RectAngle _standingGround = new RectAngle((0, 0), (0, 0));
+    private float _attackCooldown = 0.05f;
+    private float _currentCooldown = 0f;
+
+
     private bool _isLand = false;
+    private int _moveSpeed = 2;
+
     public bool IsLand { get { return _isLand; } set { _isLand = value; } }
-    private bool _isRight = true;
-    private Point _aim = (1, 0);
+    public Point Aim = (1, 0);
+
+
     private int _jumpForce = 0;
-    private Point _direction;
+    private Point _bulletPoint { get { return Position + (0, 5); } }
 
     public float JumpCooldown { private get;  set; } = 0.1f;
 
@@ -23,46 +29,27 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
     public int JumpForce { get { if (_jumpForce < 0 && IsLand) _jumpForce = 0; return _jumpForce; } set { _jumpForce = value; } }
 
 
-
-    private string[] pixels = // C = Cyan, D = DarkBlue, B = Black, G = DarkGray
-    {
-        " DDD ",
-        " DCC ",
-        " DCC ",
-        "BBBBB",
-        "BGGGB",
-        "BGGGB",
-        "DBBBD",
-        " B B ",
-        " B B ",
-        " B B ",
-        " D D "
-    };
-
     public Player(Scene scene, Point point) : base(scene, point)
     {
-        _direction = (1, 0);
-
         Health = 100;
 
         RectAngle = new RectAngle( this, (-2, 0), (2, 10));
+
+        _currentPixels = _idlePixels;
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
-        DrawPlayer(buffer);
-        //RectAngle.DrawRectAngle(buffer);
+        base.Draw(buffer);
 
-        buffer.WriteText((1, 2), $"{Position.X}, {Position.Y}");
-        buffer.WriteText((1, 3), $"{RectAngle.Position.X}, {RectAngle.Position.Y}");
-
-        buffer.WriteText((1, 4), $"HP : {Health}");
-        buffer.WriteText((1, 5), $"ID : {ID}");
-        buffer.WriteText((1, 6), $"isLand : {IsLand}");
+        buffer.WriteText(Position - (0, 1), Health.ToString());
     }
 
     public override void Update(float deltaTime)
     {
+        Move();
+        base.Update(deltaTime);
+
         IsLand = IsOnGround();
 
         if (IsLand)
@@ -74,36 +61,31 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
         {
             Land();
         }
-
-        Move(2);
+        
         Aimming();
-        Attack();
-        RectAngle.Follow();
+        Attack(deltaTime);
     }
 
-    public void Move(int speed)
+    public void Move()
     {
         if (Input.IsKey(ConsoleKey.D))
         {
-            _isRight = true;
-
-            if (IsLand)
-                _direction = (1, 0);
+            _runningDirection = (1, 0);
         }
         else if (Input.IsKey(ConsoleKey.A))
         {
-            _isRight = false;
-
-            if (IsLand)
-                _direction = (-1, 0);
+            _runningDirection = (-1, 0);
         }
         else
         {
             if (IsLand)
-                _direction = (0, 0);
+            {
+                _runningDirection = (0, 0);
+            }
         }
+
         
-        Position += (speed * _direction.X, 0);
+        Position += (_moveSpeed * _runningDirection.X, 0);
     }
 
     public void VirticalMove(int force)
@@ -138,7 +120,6 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
                     IsLand = true;
                     JumpForce = 0;
                     Position.Y = g.GroundEntitiyList[i].Position.Y + 1;
-                    _standingGround = g.GroundEntitiyList[i].RectAngle;
                     return;
                 }
             }
@@ -147,37 +128,6 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
         VirticalMove(JumpForce--);
     }
 
-    public void DrawPlayer(ScreenBuffer buffer)
-    {
-        for (int i = -2; i <= 2; i++)
-        {
-            for (int j = 0; j <= 10; j++)
-            {
-                ConsoleColor color = ConsoleColor.Black;
-                int n = _isRight ? 1 : -1;
-
-                switch (pixels[j][i * n + 2])
-                {
-                    case 'C':
-                        color = ConsoleColor.Cyan;
-                        break;
-                    case 'D':
-                        color = ConsoleColor.DarkBlue;
-                        break;
-                    case 'B':
-                        color = ConsoleColor.Black;
-                        break;
-                    case 'G':
-                        color = ConsoleColor.DarkGray;
-                        break;
-                    default:
-                        continue;
-                }
-
-                buffer.SetCell((Position + new Point(i, -j + 10)), color);
-            }
-        }
-    }
 
 
     private bool IsOnGround()
@@ -197,50 +147,111 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 
     }
 
-
-    public Point GetNextPosition(int lowerForce)
-    {
-        throw new NotImplementedException();
-    }
+    
 
     public void Aimming()
     {
-        if (Input.IsKey(ConsoleKey.D))
-        {
-            _aim.X = 1;
-        }
-        else if (Input.IsKey(ConsoleKey.A))
-        {
-            _aim.X = -1;
-        }
-
         if (Input.IsKey(ConsoleKey.W))
         {
-            _aim.Y = 1;
+            Aim = (0, 1);
+            return;
         }
         else if (Input.IsKey(ConsoleKey.S))
         {
             if (!_isLand)
             {
-                _aim.Y = -1;
+                Aim = (0, -1);
+                return;
             }
         }
         else
         {
-            _aim.Y = 0;
+            if (Input.IsKey(ConsoleKey.D))
+            {
+                Aim = (1, 0);
+            }
+            else if (Input.IsKey(ConsoleKey.A))
+            {
+                Aim = (-1, 0);
+            }
+            else
+            {
+                if (_isLand)
+                {
+                    if (_currentIsRight)
+                    {
+                        Aim = (1, 0);
+                    }
+                    else
+                    {
+                        Aim = (-1, 0);
+                    }
+                }
+            }
         }
     }
 
-    public void Attack()
+    public void Attack(float deltaTime)
     {
-        if (Input.IsKeyDown(ConsoleKey.LeftArrow))
+        if (_currentCooldown <= 0)
         {
-            Scene.AddGameObject(new HandgunBullet(Scene, this, Position + (0, 5), _aim));
-        }
+            if (Input.IsKeyDown(ConsoleKey.LeftArrow))
+            {
+                Scene.AddGameObject(new HandgunBullet(Scene, this, _bulletPoint, Aim));
+                _currentCooldown = _attackCooldown;
+            }
 
-        if (Input.IsKeyDown(ConsoleKey.RightArrow))
+            if (Input.IsKeyDown(ConsoleKey.RightArrow))
+            {
+                Scene.AddGameObject(new ShotgunBullet(Scene, this, _bulletPoint, Aim));
+                _currentCooldown = _attackCooldown;
+            }
+        }
+        else
         {
-            Scene.AddGameObject(new ShotgunBullet(Scene, this, Position + (0, 5), _aim));
+            _currentCooldown -= deltaTime;
         }
     }
+
+
+
+    private enum State
+    {
+        Idle,
+        SitDown,
+        Jump,
+    }
+
+    private string[] _idlePixels = // C = Cyan, D = DarkBlue, B = Black, G = DarkGray
+    {
+        "    DDD    ",
+        "    DCC    ",
+        "    DCC    ",
+        "   BBBBB   ",
+        "   BGGGB   ",
+        "   BGGGB   ",
+        "   DBBBD   ",
+        "    B B    ",
+        "    B B    ",
+        "    B B    ",
+        "    D D    "
+    };
+
+    private string[] _sitPixels = // C = Cyan, D = DarkBlue, B = Black, G = DarkGray
+    {
+        "           ",
+        "           ",
+        "           ",
+        "     DDD   ",
+        "     DCC   ",
+        "     DCC   ",
+        "   BBBBBB  ",
+        "   BBGGGG  ",
+        "   BBBBBB  ",
+        "   B    B  ",
+        "DBBB    D  ",
+
+    };
+
+
 }

@@ -5,5 +5,5 @@ using System.Text;
 public interface IMoveable
 {
     Point NextPosition { get; }
-    void Move(int speed);
+    void Move();
 }
