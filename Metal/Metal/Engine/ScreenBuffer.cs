@@ -95,7 +95,7 @@ namespace Framework.Engine
 
         public void SetCell((int x, int y) position, ConsoleColor bgColor = ConsoleColor.Black)
         {
-            position = (position.x * 2, -position.y + ShottingGame.k_Height - 1);
+            position = PositionAdjustment(position);
 
             if (position.x >= 0 && position.x < _width && position.y >= 0 && position.y < _height)
             {
@@ -109,7 +109,7 @@ namespace Framework.Engine
 
         public void WriteText((int x, int y) position, string text, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
-            position = (position.x * 2, -position.y + ShottingGame.k_Height - 1);
+            position = PositionAdjustment(position);
 
             for (int i = 0; i < text.Length; i++)
             {
@@ -149,7 +149,7 @@ namespace Framework.Engine
 
         public void DrawBox((int x, int y) position, int width, int height, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
-            position = (position.x * 2, -position.y + ShottingGame.k_Height - 1);
+            position = PositionAdjustment(position);
 
             SetCell(position.x, position.y, '+', color, bgColor);
             SetCell(position.x + width - 1, position.y, '+', color, bgColor);
@@ -171,6 +171,11 @@ namespace Framework.Engine
                     SetCell(x + col, y + row, ch, color, bgColor);
                 }
             }
+        }
+
+        private (int x, int y) PositionAdjustment((int x, int y) position)
+        {
+            return ((position.x - Camera.Position.X) * 2, -(position.y - Camera.Position.Y) + ShottingGame.k_Height - 1);
         }
 
         public void Present()

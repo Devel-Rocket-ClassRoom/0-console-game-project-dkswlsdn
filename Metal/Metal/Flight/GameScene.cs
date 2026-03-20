@@ -12,15 +12,18 @@ public class GameScene : Scene
     public List<GroundEntity> GroundEntitiyList = new List<GroundEntity>();
 
     Player player;
+    Camera camera;
     Ground ground;
     Ground ground2;
     Ground ground3;
     DamagableEntity entity;
     Box box;
+    
 
     public override void Load()
     {
         player = new Player(this, (30, 30));
+        camera = new Camera(this, player);
         ground = new Ground(this, (0, 5), 800);
         ground2 = new Ground(this, (40, 25), 40);
         ground3 = new Ground(this, (120, 40), 80);
@@ -30,6 +33,7 @@ public class GameScene : Scene
         AddGameObject(ground2);
         AddGameObject(ground3);
         AddGameObject(player);
+        AddGameObject(camera);
         AddGameObject(box);
     }
 
