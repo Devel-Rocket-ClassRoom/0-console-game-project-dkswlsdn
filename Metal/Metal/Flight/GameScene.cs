@@ -19,8 +19,8 @@ public class GameScene : Scene
     Ground ground4;
     DamagableEntity entity;
     Box box;
-    GetShotgun GetWeaponTemp;
-    GetShotgun GetWeaponTemp2;
+    GetWeapon GetWeaponTemp;
+    GetWeapon GetWeaponTemp2;
     
 
     public override void Load()
@@ -33,7 +33,7 @@ public class GameScene : Scene
         ground4 = new Ground(this, (100, 6), 10);
         box = new Box(this, (100, 45));
         GetWeaponTemp = new GetShotgun(this, (150, 20));
-        GetWeaponTemp2 = new GetShotgun(this, (200, 20));
+        GetWeaponTemp2 = new GetHeavyMachinegun(this, (200, 20));
 
         AddGameObject(ground);
         AddGameObject(ground2);

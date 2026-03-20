@@ -9,7 +9,6 @@ public class Shotgun : Weapon
     public Shotgun(Scene scene, CharacterEntity id, bool isMain = true) : base(scene, id, isMain)
     {
         Name = "Shotgun";
-        Arms = 20;
         Cooldown = 0.5f;
     }
 

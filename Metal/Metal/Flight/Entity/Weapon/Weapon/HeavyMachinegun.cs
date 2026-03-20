@@ -13,10 +13,9 @@ public class HeavyMachinegun : Weapon
     private Point _priviousDirection = (0, 0);
     private Point a;
 
-    public HeavyMachinegun(Scene scene, CharacterEntity id, bool isMain) : base(scene, id, isMain)
+    public HeavyMachinegun(Scene scene, CharacterEntity id, bool isMain = true) : base(scene, id, isMain)
     {
         Name = "HeavyMachingun";
-        Arms = 20000;
         Cooldown = 0.30f;
     }
 
