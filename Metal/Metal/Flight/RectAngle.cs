@@ -110,7 +110,6 @@ public class RectAngle
     public void DrawRectAngle(ScreenBuffer buffer)
     {
         buffer.DrawBox(Position + (Rect.a.X, Rect.b.Y), Width * 2, Height, bgColor: ConsoleColor.DarkGray);
-        buffer.SetCell(Position, ConsoleColor.Green);
     }
 }
 

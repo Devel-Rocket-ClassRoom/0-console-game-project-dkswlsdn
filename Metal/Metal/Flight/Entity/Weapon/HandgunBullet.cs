@@ -40,10 +40,10 @@ public class HandgunBullet : BulletEntity
 
     private string[] _idelPixels =
     {
-        "Y",
-        "R",
-        "R",
         "B",
+        "R",
+        "Y",
+        "Y",
     };
 }
 

@@ -27,7 +27,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
     public float JumpCooldown { private get;  set; } = 0.1f;
 
 
-    public Point NextPosition { get { return (Position.X, Position.Y - 6); } }
+    public Point NextPosition { get { return (Position.X + _runningDirection.X, Position.Y); } }
     public Point GroundChecker { get { return Position - (0, 1); } }
     public int JumpForce { get { if (_jumpForce < 0 && IsLand) _jumpForce = 0; return _jumpForce; } set { _jumpForce = value; } }
 
@@ -69,6 +69,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         {
             JumpForce = 0;
             Jump(deltaTime);
+            CheckStair();
         }
         else
         {
@@ -128,7 +129,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         {
             for (int i = 0; i < g.GroundEntitiyList.Count; i++)
             {
-                if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X, Position.Y + JumpForce), Position))
+                if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X - 3, Position.Y + JumpForce), Position + (3, 0))) 
                 {
                     JumpCooldown = 0.1f;
                     IsLand = true;
@@ -142,6 +143,20 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         VirticalMove(JumpForce--);
     }
 
+    public void CheckStair()
+    {
+        if (Scene is GameScene g)
+        {
+            for (int i = 0; i < g.GroundEntitiyList.Count; i++)
+            {
+                if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap(Position + (-3, 0), Position + (3, 0)))
+                {
+                    Position.Y += 1;
+                    return;
+                }
+            }
+        }
+    }
 
 
     private bool IsOnGround()
@@ -150,7 +165,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         {
             for (int i = 0; i < g.GroundEntitiyList.Count; i++)
             {
-                if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X, Position.Y - 1), Position))
+                if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X - 3, Position.Y - 1), Position + (3, 0)))
                 {
                     return true;
                 }

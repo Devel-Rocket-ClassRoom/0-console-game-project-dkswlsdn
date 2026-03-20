@@ -8,13 +8,13 @@ public class Ground : GroundEntity
 {
     public Ground(Scene scene, Point point, int Width) : base(scene, point)
     {
-        RectAngle = new RectAngle(this, (-Width / 2, 0), (Width / 2, 0));
+        RectAngle = new RectAngle(this, (0, 0), (Width, 0));
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
         RectAngle.DrawRectAngle(buffer);
-        buffer.WriteText(Position, Position.ToString());
+        //buffer.WriteText(Position, Position.ToString());
     }
 
     public override void Update(float deltaTime)

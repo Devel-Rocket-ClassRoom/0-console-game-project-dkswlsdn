@@ -8,6 +8,9 @@ public class Camera : GameObject
 {
     private Point _adjustment;
 
+    public int LeftClamp = 0;
+    public int RightClamp = 100;
+
 
     public static Point Position = (0, 0);
     public bool FollowPlayer = true;
@@ -17,7 +20,7 @@ public class Camera : GameObject
     public Camera(Scene scene, CharacterEntity player) : base(scene)
     {
         _player = player;
-        Adjustment = (5, 5);
+        Adjustment = (4, 5);
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -28,7 +31,7 @@ public class Camera : GameObject
     {
         if (FollowPlayer)
         {
-            Position = (_player.Position.X, 0) - Adjustment;
+            Position.X = Math.Clamp(_player.Position.X - Adjustment.X, 0, RightClamp);
         }
     }
 }
