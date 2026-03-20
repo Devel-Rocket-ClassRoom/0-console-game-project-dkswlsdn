@@ -1,12 +1,16 @@
 ﻿using Framework.Engine;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
+public class Player : CharacterEntity, IMoveable, IJumpable
 {
+    public Weapon mainWeapon;
+    public Weapon subWeapon;
+
     private float _attackCooldown = 0.05f;
     private float _currentCooldown = 0f;
 
@@ -15,11 +19,10 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
     private int _moveSpeed = 2;
 
     public bool IsLand { get { return _isLand; } set { _isLand = value; } }
-    public Point Aim = (1, 0);
+    private bool _isSit = false;
 
 
     private int _jumpForce = 0;
-    private Point _bulletPoint { get { return Position + (0, 5); } }
 
     public float JumpCooldown { private get;  set; } = 0.1f;
 
@@ -31,6 +34,11 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 
     public Player(Scene scene, Point point) : base(scene, point)
     {
+        mainWeapon = new Handgun(Scene, this);
+        subWeapon = new Shotgun(Scene, this, false);
+        Scene.AddGameObject(mainWeapon);
+        Scene.AddGameObject(subWeapon);
+
         Health = 100;
 
         RectAngle = new RectAngle( this, (-2, 0), (2, 10));
@@ -43,11 +51,16 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
         base.Draw(buffer);
 
         buffer.WriteText(Position - (0, 1), Health.ToString());
+        buffer.WriteText(Camera.Position + (20, 5), mainWeapon.Name);
+        buffer.WriteText(Camera.Position + (20, 4), mainWeapon.Arms.ToString());
+        buffer.WriteText(Camera.Position + (30, 5), subWeapon.Name);
+        buffer.WriteText(Camera.Position + (30, 4), subWeapon.Arms.ToString());
     }
 
     public override void Update(float deltaTime)
     {
         Move();
+
         base.Update(deltaTime);
 
         IsLand = IsOnGround();
@@ -63,7 +76,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
         }
         
         Aimming();
-        Attack(deltaTime);
+        CheckArms();
     }
 
     public void Move()
@@ -84,7 +97,8 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
             }
         }
 
-        
+        _isSit = IsLand && Input.IsKey(ConsoleKey.S);
+
         Position += (_moveSpeed * _runningDirection.X, 0);
     }
 
@@ -190,29 +204,15 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
             }
         }
     }
-
-    public void Attack(float deltaTime)
+    public void CheckArms()
     {
-        if (_currentCooldown <= 0)
+        if (mainWeapon.Arms <= 0)
         {
-            if (Input.IsKeyDown(ConsoleKey.LeftArrow))
-            {
-                Scene.AddGameObject(new HandgunBullet(Scene, this, _bulletPoint, Aim));
-                _currentCooldown = _attackCooldown;
-            }
-
-            if (Input.IsKeyDown(ConsoleKey.RightArrow))
-            {
-                Scene.AddGameObject(new ShotgunBullet(Scene, this, _bulletPoint, Aim));
-                _currentCooldown = _attackCooldown;
-            }
-        }
-        else
-        {
-            _currentCooldown -= deltaTime;
+            Scene.RemoveGameObject(mainWeapon);
+            mainWeapon = new Handgun(Scene, this);
+            Scene.AddGameObject(mainWeapon);
         }
     }
-
 
 
     private enum State

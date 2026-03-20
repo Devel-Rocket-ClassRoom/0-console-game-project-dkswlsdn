@@ -23,7 +23,7 @@ public abstract class Entity : GameObject
             _direction = value;
         }
     }
-    private int _direction;
+    private int _direction = 0;
     protected Point _runningDirection;
     public RectAngle RectAngle { get; protected set; }
 
@@ -104,6 +104,8 @@ public abstract class Entity : GameObject
                 return ConsoleColor.Red;
             case 'Y':
                 return ConsoleColor.DarkYellow;
+            case 'A':
+                return ConsoleColor.DarkGreen;
             default:
                 return ConsoleColor.White;
         }

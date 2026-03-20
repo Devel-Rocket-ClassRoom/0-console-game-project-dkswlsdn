@@ -16,10 +16,9 @@ public abstract class AttackEntity : Entity
     public int Range { get; protected set; }
 
 
-    public AttackEntity(Scene scene, Entity id, Point point, int damage) :base(scene, point)
+    public AttackEntity(Scene scene, Entity id, Point point) :base(scene, point)
     {
         ownerId = id;
-        _damage = damage;
     }
 
     public override void Update(float deltaTime)

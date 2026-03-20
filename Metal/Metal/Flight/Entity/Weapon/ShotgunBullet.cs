@@ -6,12 +6,13 @@ using Framework.Engine;
 
 public class ShotgunBullet : BulletEntity
 {
-    public ShotgunBullet(Scene scene, Entity id, Point point, Point direction) : base(scene, id, point, 20, direction)
+    public ShotgunBullet(Scene scene, Entity id, Point point, Point direction) : base(scene, id, point, direction)
     {
         RectAngle = new RectAngle(Position, (-8, 0), (8, 45));
 
         _bulletSpeed = 0;
         _life = 0.2f;
+        _damage = 20;
 
         _interval = 0.3f;
         _isOnlyTarget = false;

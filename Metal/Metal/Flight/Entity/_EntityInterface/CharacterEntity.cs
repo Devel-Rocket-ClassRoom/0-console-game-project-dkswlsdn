@@ -11,6 +11,11 @@ public abstract class CharacterEntity : Entity
     protected Dictionary<int, long> ImmunityList { get; } = new Dictionary<int, long>();
     // 체력과 피격, 전투관련
 
+    public Point BulletPoint { get { return Position + (0, 5); } }
+
+    public Point Aim = (1, 0);
+
+
 
     protected float _motionTime = 1f;
 

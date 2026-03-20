@@ -12,7 +12,7 @@ public class BulletEntity : AttackEntity
     protected int _width;
     protected int _height;
 
-    public BulletEntity(Scene scene, Entity id, Point point, int damage, Point direction) : base(scene, id, point, damage)
+    public BulletEntity(Scene scene, Entity id, Point point, Point direction) : base(scene, id, point)
     {
         _runningDirection = new Point(direction);
         Direction = direction.ConvertToInt();
