@@ -16,7 +16,7 @@ public abstract class AttackEntity : Entity
     public int Range { get; protected set; }
 
 
-    public AttackEntity(Scene scene, Entity id, Point point) :base(scene, point)
+    public AttackEntity(Scene scene, CharacterEntity id, Point point) :base(scene, point)
     {
         ownerId = id;
     }

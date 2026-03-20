@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public class HandgunBullet : BulletEntity
 {
-    public HandgunBullet(Scene scene, Entity id, Point point, Point aim, bool isEnemy = false) : base(scene, id, point, aim)
+    public HandgunBullet(Scene scene, CharacterEntity id, Point point, Point aim, bool isEnemy = false) : base(scene, id, point, aim)
     {
         RectAngle = new RectAngle(this, (5, 7));
 

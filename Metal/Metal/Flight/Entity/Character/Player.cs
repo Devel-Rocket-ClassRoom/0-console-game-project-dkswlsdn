@@ -15,10 +15,8 @@ public class Player : CharacterEntity, IMoveable, IJumpable
     private float _currentCooldown = 0f;
 
 
-    private bool _isLand = false;
     private int _moveSpeed = 2;
 
-    public bool IsLand { get { return _isLand; } set { _isLand = value; } }
     private bool _isSit = false;
 
 

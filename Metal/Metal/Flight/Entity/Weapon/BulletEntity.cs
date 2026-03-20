@@ -12,7 +12,7 @@ public abstract class BulletEntity : AttackEntity
     protected int _width;
     protected int _height;
 
-    public BulletEntity(Scene scene, Entity id, Point point, Point aim) : base(scene, id, point)
+    public BulletEntity(Scene scene, CharacterEntity id, Point point, Point aim) : base(scene, id, point)
     {
         Direction = aim;
         Range = 100;

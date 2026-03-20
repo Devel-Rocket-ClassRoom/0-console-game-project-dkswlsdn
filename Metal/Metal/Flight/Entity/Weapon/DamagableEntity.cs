@@ -5,7 +5,7 @@ using Framework.Engine;
 
 public class DamagableEntity : AttackEntity
 {
-    public DamagableEntity(Scene scene, Entity id, Point point) : base(scene, id, point)
+    public DamagableEntity(Scene scene, CharacterEntity id, Point point) : base(scene, id, point)
     {
         Position = point;
         Range = 10;

@@ -31,6 +31,9 @@ public abstract class Entity : GameObject
     public RectAngle RectAngle { get; protected set; }
 
 
+    protected bool _pixelReversed;
+
+
     public Entity(Scene scene, Point point) : base(scene)
     {
         Position = new Point(point);
@@ -44,6 +47,8 @@ public abstract class Entity : GameObject
 
         int midX = width / 2;
         int midy = height / 2;
+
+        int n = _pixelReversed ? -1 : 1;
 
         for (int j = 0; j < height; j++)
         {
@@ -64,21 +69,21 @@ public abstract class Entity : GameObject
                 {
                     case (1, 0):
                         drawX = relX;
-                        drawY = relY;
+                        drawY = relY * n;
                         break;
 
                     case (-1, 0):
                         drawX = -relX;
-                        drawY = relY;
+                        drawY = relY * n;
                         break;
 
                     case (0, 1):
-                        drawX = relY;
+                        drawX = relY * n;
                         drawY = relX;
                         break;
 
                     case (0, -1):
-                        drawX = relY;
+                        drawX = relY * n;
                         drawY = -relX;
                         break;
                 }

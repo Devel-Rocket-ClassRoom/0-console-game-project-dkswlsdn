@@ -8,6 +8,8 @@ public abstract class CharacterEntity : Entity
 {
     protected bool _isDead;
     public int Health { get; protected set; }
+    public bool IsLand { get; set; }
+
     protected Dictionary<int, long> ImmunityList { get; } = new Dictionary<int, long>();
     // 체력과 피격, 전투관련
 

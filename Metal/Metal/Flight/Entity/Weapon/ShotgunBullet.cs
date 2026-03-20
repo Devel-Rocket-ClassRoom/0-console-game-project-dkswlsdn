@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public class ShotgunBullet : BulletEntity
 {
-    public ShotgunBullet(Scene scene, Entity id, Point point, Point aim) : base(scene, id, point + Point.DirectionConverter((23, 0), aim), aim)
+    public ShotgunBullet(Scene scene, CharacterEntity id, Point point, Point aim) : base(scene, id, point + new Point(23, 0).DirectionConverter(aim), aim)
     {
         RectAngle = new RectAngle(this, (46, 17));
 

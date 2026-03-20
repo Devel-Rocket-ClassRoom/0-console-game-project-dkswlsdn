@@ -89,22 +89,92 @@ public struct Point
         }
     }
 
-    public static Point DirectionConverter(Point amount, Point dir)
+    public  Point DirectionConverter(Point dir)
     {
         switch ((dir.X, dir.Y))
         {
             default:
             case (1, 0):
-                return amount;
+                return (X, Y);
 
             case (-1, 0):
-                return (-amount.X, amount.Y);
+                return (-X, Y);
 
             case (0, 1):
-                return (amount.Y, amount.X);
+                return (Y, X);
 
             case (0, -1):
-                return (amount.Y, -amount.X);
+                return (Y, -X);
         }
+    }
+
+    public Point DirectionConverter(Point prev, Point dest, out bool isReversed)
+    {
+        var key = (prev.X, prev.Y, dest.X, dest.Y);
+
+        switch (key)
+        {
+            // 1. 상 -> 우 (원본)
+            case (0, 1, 1, 0):
+                isReversed = false;
+                return new Point(X, Y);
+
+            // 2. 우 -> 상 (x = y 대칭)
+            case (1, 0, 0, 1):
+                isReversed = false;
+                return new Point(Y, X);
+
+            // 3. 우 -> 하 (x = y 대칭 후, x축 대칭)
+            // (x, y) -> (y, x) -> (y, -x)
+            case (1, 0, 0, -1):
+                isReversed = false;
+                return new Point(Y, -X);
+
+            // 4. 하 -> 우 (x축 대칭)
+            // (x, y) -> (x, -y)
+            case (0, -1, 1, 0):
+                isReversed = true;
+                return new Point(X, -Y);
+
+            // 5. 상 -> 좌 (y축 대칭)
+            // (x, y) -> (-x, y)
+            case (0, 1, -1, 0):
+                isReversed = false;
+                return new Point(-X, Y);
+
+            // 6. 좌 -> 상 (x = y 대칭 후, y축 대칭)
+            // (x, y) -> (y, x) -> (-y, x)
+            case (-1, 0, 0, 1):
+                isReversed = true;
+                return new Point(-Y, X);
+
+            // 7. 좌 -> 하 (x = y 대칭 후, x = -y 대칭)
+            // (x, y) -> (y, x) -> (-x, -y)
+            case (-1, 0, 0, -1):
+                isReversed = true;
+                return new Point(-Y, -X);
+
+            // 8. 하 -> 좌 (x = -y 대칭)
+            // (x, y) -> (-y, -x)
+            case (0, -1, -1, 0):
+                isReversed = true;
+                return new Point(-X, -Y);
+
+            default:
+                isReversed = false;
+                return this;
+        }
+    }
+
+    public Point Normalize()
+    {
+        float length = MathF.Sqrt(X * X + Y * Y);
+
+        if (length < float.Epsilon)
+        {
+            return new Point(0, 0);
+        }
+
+        return new Point(X / length, Y / length);
     }
 }
