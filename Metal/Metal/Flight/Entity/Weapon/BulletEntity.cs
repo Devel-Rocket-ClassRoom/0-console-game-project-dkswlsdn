@@ -4,7 +4,7 @@ using System.Text;
 using Framework.Engine;
 
 
-public class BulletEntity : AttackEntity
+public abstract class BulletEntity : AttackEntity
 {
     protected bool _isOnlyTarget = false;
     protected int _bulletSpeed;
@@ -12,9 +12,9 @@ public class BulletEntity : AttackEntity
     protected int _width;
     protected int _height;
 
-    public BulletEntity(Scene scene, Entity id, Point point, Point direction) : base(scene, id, point)
+    public BulletEntity(Scene scene, Entity id, Point point, Point aim) : base(scene, id, point)
     {
-        Direction = direction;
+        Direction = aim;
         Range = 100;
         _life = 1f;
     }
@@ -34,10 +34,7 @@ public class BulletEntity : AttackEntity
         }
     }
 
-    protected virtual void Go()
-    {
-        Position.X += _bulletSpeed * _runningDirection.X;
-    }
+    protected abstract void Go();
 
     protected override void AfterDealDamage()
     {

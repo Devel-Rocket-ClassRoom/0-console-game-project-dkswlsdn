@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-public class Point
+public struct Point
 {
     public float X;
     public float Y;
@@ -86,6 +86,25 @@ public class Point
                 return 3;
             default:
                 throw new Exception();
+        }
+    }
+
+    public static Point DirectionConverter(Point amount, Point dir)
+    {
+        switch ((dir.X, dir.Y))
+        {
+            default:
+            case (1, 0):
+                return amount;
+
+            case (-1, 0):
+                return (-amount.X, amount.Y);
+
+            case (0, 1):
+                return (amount.Y, amount.X);
+
+            case (0, -1):
+                return (amount.Y, -amount.X);
         }
     }
 }

@@ -1,95 +1,106 @@
-﻿using System;
+﻿using Framework.Engine;
+using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
-using Framework.Engine;
 
 public class RectAngle
 {
-    public Point Position { get; set; }
-    private (int X, int Y) _direction;
+    private readonly float _origWidth;
+    private readonly float _origHeight;
+
+    // 기준점(좌하단)을 필드로 가집니다.
+    public Point Pibot { get; set; }
+
     private Entity _chase;
-    public (Point a, Point b) Rect;
 
-    public int Width { get { return (int)(Rect.b.X - Rect.a.X + 1); } }
-    public int Height { get { return (int)(Rect.b.Y - Rect.a.Y + 1); } }
-    // Position 기준 상대 위치
-    // a : 좌하단
-    // b : 우상단
+    public float Width { get; private set; }
+    public float Height { get; private set; }
 
-    public RectAngle(Entity chase, Point a, Point b)
+    public Point Min => Pibot;
+
+    public Point Max => new Point(Pibot.X + Width - 1, Pibot.Y + Height - 1);
+
+    public Point Position
+    {
+        get
+        {
+            return new Point(Pibot.X + (Width - 1) / 2f, Pibot.Y + (Height - 1) / 2f);
+        }
+        set
+        {
+            float halfW = (Width - 1) / 2f;
+            float halfH = (Height - 1) / 2f;
+            Pibot = new Point(value.X - halfW, value.Y - halfH);
+        }
+    }
+
+    public RectAngle(Entity chase, Point size)
     {
         _chase = chase;
+        _origWidth = size.X;
+        _origHeight = size.Y;
+
+        Width = _origWidth;
+        Height = _origHeight;
         Position = chase.Position;
-        Rect = (a, b);
-    }
-
-    public RectAngle(Point point, Point a, Point b)
-    {
-        Position = point;
-        Rect = (a, b);
-    }
-
-    public RectAngle(Point a, Point b)
-    {
-        Position = (0, 0);
-        Rect = (a, b);
     }
 
 
-    public bool IsOverrap(RectAngle rectAngle)
+
+
+
+    public bool IsOverrap(RectAngle rect)
     {
-        return !(Position.X + Rect.b.X < rectAngle.Position.X + rectAngle.Rect.a.X 
-            || Position.X + Rect.a.X > rectAngle.Position.X + rectAngle.Rect.b.X
-            || Position.Y + Rect.b.Y < rectAngle.Position.Y + rectAngle.Rect.a.Y
-            || Position.Y + Rect.a.Y > rectAngle.Position.Y + rectAngle.Rect.b.Y);
+        return !(Min.X > rect.Max.X
+            || Max.X < rect.Min.X
+            || Min.Y > rect.Max.Y
+            || Max.Y < rect.Min.Y);
     }
 
     public bool IsOverrap(Point a, Point b)
     {
-        return !(Position.X + Rect.b.X < a.X 
-            || Position.X + Rect.a.X > b.X
-            || Position.Y + Rect.b.Y < a.Y 
-            || Position.Y + Rect.a.Y > b.Y);
+        float otMinX = MathF.Min(a.X, b.X);
+        float otMaxX = MathF.Max(a.X, b.X);
+        float otMinY = MathF.Min(a.Y, b.Y);
+        float otMaxY = MathF.Max(a.Y, b.Y);
+
+        return !(Min.X > otMaxX
+            || Max.X < otMinX
+            || Min.Y > otMaxY
+            || Max.Y < otMinY);
     }
 
-    public bool IsOverrap(Point point)
-    {
-        return !(point.X < Position.X + Rect.a.X 
-            || point.X > Position.X + Rect.b.X 
-            || point.Y < Position.Y + Rect.a.Y 
-            || point.X > Position.Y + Rect.b.Y);
-    }
 
-    public void SpinRect((int X, int Y) dir, bool isReverse)
-    {
-        int hw = Width / 2;
-        int h = Height;
 
+    public void SpinRect((int X, int Y) dir)
+    {
         switch (dir)
         {
-            case (0, 1):
-                Rect.a = new Point(-hw, 0);
-                Rect.b = new Point(hw, h);
-                break;
-
             case (1, 0):
-                Rect.a = new Point(0, -hw);
-                Rect.b = new Point(h, hw);
-                break;
-
-            case (0, -1): 
-                Rect.a = new Point(-hw, -h);
-                Rect.b = new Point(hw, 0);
-                break;
-
             case (-1, 0):
-                Rect.a = new Point(-h, -hw);
-                Rect.b = new Point(0, hw);
+                Width = _origWidth;
+                Height = _origHeight;
+                break;
+
+            case (0, 1):
+            case (0, -1):
+                Width = _origHeight;
+                Height = _origWidth;
                 break;
         }
-
-        _direction = dir;
     }
+
+    public void SitDown()
+    {
+        Height /= 2;
+    }
+    public void WakeDown()
+    {
+        Height *= 2;
+    }
+
+
 
 
     public void Follow()
@@ -99,14 +110,10 @@ public class RectAngle
 
     public void DrawRectAngle(ScreenBuffer buffer)
     {
-        buffer.DrawBox(Position + (Rect.a.X, Rect.b.Y), Width * 2, Height, bgColor: ConsoleColor.DarkGray);
+        int drawMinX = (int)MathF.Round(Min.X);
+        int drawMaxY = (int)MathF.Round(Max.Y);
+
+        buffer.SetCell(Position, ConsoleColor.Red);
+        buffer.DrawBox((drawMinX, drawMaxY), (int)Width, (int)Height, bgColor: ConsoleColor.DarkGray);
     }
 }
-
-/*
- * 
- * 
- * 
- * 
- * 
- * * * * * * */

@@ -31,7 +31,7 @@ public class GameScene : Scene
         ground2 = new Ground(this, (40, 25), 40, "platform");
         ground3 = new Ground(this, (120, 40), 80, "higherPlatform");
         ground4 = new Ground(this, (100, 6), 10);
-        box = new Box(this, (100, 41));
+        box = new Box(this, (100, 45));
         GetWeaponTemp = new GetShotgun(this, (150, 20));
         GetWeaponTemp2 = new GetShotgun(this, (200, 20));
 

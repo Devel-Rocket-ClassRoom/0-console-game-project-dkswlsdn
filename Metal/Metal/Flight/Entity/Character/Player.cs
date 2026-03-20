@@ -27,9 +27,8 @@ public class Player : CharacterEntity, IMoveable, IJumpable
     public float JumpCooldown { private get;  set; } = 0.1f;
 
 
-    public Point NextPosition { get { return (Position.X + _runningDirection.X, Position.Y); } }
-    private Entity _steppedGround;
-    public Point GroundChecker { get { return Position - (0, 1); } }
+    public Point NextPosition { get { return (Position.X + Direction.X, Position.Y); } }
+    public Point GroundChecker { get { return Position - (0, RectAngle.Height / 2); } }
     public float VirtlcalVelocity
     {
         set
@@ -38,6 +37,11 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         }
     }
     private float _gravity = 10;
+
+
+    private Point _input;
+    private Motion motion = Motion.Idle;
+
 
 
     public Player(Scene scene, Point point) : base(scene, point)
@@ -49,7 +53,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
         Health = 100;
 
-        RectAngle = new RectAngle( this, (-2, 0), (2, 10));
+        RectAngle = new RectAngle(this, (5, 11));
 
         _currentPixels = _idlePixels;
     }
@@ -63,11 +67,20 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         buffer.WriteText(Camera.Position + (20, 4), mainWeapon.Arms.ToString());
         buffer.WriteText(Camera.Position + (30, 5), subWeapon.Name);
         buffer.WriteText(Camera.Position + (30, 4), subWeapon.Arms.ToString());
-        if (_steppedGround != null)buffer.WriteText(Camera.Position + (40, 4), _steppedGround.Name.ToString(), ConsoleColor.Red);
+
+        buffer.WriteText(Position + (0, -1), Aim.ToString());
+        buffer.WriteText(Position + (0, -2), Direction.ToString());
+
+        buffer.SetCell(GroundChecker, ConsoleColor.Green);
     }
+
+
+
 
     public override void Update(float deltaTime)
     {
+        PlayerInput();
+
         Move();
 
         base.Update(deltaTime);
@@ -87,29 +100,16 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         
         Aimming();
         CheckArms();
+        Animation();
     }
 
     public void Move()
     {
-        if (Input.IsKey(ConsoleKey.D))
-        {
-            _runningDirection = (1, 0);
-        }
-        else if (Input.IsKey(ConsoleKey.A))
-        {
-            _runningDirection = (-1, 0);
-        }
-        else
-        {
-            if (IsLand)
-            {
-                _runningDirection = (0, 0);
-            }
-        }
+        if (_input.X != 0) Direction = (_input.X, 0);
+
+        Position += (_moveSpeed * _input.X, 0);
 
         _isSit = IsLand && Input.IsKey(ConsoleKey.S);
-
-        Position += (_moveSpeed * _runningDirection.X, 0);
     }
 
     public void VirticalMove()
@@ -139,9 +139,9 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         {
             for (int i = 0; i < g.GroundEntitiyList.Count; i++)
             {
-                if (_currentVelocity <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X - 3, Position.Y + Math.Min(_currentVelocity - _gravity * deltaTime, -1)), Position + (3, 0)))
+                if (_currentVelocity <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((GroundChecker.X - 3, GroundChecker.Y + Math.Min(_currentVelocity - _gravity * deltaTime, -1)), GroundChecker + (3, 0)))
                 {
-                    _currentVelocity = g.GroundEntitiyList[i].Position.Y - Position.Y + 1;
+                    _currentVelocity = g.GroundEntitiyList[i].Position.Y - GroundChecker.Y + 1;
                     VirticalMove();
                     return true;
                 }
@@ -156,56 +156,62 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
     public void Aimming()
     {
-        if (Input.IsKey(ConsoleKey.W))
+        if (_input.X == 0 && _input.Y == 0)
         {
-            Aim = (0, 1);
-            return;
+            int n = CurrentIsRight ? 1 : -1;
+            Aim = (n, 0);
         }
-        else if (Input.IsKey(ConsoleKey.S))
+        else if (IsLand && _input.Y == -1)
         {
-            if (!_isLand)
-            {
-                Aim = (0, -1);
-                return;
-            }
-            else
-            {
-                if (_currentIsRight)
-                {
-                    Aim = (1, 0);
-                }
-                else
-                {
-                    Aim = (-1, 0);
-                }
-            }
+            int n = CurrentIsRight ? 1 : -1;
+            Aim = (n, 0);
+        }
+        else if (_input.Y != 0)
+        {
+            Aim = (0, _input.Y);
         }
         else
         {
-            if (Input.IsKey(ConsoleKey.D))
-            {
-                Aim = (1, 0);
-            }
-            else if (Input.IsKey(ConsoleKey.A))
-            {
-                Aim = (-1, 0);
-            }
-            else
-            {
-                if (_isLand)
-                {
-                    if (_currentIsRight)
-                    {
-                        Aim = (1, 0);
-                    }
-                    else
-                    {
-                        Aim = (-1, 0);
-                    }
-                }
-            }
+            Aim = _input;
         }
     }
+
+
+    private void PlayerInput()
+    {
+        if (Input.IsKey(ConsoleKey.W))
+        {
+            _input.Y = 1;
+        }
+        else if (Input.IsKey(ConsoleKey.S))
+        {
+            _input.Y = -1;
+        }
+        else
+        {
+            _input.Y = 0;
+        }
+        
+        if (Input.IsKey(ConsoleKey.D))
+        {
+            _input.X = 1;
+        }
+        else if (Input.IsKey(ConsoleKey.A))
+        {
+            _input.X = -1;
+        }
+        else
+        {
+            _input.X = 0;
+        }
+    }
+
+    public void Animation()
+    {
+        
+    }
+
+
     public void CheckArms()
     {
         if (mainWeapon.Arms <= 0)
@@ -229,6 +235,36 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         "    DDD    ",
         "    DCC    ",
         "    DCC    ",
+        "   BBBBB   ",
+        "   BGGGB   ",
+        "   BGGGB   ",
+        "   DBBBD   ",
+        "    B B    ",
+        "    B B    ",
+        "    B B    ",
+        "    D D    "
+    };
+
+    private string[] _lookUpPixels = // C = Cyan, D = DarkBlue, B = Black, G = DarkGray
+    {
+        "    DCC    ",
+        "    DCC    ",
+        "    DDD    ",
+        "   BBBBB   ",
+        "   BGGGB   ",
+        "   BGGGB   ",
+        "   DBBBD   ",
+        "    B B    ",
+        "    B B    ",
+        "    B B    ",
+        "    D D    "
+    };
+
+    private string[] _lookDownPixels = // C = Cyan, D = DarkBlue, B = Black, G = DarkGray
+    {
+        "    DDD    ",
+        "    CCC    ",
+        "    CCC    ",
         "   BBBBB   ",
         "   BGGGB   ",
         "   BGGGB   ",

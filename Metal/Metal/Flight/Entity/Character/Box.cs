@@ -14,10 +14,9 @@ public class Box : CharacterEntity, IAttackable
     {
         Health = 100;
 
-        RectAngle = new RectAngle(this, (-2, 0), (2, 10));
+        RectAngle = new RectAngle(this, (5, 11));
 
         _currentPixels = _idlePixels;
-        _currentIsRight = false;
     }
 
     public Point Aim { get; set; } = (-1, 0);

@@ -8,7 +8,7 @@ public class GetShotgun : Entity
 {
     public GetShotgun(Scene scene, Point point) : base(scene, point)
     {
-        RectAngle = new RectAngle(point, (-4, 0), (4, 8));
+        RectAngle = new RectAngle(this, (9, 9));
         _currentPixels = _idelPixels;
     }
 

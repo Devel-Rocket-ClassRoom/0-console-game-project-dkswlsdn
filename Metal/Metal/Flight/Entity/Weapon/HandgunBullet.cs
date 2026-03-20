@@ -6,10 +6,9 @@ using Framework.Engine;
 
 public class HandgunBullet : BulletEntity
 {
-    public HandgunBullet(Scene scene, Entity id, Point point, Point direction, bool isEnemy = false) : base(scene, id, point, direction)
+    public HandgunBullet(Scene scene, Entity id, Point point, Point aim, bool isEnemy = false) : base(scene, id, point, aim)
     {
-        _runningDirection = new Point(direction);
-        RectAngle = new RectAngle(this, (-2, 0), (2, 6));
+        RectAngle = new RectAngle(this, (5, 7));
 
         _life = isEnemy ? 3f : 1f;
         _bulletSpeed = isEnemy ? 2 : 6;
@@ -29,22 +28,19 @@ public class HandgunBullet : BulletEntity
 
     protected override void Go()
     {
-        if (_runningDirection.Y != 0)
+        if (Direction.Y != 0)
         {
-            Position += (0, _runningDirection.Y * _bulletSpeed);
+            Position += (0, Direction.Y * _bulletSpeed);
             return;
         }
 
-        Position += _runningDirection * _bulletSpeed;
+        Position += Direction * _bulletSpeed;
     }
 
 
     private string[] _idelPixels =
     {
-        "B",
-        "R",
-        "Y",
-        "Y",
+        "YYRB"
     };
 }
 

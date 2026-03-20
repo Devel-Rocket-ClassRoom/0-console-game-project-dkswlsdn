@@ -13,10 +13,10 @@ public class HeavyMachinegunBullet : BulletEntity
     private int _bulletCount;
     private Point _previous;
 
-    public HeavyMachinegunBullet(Scene scene, Entity id, Point point, Point direction, int count, Point previous, bool isEnemy = false) : base(scene, id, point, direction)
+    public HeavyMachinegunBullet(Scene scene, Entity id, Point point, Point aim, int count, Point previous, bool isEnemy = false) 
+        : base(scene, id, point + Point.DirectionConverter((5, 0), aim), aim)
     {
-        _runningDirection = new Point(direction);
-        RectAngle = new RectAngle(this, (-2, 0), (2, 4));
+        RectAngle = new RectAngle(this, (4, 4));
 
         _life = isEnemy ? 3f : 1f;
         _bulletSpeed = isEnemy ? 2 : 6;
@@ -32,13 +32,13 @@ public class HeavyMachinegunBullet : BulletEntity
 
     protected override void Go()
     {
-        if (_runningDirection.Y != 0)
+        if (Direction.Y != 0)
         {
-            Position += (_bulletPattern[_bulletCount], _runningDirection.Y * _bulletSpeed);
+            Position += (_bulletPattern[_bulletCount], Direction.Y * _bulletSpeed);
             return;
         }
 
-        Position += (_runningDirection.X * _bulletSpeed, _bulletPattern[_bulletCount]);
+        Position += (Direction.X * _bulletSpeed, _bulletPattern[_bulletCount]);
     }
 
     private void GetNextAngle(int isClockwise)
@@ -48,14 +48,51 @@ public class HeavyMachinegunBullet : BulletEntity
 
     private string[] _idelPixels =
     {
-        "yy",
-        "yy",
-        "yy",
-        "yy",
-        "YY",
-        "YY",
-        "YY",
-        "YY",
-        "GG",
+        "GYYYYYYyyy",
+        "GYYYYYYyyy",
+    };
+
+    
+    private string[] _1020Pixels =
+    {
+        "     yyy",
+        "  YYYyyy",
+        "GYYYY   ",
+        "GY      ",
+    };
+
+    private string[] _3040Pixels =
+    {
+        "      yy",
+        "     yy ",
+        "    Yy  ",
+        "   YY   ",
+        "  YY    ",
+        " YY     ",
+        "GG      ",
+    };
+
+    private string[] _5060Pixels =
+    {
+        "      y",
+        "     yy",
+        "    Yy ",
+        "   YY  ",
+        "  YY   ",
+        "  Y    ",
+        "GG     ",
+        "G      ",
+    };
+
+    private string[] _7080Pixels =
+    {
+        "  yy",
+        "  yy",
+        "  yy",
+        "  YY",
+        " YY ",
+        " YY ",
+        " YY ",
+        "GG  ",
     };
 }

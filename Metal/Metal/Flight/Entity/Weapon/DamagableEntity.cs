@@ -9,7 +9,7 @@ public class DamagableEntity : AttackEntity
     {
         Position = point;
         Range = 10;
-        RectAngle = new RectAngle(this, (-2 , -2), (2, 2));
+        RectAngle = new RectAngle(this, (5, 5));
     }
 
     public override void Draw(ScreenBuffer buffer)

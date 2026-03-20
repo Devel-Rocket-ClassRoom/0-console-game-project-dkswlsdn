@@ -8,7 +8,7 @@ public class Ground : GroundEntity
 {
     public Ground(Scene scene, Point point, int Width, string name = "g") : base(scene, point)
     {
-        RectAngle = new RectAngle(this, (0, 0), (Width, 0));
+        RectAngle = new RectAngle(this, (Width, 1));
         Name = name;
     }
 

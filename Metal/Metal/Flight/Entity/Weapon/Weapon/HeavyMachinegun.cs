@@ -10,7 +10,7 @@ public class HeavyMachinegun : Weapon
     private int _bulletCount = 4;
     private bool _fire = false;
     private bool _reserve = false;
-    private Point _priviousDirection;
+    private Point _priviousDirection = (0, 0);
 
     public HeavyMachinegun(Scene scene, CharacterEntity id, bool isMain) : base(scene, id, isMain)
     {
@@ -28,7 +28,7 @@ public class HeavyMachinegun : Weapon
         {
             if (_leftCooldown <= 0)
             {
-                if (_priviousDirection == null)
+                if (_priviousDirection.X == 0 && _priviousDirection.Y == 0)
                     _priviousDirection = _ownerID.Aim;
 
                 _bulletCount = 0;

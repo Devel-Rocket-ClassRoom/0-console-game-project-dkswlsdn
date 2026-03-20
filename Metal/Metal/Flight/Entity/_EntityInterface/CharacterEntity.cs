@@ -11,7 +11,7 @@ public abstract class CharacterEntity : Entity
     protected Dictionary<int, long> ImmunityList { get; } = new Dictionary<int, long>();
     // 체력과 피격, 전투관련
 
-    public Point BulletPoint { get { return Position + (0, 5); } }
+    public virtual Point BulletPoint { get { return Position; } }
 
     public Point Aim = (1, 0);
 
@@ -27,7 +27,7 @@ public abstract class CharacterEntity : Entity
             g_scene.EntityList.Add(this);
         }
 
-        Direction = (0, 1);
+        Direction = (1, 0);
     }
 
     

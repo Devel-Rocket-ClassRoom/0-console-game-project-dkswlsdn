@@ -9,7 +9,7 @@ public abstract class Entity : GameObject
 
 
     protected string[] _currentPixels;
-    protected bool _currentIsRight = true;
+    protected bool CurrentIsRight { get { return Direction.X == 1; } }
 
     protected (float X, float Y) _realPosition = (0, 0);
     public Point Position
@@ -17,7 +17,7 @@ public abstract class Entity : GameObject
         get { return (_realPosition.X, _realPosition.Y); }
         set { _realPosition = (value.X, value.Y); }
     }
-    public (int X, int Y) Direction
+    public Point Direction
     {
         get { return _direction; }
         set
@@ -27,8 +27,7 @@ public abstract class Entity : GameObject
     }
 
 
-    private (int X, int Y) _direction = (0, 1);
-    protected Point _runningDirection;
+    private (int X, int Y) _direction = (1, 0);
     public RectAngle RectAngle { get; protected set; }
 
 
@@ -36,7 +35,6 @@ public abstract class Entity : GameObject
     {
         Position = new Point(point);
         ID = nextId++;
-        _runningDirection = (0, 0);
     }
 
     public virtual void DrawEntity(ScreenBuffer buffer)
@@ -44,11 +42,8 @@ public abstract class Entity : GameObject
         int width = _currentPixels[0].Length;
         int height = _currentPixels.Length;
 
-        if (_runningDirection.X != 0) _currentIsRight = _runningDirection.X == 1;
-        int n = _currentIsRight ? 1 : -1;
-
         int midX = width / 2;
-        int bottomY = height - 1;
+        int midy = height / 2;
 
         for (int j = 0; j < height; j++)
         {
@@ -58,32 +53,33 @@ public abstract class Entity : GameObject
                 if (pixel == ' ' || pixel == '\0') continue;
 
                 ConsoleColor color = GetColor(pixel);
+
                 int relX = i - midX;
-                int relY = bottomY - j;
+                int relY = -j + midy;
 
                 int drawX = 0;
                 int drawY = 0;
 
-                switch (Direction)
+                switch ((Direction.X, Direction.Y))
                 {
-                    case (0, 1):
-                        drawX = relX * n;
+                    case (1, 0):
+                        drawX = relX;
                         drawY = relY;
                         break;
 
-                    case (1, 0):
+                    case (-1, 0):
+                        drawX = -relX;
+                        drawY = relY;
+                        break;
+
+                    case (0, 1):
                         drawX = relY;
-                        drawY = relX * n;
+                        drawY = relX;
                         break;
 
                     case (0, -1):
-                        drawX = relX * n;
-                        drawY = -relY;
-                        break;
-
-                    case (-1, 0):
-                        drawX = -relY;
-                        drawY = relX * n;
+                        drawX = relY;
+                        drawY = -relX;
                         break;
                 }
 
@@ -121,13 +117,20 @@ public abstract class Entity : GameObject
 
     public override void Update(float deltaTime)
     {
-        RectAngle.SpinRect(Direction, _currentIsRight);
+        RectAngle.SpinRect(Direction);
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
         DrawEntity(buffer);
         //RectAngle.DrawRectAngle(buffer);
-        //buffer.WriteText(Position + (0, 1), Direction.ToString());
+        //buffer.SetCell(Position + (0, 1), ConsoleColor.Green);
+    }
+
+
+
+    public enum Motion
+    {
+        Idle, Walk, WalkLookUp, Lookup, Sit, Crawl, Jump, JumpLookUp, LookDown,
     }
 }

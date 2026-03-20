@@ -6,10 +6,9 @@ using Framework.Engine;
 
 public class ShotgunBullet : BulletEntity
 {
-    public ShotgunBullet(Scene scene, Entity id, Point point, Point direction) : base(scene, id, point, direction)
+    public ShotgunBullet(Scene scene, Entity id, Point point, Point aim) : base(scene, id, point + Point.DirectionConverter((23, 0), aim), aim)
     {
-        _runningDirection = new Point(direction);
-        RectAngle = new RectAngle(this, (-8, 0), (8, 45));
+        RectAngle = new RectAngle(this, (46, 17));
 
         _bulletSpeed = 0;
         _life = 0.2f;
@@ -35,49 +34,28 @@ public class ShotgunBullet : BulletEntity
         //RectAngle.Follow();
     }
 
+    protected override void Go()
+    {
+    }
+
     public string[] _idelPixels =
     {
-        "GGGGGGGGGGGGGGGGG",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
-        "        G        ",
+        "                                            G",
+        "                                            G",
+        "                                            G",
+        "                                            G",
+        "                                            G",
+        "                                            G",
+        "                                            G",
+        "                                            G",
+        "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+        "                                            G",
+        "                                            G",
+        "                                            G",
+        "                                            G",
+        "                                            G",
+        "                                            G",
+        "                                            G",
+        "                                            G",
     };
 }

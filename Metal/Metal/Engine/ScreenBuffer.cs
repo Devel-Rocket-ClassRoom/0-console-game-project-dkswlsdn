@@ -150,6 +150,7 @@ namespace Framework.Engine
         public void DrawBox((int x, int y) position, int width, int height, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
             position = PositionAdjustment(position);
+            width *= 2;
 
             SetCell(position.x, position.y, '+', color, bgColor);
             SetCell(position.x + width - 1, position.y, '+', color, bgColor);
