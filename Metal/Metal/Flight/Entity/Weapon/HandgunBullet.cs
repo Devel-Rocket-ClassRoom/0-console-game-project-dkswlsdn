@@ -8,7 +8,8 @@ public class HandgunBullet : BulletEntity
 {
     public HandgunBullet(Scene scene, Entity id, Point point, Point direction, bool isEnemy = false) : base(scene, id, point, direction)
     {
-        RectAngle = new RectAngle(Position, (-2, 0), (2, 6));
+        _runningDirection = new Point(direction);
+        RectAngle = new RectAngle(this, (-2, 0), (2, 6));
 
         _life = isEnemy ? 3f : 1f;
         _bulletSpeed = isEnemy ? 2 : 6;
@@ -30,11 +31,11 @@ public class HandgunBullet : BulletEntity
     {
         if (_runningDirection.Y != 0)
         {
-            Position.Y += _runningDirection.Y * _bulletSpeed;
+            Position += (0, _runningDirection.Y * _bulletSpeed);
             return;
         }
 
-        Position.X += _runningDirection.X * _bulletSpeed;
+        Position += _runningDirection * _bulletSpeed;
     }
 
 

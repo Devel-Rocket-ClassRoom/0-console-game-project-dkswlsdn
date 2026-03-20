@@ -4,7 +4,7 @@ using System.Text;
 
 public interface IJumpable
 {
-    int JumpForce { get; set; }
+    float VirtlcalVelocity { set; }
     void Jump(float deltaTime);
-    void VirticalMove(int force);
+    void VirticalMove();
 }

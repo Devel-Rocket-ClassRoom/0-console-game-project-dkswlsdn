@@ -44,8 +44,8 @@ public abstract class AttackEntity : Entity
         {
             var target = allEntities[i];
 
-            int dx = target.Position.X - Position.X;
-            int dy = target.Position.Y - Position.Y;
+            int dx = (int)(target.Position.X - Position.X);
+            int dy = (int)(target.Position.Y - Position.Y);
 
             if (dx * dx + dy * dy <= rangeSq && target.ID != ownerId.ID && target.IsActive)
             {

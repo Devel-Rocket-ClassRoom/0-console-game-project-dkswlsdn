@@ -27,7 +27,7 @@ public abstract class CharacterEntity : Entity
             g_scene.EntityList.Add(this);
         }
 
-        Direction = 0;
+        Direction = (0, 1);
     }
 
     

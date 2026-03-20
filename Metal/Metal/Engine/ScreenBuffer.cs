@@ -175,7 +175,7 @@ namespace Framework.Engine
 
         private (int x, int y) PositionAdjustment((int x, int y) position)
         {
-            return ((position.x - Camera.Position.X) * 2, -(position.y - Camera.Position.Y) + ShottingGame.k_Height - 1);
+            return (((int)(position.x - Camera.Position.X) * 2), (int)(-(position.y - Camera.Position.Y) + ShottingGame.k_Height - 1));
         }
 
         public void Present()

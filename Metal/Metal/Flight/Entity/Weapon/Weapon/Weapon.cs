@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public abstract class Weapon : GameObject
 {
-    public string Name { get; set; }
+    
     public int Arms;
     public bool _isMain;
 
@@ -28,19 +28,11 @@ public abstract class Weapon : GameObject
     {
         if (_leftCooldown <= 0 && Input.IsKeyDown(_key) && Arms > 0)
         {
-            Fire();
+            Scene.AddGameObject(GetArms());
             _leftCooldown = Cooldown;
         }
 
         _leftCooldown -= deltaTime;
-    }
-
-    private void Fire()
-    {
-        if (Scene is GameScene g)
-        {
-            Scene.AddGameObject(GetArms());
-        }
     }
 
     public void Drop()

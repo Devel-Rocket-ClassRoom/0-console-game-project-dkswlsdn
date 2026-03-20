@@ -14,8 +14,7 @@ public class BulletEntity : AttackEntity
 
     public BulletEntity(Scene scene, Entity id, Point point, Point direction) : base(scene, id, point)
     {
-        _runningDirection = new Point(direction);
-        Direction = direction.ConvertToInt();
+        Direction = direction;
         Range = 100;
         _life = 1f;
     }
@@ -23,6 +22,7 @@ public class BulletEntity : AttackEntity
     public override void Update(float deltaTime)
     {
         Go();
+        RectAngle.Follow();
 
         base.Update(deltaTime);
 

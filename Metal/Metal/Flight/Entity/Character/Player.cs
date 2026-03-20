@@ -22,20 +22,28 @@ public class Player : CharacterEntity, IMoveable, IJumpable
     private bool _isSit = false;
 
 
-    private int _jumpForce = 0;
+    private float _currentVelocity = 0;
 
     public float JumpCooldown { private get;  set; } = 0.1f;
 
 
     public Point NextPosition { get { return (Position.X + _runningDirection.X, Position.Y); } }
+    private Entity _steppedGround;
     public Point GroundChecker { get { return Position - (0, 1); } }
-    public int JumpForce { get { if (_jumpForce < 0 && IsLand) _jumpForce = 0; return _jumpForce; } set { _jumpForce = value; } }
+    public float VirtlcalVelocity
+    {
+        set
+        {
+            _currentVelocity = MathF.Sqrt(2f * _gravity * value);
+        }
+    }
+    private float _gravity = 10;
 
 
     public Player(Scene scene, Point point) : base(scene, point)
     {
         mainWeapon = new Handgun(Scene, this);
-        subWeapon = new Shotgun(Scene, this, false);
+        subWeapon = new HeavyMachinegun(Scene, this, false);
         Scene.AddGameObject(mainWeapon);
         Scene.AddGameObject(subWeapon);
 
@@ -55,6 +63,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         buffer.WriteText(Camera.Position + (20, 4), mainWeapon.Arms.ToString());
         buffer.WriteText(Camera.Position + (30, 5), subWeapon.Name);
         buffer.WriteText(Camera.Position + (30, 4), subWeapon.Arms.ToString());
+        if (_steppedGround != null)buffer.WriteText(Camera.Position + (40, 4), _steppedGround.Name.ToString(), ConsoleColor.Red);
     }
 
     public override void Update(float deltaTime)
@@ -63,17 +72,17 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
         base.Update(deltaTime);
 
-        IsLand = IsOnGround();
+        IsLand = IsOnGround(deltaTime);
 
         if (IsLand)
         {
-            JumpForce = 0;
+            VirtlcalVelocity = 0;
             Jump(deltaTime);
-            CheckStair();
         }
         else
         {
-            Land();
+            _currentVelocity -= _gravity * deltaTime;
+            VirticalMove();
         }
         
         Aimming();
@@ -103,9 +112,9 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         Position += (_moveSpeed * _runningDirection.X, 0);
     }
 
-    public void VirticalMove(int force)
+    public void VirticalMove()
     {
-        Position += (0, force / 2);
+        Position += (0, _currentVelocity);
     }
 
     public void Jump(float deltaTime)
@@ -118,55 +127,22 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
         if (Input.IsKey(ConsoleKey.Spacebar))
         {
-            JumpForce = 10;
+            VirtlcalVelocity = 1.5f;
             IsLand = false;
         }
     }
 
-    public void Land()
+
+    private bool IsOnGround(float deltaTime)
     {
         if (Scene is GameScene g)
         {
             for (int i = 0; i < g.GroundEntitiyList.Count; i++)
             {
-                if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X - 3, Position.Y + JumpForce), Position + (3, 0))) 
+                if (_currentVelocity <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X - 3, Position.Y + Math.Min(_currentVelocity - _gravity * deltaTime, -1)), Position + (3, 0)))
                 {
-                    JumpCooldown = 0.1f;
-                    IsLand = true;
-                    JumpForce = 0;
-                    Position.Y = g.GroundEntitiyList[i].Position.Y + 1;
-                    return;
-                }
-            }
-        }
-
-        VirticalMove(JumpForce--);
-    }
-
-    public void CheckStair()
-    {
-        if (Scene is GameScene g)
-        {
-            for (int i = 0; i < g.GroundEntitiyList.Count; i++)
-            {
-                if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap(Position + (-3, 0), Position + (3, 0)))
-                {
-                    Position.Y += 1;
-                    return;
-                }
-            }
-        }
-    }
-
-
-    private bool IsOnGround()
-    {
-        if (Scene is GameScene g)
-        {
-            for (int i = 0; i < g.GroundEntitiyList.Count; i++)
-            {
-                if (JumpForce <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((Position.X - 3, Position.Y - 1), Position + (3, 0)))
-                {
+                    _currentVelocity = g.GroundEntitiyList[i].Position.Y - Position.Y + 1;
+                    VirticalMove();
                     return true;
                 }
             }

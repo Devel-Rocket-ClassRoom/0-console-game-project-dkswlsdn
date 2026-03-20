@@ -27,12 +27,12 @@ public class GameScene : Scene
     {
         player = new Player(this, (30, 30));
         camera = new Camera(this, player);
-        ground = new Ground(this, (0, 5), 800);
-        ground2 = new Ground(this, (40, 25), 40);
-        ground3 = new Ground(this, (120, 40), 80);
+        ground = new Ground(this, (0, 5), 800, "ground");
+        ground2 = new Ground(this, (40, 25), 40, "platform");
+        ground3 = new Ground(this, (120, 40), 80, "higherPlatform");
         ground4 = new Ground(this, (100, 6), 10);
         box = new Box(this, (100, 41));
-        GetWeaponTemp = new GetShotgun(this, (100, 20));
+        GetWeaponTemp = new GetShotgun(this, (150, 20));
         GetWeaponTemp2 = new GetShotgun(this, (200, 20));
 
         AddGameObject(ground);

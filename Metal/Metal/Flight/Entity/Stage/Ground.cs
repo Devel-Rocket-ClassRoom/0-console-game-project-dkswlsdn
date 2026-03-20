@@ -6,9 +6,10 @@ using Framework.Engine;
 
 public class Ground : GroundEntity
 {
-    public Ground(Scene scene, Point point, int Width) : base(scene, point)
+    public Ground(Scene scene, Point point, int Width, string name = "g") : base(scene, point)
     {
         RectAngle = new RectAngle(this, (0, 0), (Width, 0));
+        Name = name;
     }
 
     public override void Draw(ScreenBuffer buffer)

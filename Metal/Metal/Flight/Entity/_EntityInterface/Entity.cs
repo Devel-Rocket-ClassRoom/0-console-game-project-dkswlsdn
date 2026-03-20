@@ -3,27 +3,31 @@ using System.Drawing;
 
 public abstract class Entity : GameObject
 {
+    public string Name { get; set; }
     public static int nextId = 1;
     public int ID { get; private set; }
 
 
     protected string[] _currentPixels;
     protected bool _currentIsRight = true;
-    public Point Position;
-    public int Direction
+
+    protected (float X, float Y) _realPosition = (0, 0);
+    public Point Position
+    {
+        get { return (_realPosition.X, _realPosition.Y); }
+        set { _realPosition = (value.X, value.Y); }
+    }
+    public (int X, int Y) Direction
     {
         get { return _direction; }
         set
         {
-            if (value < 0 || value >= 4)
-            {
-                value = 0;
-            }
-
             _direction = value;
         }
     }
-    private int _direction = 0;
+
+
+    private (int X, int Y) _direction = (0, 1);
     protected Point _runningDirection;
     public RectAngle RectAngle { get; protected set; }
 
@@ -62,22 +66,22 @@ public abstract class Entity : GameObject
 
                 switch (Direction)
                 {
-                    case 0:
+                    case (0, 1):
                         drawX = relX * n;
                         drawY = relY;
                         break;
 
-                    case 1:
+                    case (1, 0):
                         drawX = relY;
                         drawY = relX * n;
                         break;
 
-                    case 2:
+                    case (0, -1):
                         drawX = relX * n;
                         drawY = -relY;
                         break;
 
-                    case 3:
+                    case (-1, 0):
                         drawX = -relY;
                         drawY = relX * n;
                         break;
@@ -104,6 +108,8 @@ public abstract class Entity : GameObject
                 return ConsoleColor.Red;
             case 'Y':
                 return ConsoleColor.DarkYellow;
+            case 'y':
+                return ConsoleColor.Yellow;
             case 'g':
                 return ConsoleColor.DarkGreen;
             case 'W':
