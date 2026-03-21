@@ -41,6 +41,19 @@ public struct Point
 
 
 
+    public static bool operator == (Point a, Point b)
+    {
+        return a.X == b.X && a.Y == b.Y;
+    }
+
+    public static bool operator !=(Point a, Point b)
+    {
+        return !(a == b);
+    }
+
+
+
+
 
     public static implicit operator Point((float x, float y) tuple)
     {

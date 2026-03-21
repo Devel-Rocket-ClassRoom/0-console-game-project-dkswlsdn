@@ -14,8 +14,8 @@ public class Handgun : Weapon
         OwnerID = id;
     }
 
-    protected override void Fire()
+    protected override void Fire(Point dir)
     {
-        new HandgunBullet(Scene, OwnerID, OwnerID.BulletPoint, OwnerID.Aim);
+        new HandgunBullet(Scene, OwnerID, OwnerID.BulletPoint, dir);
     }
 }

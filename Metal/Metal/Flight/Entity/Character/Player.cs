@@ -76,6 +76,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
     {
         mainWeapon = new Handgun(Scene, this);
         subWeapon = new HeavyMachinegun(Scene, false);
+        subWeapon.Arms = 20000;
 
         mainWeapon.OwnerID = this;
         subWeapon.OwnerID = this;

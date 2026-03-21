@@ -6,12 +6,13 @@ using Framework.Engine;
 
 public class HeavyMachinegunBullet : BulletEntity, IMoveable
 {
-    private static int NextBulletAngle = 10;
+    private static int currentBulletCount = 0;
 
     private Point[] _spreadPattern = { (0.342f, 0.94f), (0.643f, 0.766f), (0.866f, 0.5f), (0.985f, 0.174f) };
     //private Point[] _spreadPattern = { (0.985f, 0.174f), (0.866f, 0.5f), (0.643f, 0.766f), (0.342f, 0.94f) };
-    private float[] _bulletPattern = { 0.02f, -0.06f, 0.06f, 0.02f };
+    private float[] _bulletPattern = { 0.02f, -0.06f, 0.06f, -0.02f };
     private int _bulletCount;
+    private int _spreadingBulletCount;
     private Point _previous;
 
     private bool _isRasing = false;
@@ -50,6 +51,8 @@ public class HeavyMachinegunBullet : BulletEntity, IMoveable
         _bulletCount = count;
 
         DicideDirection();
+
+        currentBulletCount++;
     }
 
     public void Move()
@@ -74,14 +77,14 @@ public class HeavyMachinegunBullet : BulletEntity, IMoveable
         {
             switch (_bulletCount)
             {
+                //case 3: _currentPixels = _7080Pixels; break;
+                //case 2: _currentPixels = _5060Pixels; break;
+                //case 1: _currentPixels = _3040Pixels; break;
+                //case 0: _currentPixels = _1020Pixels; break;
                 case 0: _currentPixels = _7080Pixels; break;
                 case 1: _currentPixels = _5060Pixels; break;
                 case 2: _currentPixels = _3040Pixels; break;
                 case 3: _currentPixels = _1020Pixels; break;
-                //case 0: _currentPixels = _1020Pixels; break;
-                //case 1: _currentPixels = _3040Pixels; break;
-                //case 2: _currentPixels = _5060Pixels; break;
-                //case 3: _currentPixels = _7080Pixels; break;
             }
 
             speed = _spreadPattern[_bulletCount].DirectionConverter(_previous, Direction, out _pixelReversed);
@@ -103,9 +106,8 @@ public class HeavyMachinegunBullet : BulletEntity, IMoveable
     public override void Draw(ScreenBuffer buffer)
     {
         base.Draw(buffer);
-        buffer.WriteText(Camera.Position + (0, 20), _bulletCount.ToString());
-        buffer.WriteText(Camera.Position + (0, 19), _isRasing.ToString());
-        buffer.WriteText(Camera.Position + (0, 18), _isLowering.ToString());
+        //buffer.WriteText(Position, _bulletCount.ToString());
+
     }
 
 

@@ -26,7 +26,7 @@ public abstract class Weapon : GameObject
     {
         if (_leftCooldown <= 0 && Input.IsKeyDown(_key) && Arms > 0)
         {
-            Fire();
+            Fire(OwnerID.Aim);
             _leftCooldown = Cooldown;
         }
 
@@ -38,7 +38,7 @@ public abstract class Weapon : GameObject
         Scene.RemoveGameObject(this);
     }
 
-    protected abstract void Fire();
+    protected abstract void Fire(Point dir);
 
     public override void Draw(ScreenBuffer buffer)
     {
