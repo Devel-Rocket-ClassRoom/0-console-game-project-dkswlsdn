@@ -6,11 +6,13 @@ using Framework.Engine;
 
 public abstract class BulletEntity : AttackEntity
 {
-    protected bool _isOnlyTarget = false;
-    protected int _bulletSpeed;
+    public float Thickness { get { return _currentPixels.Length; } }
+    public float Breadth { get { return _currentPixels[0].Length; } }
 
-    protected int _width;
-    protected int _height;
+
+
+    protected bool _isOnlyTarget = false;
+    protected float _bulletSpeed;
 
     public BulletEntity(Scene scene, CharacterEntity id, Point point, Point aim) : base(scene, id, point)
     {
@@ -21,9 +23,6 @@ public abstract class BulletEntity : AttackEntity
 
     public override void Update(float deltaTime)
     {
-        Go();
-        RectAngle.Follow();
-
         base.Update(deltaTime);
 
         _life -= deltaTime;
@@ -33,8 +32,6 @@ public abstract class BulletEntity : AttackEntity
             Scene.RemoveGameObject(this);
         }
     }
-
-    protected abstract void Go();
 
     protected override void AfterHit()
     {

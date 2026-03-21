@@ -4,7 +4,7 @@ using System.Text;
 
 public interface IMoveable
 {
-    (Point a, Point b) ForwardPosition { get; }
-    (Point a, Point b) BackwardPosition { get; }
+    Point ForwardPosition { get; }
+    Point BackwardPosition { get; }
     void Move();
 }

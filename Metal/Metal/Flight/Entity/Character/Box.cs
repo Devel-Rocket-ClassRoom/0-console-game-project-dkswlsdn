@@ -4,7 +4,7 @@ using System.Text;
 using Framework.Engine;
 
 
-public class Box : CharacterEntity, IAttackable
+public class Box : CharacterEntity
 {
     int a = 0;
     private float _attackCooldown = 1f;
@@ -30,7 +30,7 @@ public class Box : CharacterEntity, IAttackable
     {
         if (_currentCooldown <= 0 && !_isDead)
         {
-            Scene.AddGameObject(new HandgunBullet(Scene, this, (Position.X, Position.Y), Aim, true));
+            new HandgunBullet(Scene, this, (Position.X, Position.Y), Aim, true);
             _currentCooldown = _attackCooldown;
         }
         else

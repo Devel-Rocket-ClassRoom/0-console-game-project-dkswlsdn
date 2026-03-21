@@ -44,7 +44,8 @@ public class RectAngle
 
         Width = _origWidth;
         Height = _origHeight;
-        Position = chase.Position;
+
+        Follow();
     }
 
 
@@ -109,12 +110,17 @@ public class RectAngle
         Position = _chase.Position;
     }
 
+    public void Follow(Point p)
+    {
+        Position = p;
+    }
+
     public void DrawRectAngle(ScreenBuffer buffer)
     {
         int drawMinX = (int)MathF.Round(Min.X);
         int drawMaxY = (int)MathF.Round(Max.Y);
 
-        buffer.SetCell(Position, ConsoleColor.Red);
+        buffer.SetCell(Position, ConsoleColor.Green);
         buffer.DrawBox((drawMinX, drawMaxY), (int)Width, (int)Height, bgColor: ConsoleColor.DarkGray);
     }
 }

@@ -32,25 +32,9 @@ public class GameScene : Scene
         ground = new Ground(this, (0, 5), 800, "ground");
         ground2 = new Ground(this, (40, 25), 40, "platform");
         ground3 = new Ground(this, (120, 40), 80, "higherPlatform");
-        ground4 = new Ground(this, (100, 6), 10);
         box = new Box(this, (100, 45));
         GetWeaponTemp = new GetShotgun(this, (150, 20));
         GetWeaponTemp2 = new GetHeavyMachinegun(this, (200, 20));
-
-        AddGameObject(ground);
-        AddGameObject(ground2);
-        AddGameObject(ground3);
-        AddGameObject(ground4);
-        AddGameObject(new Ground(this, (101, 7), 1));
-        AddGameObject(new Ground(this, (102, 8), 1));
-        AddGameObject(new Ground(this, (103, 9), 1));
-        AddGameObject(new Ground(this, (104, 10), 1));
-        AddGameObject(new Ground(this, (105, 11), 1));
-        AddGameObject(player);
-        AddGameObject(camera);
-        AddGameObject(box);
-        AddGameObject(GetWeaponTemp);
-        AddGameObject(GetWeaponTemp2);
     }
 
     public override void Unload()
@@ -65,6 +49,7 @@ public class GameScene : Scene
     public override void Draw(ScreenBuffer buffer)
     {
         buffer.FillRect(0, 0, ShottingGame.k_Width, ShottingGame.k_Height, bgColor:ConsoleColor.DarkCyan);
+        buffer.WriteText(Camera.Position + (0, 30), _gameObjects.Count.ToString());
 
         DrawGameObjects(buffer);
     }

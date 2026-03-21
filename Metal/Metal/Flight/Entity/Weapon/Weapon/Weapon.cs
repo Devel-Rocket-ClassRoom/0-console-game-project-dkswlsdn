@@ -6,7 +6,6 @@ using Framework.Engine;
 
 public abstract class Weapon : GameObject
 {
-    
     public int Arms;
     public bool _isMain;
 
@@ -27,7 +26,7 @@ public abstract class Weapon : GameObject
     {
         if (_leftCooldown <= 0 && Input.IsKeyDown(_key) && Arms > 0)
         {
-            Scene.AddGameObject(GetArms());
+            Fire();
             _leftCooldown = Cooldown;
         }
 
@@ -39,7 +38,7 @@ public abstract class Weapon : GameObject
         Scene.RemoveGameObject(this);
     }
 
-    protected abstract AttackEntity GetArms();
+    protected abstract void Fire();
 
     public override void Draw(ScreenBuffer buffer)
     {

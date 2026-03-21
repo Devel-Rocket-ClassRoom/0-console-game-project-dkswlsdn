@@ -4,7 +4,7 @@ using System.Text;
 using Framework.Engine;
 
 
-public class HeavyMachinegunBullet : BulletEntity
+public class HeavyMachinegunBullet : BulletEntity, IMoveable
 {
     private static int NextBulletAngle = 10;
 
@@ -18,8 +18,21 @@ public class HeavyMachinegunBullet : BulletEntity
     private bool _isLowering = false;
     private Point speed;
 
+
+    public Point ForwardPosition
+    { // 픽셀의 정면점
+        get { return Position + new Point(Breadth / 2, 0).PointConverter(Direction); }
+    }
+    public Point BackwardPosition
+    { // 픽셀이 판정보다 작을 때 픽셀의 뒷면에 판정의 뒷면을 붙임
+        get { return Position - (((RectAngle.Width - Breadth) / 2 + 1) * Direction.X, 0); }
+    }
+
+
+
+
     public HeavyMachinegunBullet(Scene scene, CharacterEntity id, Point point, Point aim, int count, Point previous, bool isEnemy = false) 
-        : base(scene, id, point + new Point(3, 0).DirectionConverter(id.Aim), aim)
+        : base(scene, id, point + new Point(3, 0).PointConverter(id.Aim), aim)
     {
         RectAngle = new RectAngle(this, (8, 4));
 
@@ -28,7 +41,7 @@ public class HeavyMachinegunBullet : BulletEntity
         _isLowering = previous.Y != 0 && aim.X != 0;
 
         _life = isEnemy ? 3f : 1f;
-        _bulletSpeed = isEnemy ? 2 : 6;
+        _bulletSpeed = isEnemy ? 2f : 6f;
         _damage = 1;
 
         _isOnlyTarget = true;
@@ -39,10 +52,21 @@ public class HeavyMachinegunBullet : BulletEntity
         DicideDirection();
     }
 
-    protected override void Go()
+    public void Move()
     {
         Position += speed * _bulletSpeed;
     }
+
+    public override void Update(float deltaTime)
+    {
+        base.Update(deltaTime);
+
+        Move();
+        RectAngle.Follow(Position);
+    }
+
+
+
 
     private void DicideDirection()
     {
@@ -83,6 +107,7 @@ public class HeavyMachinegunBullet : BulletEntity
         buffer.WriteText(Camera.Position + (0, 19), _isRasing.ToString());
         buffer.WriteText(Camera.Position + (0, 18), _isLowering.ToString());
     }
+
 
     private string[] _idelPixels =
     {

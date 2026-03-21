@@ -16,9 +16,9 @@ public class Shotgun : Weapon
     {
     }
 
-    protected override AttackEntity GetArms()
+    protected override void Fire()
     {
         Arms--;
-        return new ShotgunBullet(Scene, OwnerID, OwnerID.BulletPoint, OwnerID.Aim);
+        new ShotgunBullet(Scene, OwnerID, OwnerID.BulletPoint, OwnerID.Aim);
     }
 }

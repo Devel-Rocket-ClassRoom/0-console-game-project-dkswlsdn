@@ -34,15 +34,12 @@ public abstract class Entity : GameObject
     protected bool _pixelReversed;
 
 
-    public Entity(Scene scene, Point point) : base(scene)
+    public Entity(Scene scene, Point point, bool instant = true) : base(scene)
     {
         Position = new Point(point);
         ID = nextId++;
-    }
 
-    public Entity(Scene scene) : base(scene)
-    {
-        ID = nextId++;
+        if (instant) Scene.AddGameObject(this);
     }
 
 
@@ -130,13 +127,16 @@ public abstract class Entity : GameObject
 
     public override void Update(float deltaTime)
     {
-        RectAngle.SpinRect(Direction);
+        if (RectAngle != null)
+        {
+            RectAngle.SpinRect(Direction);
+        }
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
         DrawEntity(buffer);
-        //RectAngle.DrawRectAngle(buffer);
+        //if (RectAngle != null) RectAngle.DrawRectAngle(buffer);
         //buffer.SetCell(Position + (0, 1), ConsoleColor.Green);
     }
 

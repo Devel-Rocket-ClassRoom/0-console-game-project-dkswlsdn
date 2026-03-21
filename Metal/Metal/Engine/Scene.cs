@@ -4,7 +4,7 @@ namespace Framework.Engine
 {
     public abstract class Scene
     {
-        private readonly List<GameObject> _gameObjects = new List<GameObject>();
+        protected readonly List<GameObject> _gameObjects = new List<GameObject>();
         private readonly List<GameObject> _pendingAdd = new List<GameObject>();
         private readonly List<GameObject> _pendingRemove = new List<GameObject>();
         private bool _isUpdating;

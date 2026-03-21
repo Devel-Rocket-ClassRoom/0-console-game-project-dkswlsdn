@@ -14,10 +14,8 @@ public class Handgun : Weapon
         OwnerID = id;
     }
 
-
-
-    protected override AttackEntity GetArms()
+    protected override void Fire()
     {
-        return new HandgunBullet(Scene, OwnerID, OwnerID.BulletPoint, OwnerID.Aim);
+        new HandgunBullet(Scene, OwnerID, OwnerID.BulletPoint, OwnerID.Aim);
     }
 }

@@ -58,9 +58,9 @@ public class HeavyMachinegun : Weapon
             if (Arms <= 0)
                 return;
 
-            Arms--;
 
-            Scene.AddGameObject(new HeavyMachinegunBullet(Scene, OwnerID, OwnerID.BulletPoint, a, _bulletCount++, _priviousDirection));
+            Fire();
+
             // 앉음시작 이벤트 발생 시 끊음
             _nextBulletCooldown = 0.06f;
 
@@ -78,8 +78,9 @@ public class HeavyMachinegun : Weapon
 
     
 
-    protected override AttackEntity GetArms()
+    protected override void Fire()
     {
-        throw new NotImplementedException();
+        Arms--;
+        new HeavyMachinegunBullet(Scene, OwnerID, OwnerID.BulletPoint, a, _bulletCount++, _priviousDirection);
     }
 }

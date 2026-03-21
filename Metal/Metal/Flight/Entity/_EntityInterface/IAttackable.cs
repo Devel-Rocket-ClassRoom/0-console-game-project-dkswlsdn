@@ -6,5 +6,5 @@ using Framework.Engine;
 
 public interface IAttackable
 {
-    void Aimming();
+    bool Attack();
 }

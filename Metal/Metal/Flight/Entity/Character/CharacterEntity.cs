@@ -7,6 +7,7 @@ using Framework.Engine;
 public abstract class CharacterEntity : Entity
 {
     protected bool _isDead;
+    protected bool _isImmune;
     public int Health { get; protected set; }
 
     protected Dictionary<int, long> ImmunityList { get; } = new Dictionary<int, long>();
@@ -53,6 +54,13 @@ public abstract class CharacterEntity : Entity
         if (IsActive)
             RectAngle.Follow();
     }
+
+
+
+
+
+
+
 
     public virtual void TakeDamage(int attackId, int damage, int immuneDuration)
     {

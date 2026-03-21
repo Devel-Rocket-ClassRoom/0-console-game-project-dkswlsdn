@@ -6,7 +6,7 @@ using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
+public class Player : CharacterEntity, IMoveable, IJumpable
 {
     public Weapon mainWeapon;
     public Weapon subWeapon;
@@ -35,12 +35,24 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 
 
 
-    public (Point a, Point b) ForwardPosition
+    public Point ForwardPosition
     {
-        get { return (Position + ((RectAngle.Width / 2 + 0) * Direction.X, -RectAngle.Height / 2),
-                Position + ((RectAngle.Width / 2 + 2) * Direction.X, RectAngle.Height / 2)); }
+        get { return Position + ((RectAngle.Width / 2 + 0) * Direction.X, 0); }
     }
-    public (Point a, Point b) BackwardPosition
+    public Point BackwardPosition
+    {
+        get { return Position - ((RectAngle.Width / 2 + 1) * Direction.X, 0); }
+    }
+
+    public (Point a, Point b) ForwardSide
+    {
+        get
+        {
+            return (Position + ((RectAngle.Width / 2 + 0) * Direction.X, -RectAngle.Height / 2),
+                Position + ((RectAngle.Width / 2 + 2) * Direction.X, RectAngle.Height / 2));
+        }
+    }
+    public (Point a, Point b) BackwardSide
     {
         get
         {
@@ -132,7 +144,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
         {
             for (int i = 0; i < g.WallEntitiyList.Count; i++)
             {
-                if (g.WallEntitiyList[i].RectAngle.IsOverrap(ForwardPosition.a, ForwardPosition.b))
+                if (g.WallEntitiyList[i].RectAngle.IsOverrap(ForwardSide.a, ForwardSide.b))
                 {
                     return;
                 }

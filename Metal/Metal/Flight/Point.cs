@@ -23,7 +23,7 @@ public struct Point
 
     
 
-    public static Point operator *(Point a, int b)
+    public static Point operator *(Point a, float b)
     {
         return new Point(a.X * b, a.Y * b);
     }
@@ -89,22 +89,24 @@ public struct Point
         }
     }
 
-    public  Point DirectionConverter(Point dir)
+    public Point PointConverter(Point dest)
     {
-        switch ((dir.X, dir.Y))
+        switch ((dest.X, dest.Y))
         {
-            default:
             case (1, 0):
-                return (X, Y);
+                return this;
 
             case (-1, 0):
-                return (-X, Y);
+                return new Point(-X, Y);
 
             case (0, 1):
-                return (Y, X);
+                return new Point(Y, X);
 
             case (0, -1):
-                return (Y, -X);
+                return new Point(Y, -X);
+
+            default:
+                return this;
         }
     }
 
@@ -114,48 +116,34 @@ public struct Point
 
         switch (key)
         {
-            // 1. 상 -> 우 (원본)
             case (0, 1, 1, 0):
                 isReversed = false;
                 return new Point(X, Y);
 
-            // 2. 우 -> 상 (x = y 대칭)
             case (1, 0, 0, 1):
                 isReversed = false;
                 return new Point(Y, X);
 
-            // 3. 우 -> 하 (x = y 대칭 후, x축 대칭)
-            // (x, y) -> (y, x) -> (y, -x)
             case (1, 0, 0, -1):
                 isReversed = false;
                 return new Point(Y, -X);
 
-            // 4. 하 -> 우 (x축 대칭)
-            // (x, y) -> (x, -y)
             case (0, -1, 1, 0):
                 isReversed = true;
                 return new Point(X, -Y);
 
-            // 5. 상 -> 좌 (y축 대칭)
-            // (x, y) -> (-x, y)
             case (0, 1, -1, 0):
                 isReversed = false;
                 return new Point(-X, Y);
 
-            // 6. 좌 -> 상 (x = y 대칭 후, y축 대칭)
-            // (x, y) -> (y, x) -> (-y, x)
             case (-1, 0, 0, 1):
                 isReversed = true;
                 return new Point(-Y, X);
 
-            // 7. 좌 -> 하 (x = y 대칭 후, x = -y 대칭)
-            // (x, y) -> (y, x) -> (-x, -y)
             case (-1, 0, 0, -1):
                 isReversed = true;
                 return new Point(-Y, -X);
 
-            // 8. 하 -> 좌 (x = -y 대칭)
-            // (x, y) -> (-y, -x)
             case (0, -1, -1, 0):
                 isReversed = true;
                 return new Point(-X, -Y);

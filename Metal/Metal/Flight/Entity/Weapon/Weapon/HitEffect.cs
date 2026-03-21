@@ -8,7 +8,6 @@ public class HitEffect : Entity
     float life = 0.1f;
     public HitEffect(Scene scene, Point point) : base(scene, point)
     {
-        Scene.AddGameObject(this);
         _currentPixels = _hitPixels;
     }
 
