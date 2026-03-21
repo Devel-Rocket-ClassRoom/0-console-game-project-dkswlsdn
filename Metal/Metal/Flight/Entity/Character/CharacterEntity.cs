@@ -4,13 +4,14 @@ using System.Text;
 
 using Framework.Engine;
 
-public abstract class CharacterEntity : Entity
+public abstract class CharacterEntity : Entity, IHitable
 {
     protected bool _isDead;
-    protected bool _isImmune;
+
+    public bool IsImmune { get; set; }
     public int Health { get; protected set; }
 
-    protected Dictionary<int, long> ImmunityList { get; } = new Dictionary<int, long>();
+    public Dictionary<int, long> ImmunityList { get; } = new Dictionary<int, long>();
     // 체력과 피격, 전투관련
 
     public virtual Point BulletPoint { get { return Position; } }
@@ -62,8 +63,14 @@ public abstract class CharacterEntity : Entity
 
 
 
-    public virtual void TakeDamage(int attackId, int damage, int immuneDuration)
+    public virtual void DeadMotion(float deltaTime)
     {
+
+    }
+    public void TakeDamage(int attackId, int damage, int immuneDuration)
+    {
+        if (IsImmune) return;
+
         long currentTime = Environment.TickCount64;
 
         if (ImmunityList.TryGetValue(attackId, out long endTime))
@@ -84,10 +91,5 @@ public abstract class CharacterEntity : Entity
         }
 
         ImmunityList[attackId] = currentTime + immuneDuration;
-    }
-
-    public virtual void DeadMotion(float deltaTime)
-    {
-
     }
 }

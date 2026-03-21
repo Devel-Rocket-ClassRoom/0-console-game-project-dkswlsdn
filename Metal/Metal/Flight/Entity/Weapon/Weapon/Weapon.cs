@@ -10,7 +10,7 @@ public abstract class Weapon : GameObject
     public bool _isMain;
 
     public CharacterEntity OwnerID { protected get; set; }
-    public AttackEntity Arm;
+    public BulletEntity Arm;
     public float Cooldown = 1;
     protected float _leftCooldown = 0;
 

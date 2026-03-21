@@ -30,7 +30,7 @@ public class Box : CharacterEntity
     {
         if (_currentCooldown <= 0 && !_isDead)
         {
-            new HandgunBullet(Scene, this, (Position.X, Position.Y), Aim, true);
+            new Cannon(Scene, this, (Position.X, Position.Y), Aim);
             _currentCooldown = _attackCooldown;
         }
         else

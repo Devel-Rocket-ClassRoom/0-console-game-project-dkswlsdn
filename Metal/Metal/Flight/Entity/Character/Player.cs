@@ -11,8 +11,6 @@ public class Player : CharacterEntity, IMoveable, IJumpable
     public Weapon mainWeapon;
     public Weapon subWeapon;
 
-    private float _attackCooldown = 0.05f;
-    private float _currentCooldown = 0f;
 
 
     private int _moveSpeed = 2;
@@ -170,7 +168,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
         if (Input.IsKey(ConsoleKey.Spacebar))
         {
-            VirtlcalVelocity = 1.5f;
+            VirtlcalVelocity = 1f;
             IsLand = false;
         }
     }
