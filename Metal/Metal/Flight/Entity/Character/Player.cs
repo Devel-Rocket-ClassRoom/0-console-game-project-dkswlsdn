@@ -6,7 +6,7 @@ using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-public class Player : CharacterEntity, IMoveable, IJumpable
+public class Player : CharacterEntity
 {
     public Weapon mainWeapon;
     public Weapon subWeapon;
@@ -18,47 +18,11 @@ public class Player : CharacterEntity, IMoveable, IJumpable
     private bool _isSit = false;
 
 
-    private float _currentVelocity = 0;
     public float JumpCooldown { private get;  set; } = 0.1f;
-    public bool IsLand { get; set; }
-    public float VirtlcalVelocity
-    {
-        set
-        {
-            _currentVelocity = MathF.Sqrt(2f * _gravity * value);
-        }
-    }
-    private float _gravity = 10;
+    
 
-
-
-
-    public Point ForwardPosition
-    {
-        get { return Position + ((RectAngle.Width / 2 + 0) * Direction.X, 0); }
-    }
-    public Point BackwardPosition
-    {
-        get { return Position - ((RectAngle.Width / 2 + 1) * Direction.X, 0); }
-    }
-
-    public (Point a, Point b) ForwardSide
-    {
-        get
-        {
-            return (Position + ((RectAngle.Width / 2 + 0) * Direction.X, -RectAngle.Height / 2),
-                Position + ((RectAngle.Width / 2 + 2) * Direction.X, RectAngle.Height / 2));
-        }
-    }
-    public (Point a, Point b) BackwardSide
-    {
-        get
-        {
-            return (Position - ((RectAngle.Width / 2 + 1) * Direction.X, -RectAngle.Height / 2),
-                Position - ((RectAngle.Width / 2 + 1) * Direction.X, RectAngle.Height / 2));
-        }
-    }
-    public Point GroundChecker { get { return Position - (0, RectAngle.Height / 2); } }
+    
+    
     
 
 
@@ -120,7 +84,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
         if (IsLand)
         {
-            VirtlcalVelocity = 0;
+            VirticalVelocity = 0;
             Jump(deltaTime);
         }
         else
@@ -153,10 +117,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         Position += (_moveSpeed * _input.X, 0);
     }
 
-    public void VirticalMove()
-    {
-        Position += (0, _currentVelocity);
-    }
+    
 
     public void Jump(float deltaTime)
     {
@@ -168,31 +129,14 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
         if (Input.IsKey(ConsoleKey.Spacebar))
         {
-            VirtlcalVelocity = 1f;
+            VirticalVelocity = 1f;
             IsLand = false;
         }
     }
 
 
-    private bool IsOnGround(float deltaTime)
-    {
-        if (Scene is GameScene g)
-        {
-            for (int i = 0; i < g.GroundEntitiyList.Count; i++)
-            {
-                if (_currentVelocity <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((GroundChecker.X - 3, GroundChecker.Y + Math.Min(_currentVelocity - _gravity * deltaTime, -1)), GroundChecker + (3, 0)))
-                {
-                    _currentVelocity = g.GroundEntitiyList[i].Position.Y - GroundChecker.Y + 1;
-                    VirticalMove();
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     
+
 
     public void Aimming()
     {

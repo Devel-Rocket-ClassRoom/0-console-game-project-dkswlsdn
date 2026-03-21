@@ -40,9 +40,9 @@ public class HandgunBullet : BulletEntity, IMoveable
 
     public override void Update(float deltaTime)
     {
-        base.Update(deltaTime);
-
         Move();
+
+        base.Update(deltaTime);
     }
 
     public void Move()

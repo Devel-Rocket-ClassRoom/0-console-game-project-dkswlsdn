@@ -83,7 +83,7 @@ public class HeavyMachinegun : Weapon
         }
     }
 
-    protected override void Fire(Point finalDir) // 매개변수로 방향을 받도록 수정
+    public override void Fire(Point finalDir) // 매개변수로 방향을 받도록 수정
     {
         Arms--;
 

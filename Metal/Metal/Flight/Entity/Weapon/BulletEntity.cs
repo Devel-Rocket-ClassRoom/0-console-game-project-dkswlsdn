@@ -12,6 +12,12 @@ public abstract class BulletEntity : Entity
     public float Thickness { get { return _currentPixels.Length; } }
     public float Breadth { get { return _currentPixels[0].Length; } }
 
+
+    private Point _previusPoint;
+    public Point Velocity { get { return Position - _previusPoint; } }
+
+
+
     protected int _damage;
     protected float _life;
 
@@ -49,6 +55,8 @@ public abstract class BulletEntity : Entity
         {
             Scene.RemoveGameObject(this);
         }
+
+        _previusPoint = Position;
     }
 
     protected virtual void DealDamage()
@@ -89,7 +97,7 @@ public abstract class BulletEntity : Entity
                 }
                 else if (_targetsBuffer[i] is GroundEntity st)
                 {
-                    if (st.CanHitToLowerBullet)
+                    if (st.CanHitToBullet)
                     {
                         AfterHit();
                     }

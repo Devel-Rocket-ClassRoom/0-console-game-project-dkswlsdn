@@ -9,7 +9,7 @@ public class Camera : Entity
     private Point _adjustment;
 
     public int LeftClamp = 0;
-    public int RightClamp = 200;
+    public int RightClamp = 400;
 
     private Wall _leftClampWall;
     private Wall _rightClampWall;
@@ -25,8 +25,8 @@ public class Camera : Entity
         _player = player;
         Adjustment = (4, 5);
 
-        _leftClampWall = new Wall(Scene, (LeftClamp - 1, 50), 100, "LeftClamp");
-        _rightClampWall = new Wall(Scene, (RightClamp + ShottingGame.k_Width / 2, 50), 100, "RightClamp");
+        _leftClampWall = new Wall(Scene, (LeftClamp - 1, 50), 100, "LeftClamp", false);
+        _rightClampWall = new Wall(Scene, (RightClamp + ShottingGame.k_Width / 2, 50), 100, "RightClamp", false);
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -40,7 +40,7 @@ public class Camera : Entity
             Position.X = Math.Clamp(_player.Position.X - Adjustment.X, 0, RightClamp);
         }
 
-        _leftClampWall.Position = (LeftClamp - 1, 50);
-        _rightClampWall.Position = (RightClamp + ShottingGame.k_Width / 2, 50);
+        _leftClampWall.Position = (LeftClamp, 0);
+        _rightClampWall.Position = (RightClamp + ShottingGame.k_Width / 2, 0);
     }
 }

@@ -28,9 +28,9 @@ public class Box : CharacterEntity
 
     public void Attack(float deltaTime)
     {
-        if (_currentCooldown <= 0 && !_isDead)
+        if (_currentCooldown <= 0 && IsAlive)
         {
-            new Cannon(Scene, this, (Position.X, Position.Y), Aim);
+            new CannonBullet(Scene, this, (Position.X, Position.Y), Aim);
             _currentCooldown = _attackCooldown;
         }
         else
@@ -54,10 +54,6 @@ public class Box : CharacterEntity
         Aimming();
     }
 
-    public override void DeadMotion(float deltaTime)
-    {
-        _currentPixels = _deadPixels;
-    }
 
 
     private string[] _idlePixels =

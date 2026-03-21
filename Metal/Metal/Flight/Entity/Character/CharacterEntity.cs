@@ -6,13 +6,16 @@ using Framework.Engine;
 
 public abstract class CharacterEntity : Entity, IHitable
 {
-    protected bool _isDead;
 
+
+    public bool IsAlive { get; private set; } = true;
     public bool IsImmune { get; set; }
     public int Health { get; protected set; }
 
     public Dictionary<int, long> ImmunityList { get; } = new Dictionary<int, long>();
     // 체력과 피격, 전투관련
+
+
 
     public virtual Point BulletPoint { get { return Position; } }
 
@@ -20,7 +23,7 @@ public abstract class CharacterEntity : Entity, IHitable
 
 
 
-    protected float _motionTime = 1f;
+    protected float _motionTime = 0.7f;
 
 
     public CharacterEntity(Scene scene, Point point) : base(scene, point)
@@ -38,35 +41,14 @@ public abstract class CharacterEntity : Entity, IHitable
     {
         base.Update(deltaTime);
 
-        if (_isDead)
-        {
-            if (_motionTime > 0f)
-            {
-                _motionTime -= deltaTime;
-                DeadMotion(deltaTime);
-            }
-            else
-            {
-                Scene.RemoveGameObject(this);
-                IsActive = false;
-            }
-        }
-
         if (IsActive)
             RectAngle.Follow();
     }
 
 
+    
 
 
-
-
-
-
-    public virtual void DeadMotion(float deltaTime)
-    {
-
-    }
     public void TakeDamage(int attackId, int damage, int immuneDuration)
     {
         if (IsImmune) return;
@@ -87,7 +69,7 @@ public abstract class CharacterEntity : Entity, IHitable
 
         if (Health <= 0)
         {
-            _isDead = true;
+            IsAlive = false;
         }
 
         ImmunityList[attackId] = currentTime + immuneDuration;

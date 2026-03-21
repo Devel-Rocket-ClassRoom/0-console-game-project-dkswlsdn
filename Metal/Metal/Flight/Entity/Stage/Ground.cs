@@ -6,7 +6,11 @@ using Framework.Engine;
 
 public class Ground : GroundEntity
 {
-    public Ground(Scene scene, Point point, int width, string name = "g") : base(scene, point)
+    protected int _width;
+    public bool IsPlatForm { get; private set; }
+
+
+    public Ground(Scene scene, Point point, int width, string name = "g", bool canHit = true, bool isPlatform = false) : base(scene, point, canHit)
     {
         if (Scene is GameScene g)
         {
@@ -14,18 +18,28 @@ public class Ground : GroundEntity
             g.GroundEntitiyList.Sort((a, b) => b.Position.Y.CompareTo(a.Position.Y));
         }
 
-        RectAngle = new RectAngle(this, (width, 1));
+        RectAngle = new RectAngle(this, (width, 5));
         Name = name;
+        _width = width;
+
+        IsPlatForm = isPlatform;
+
+        new Wall(scene, point + (0, -4), 5, canHit: canHit);
+        new Wall(scene, point + (width, -4), 5, canHit: canHit);
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
         RectAngle.DrawRectAngle(buffer);
-        //buffer.WriteText(Position, Position.ToString());
+
+        for (int i = 0; i < _width; i += 100)
+        {
+            buffer.WriteText(Position + (i, 0), i.ToString(), ConsoleColor.White, ConsoleColor.DarkBlue);
+        }
     }
 
     public override void Update(float deltaTime)
     {
-        RectAngle.Follow();
+        RectAngle.Follow(Position + (_width / 2, -3));
     }
 }

@@ -16,7 +16,7 @@ public class Shotgun : Weapon
     {
     }
 
-    protected override void Fire(Point dir)
+    public override void Fire(Point dir)
     {
         Arms--;
         new ShotgunBullet(Scene, OwnerID, OwnerID.BulletPoint, dir);

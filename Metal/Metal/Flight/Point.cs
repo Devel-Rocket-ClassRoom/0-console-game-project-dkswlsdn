@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -177,5 +178,35 @@ public struct Point
         }
 
         return new Point(X / length, Y / length);
+    }
+
+    public Point HexaNormalize()
+    {
+        float length = MathF.Sqrt(X * X + Y * Y);
+        if (length < float.Epsilon) return new Point(0, 0);
+
+        float radians = MathF.Atan2(Y, X);
+
+        float step = MathF.PI / 8f;
+        float index = MathF.Round(radians / step);
+
+        float finalAngle = index * step;
+
+        return new Point(
+            MathF.Cos(finalAngle),
+            MathF.Sin(finalAngle)
+        );
+    }
+
+    public bool IsInDistance(Point target, float range)
+    {
+        float dx = target.X - X;
+        float dy = target.Y - Y;
+
+        float distanceSquared = (dx * dx) + (dy * dy);
+
+        float rangeSquared = range * range;
+
+        return distanceSquared <= rangeSquared;
     }
 }

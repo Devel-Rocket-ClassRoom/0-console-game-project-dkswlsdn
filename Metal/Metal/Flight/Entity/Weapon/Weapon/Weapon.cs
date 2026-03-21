@@ -38,7 +38,7 @@ public abstract class Weapon : GameObject
         Scene.RemoveGameObject(this);
     }
 
-    protected abstract void Fire(Point dir);
+    public abstract void Fire(Point dir);
 
     public override void Draw(ScreenBuffer buffer)
     {

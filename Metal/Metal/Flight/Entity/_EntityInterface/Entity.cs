@@ -11,6 +11,10 @@ public abstract class Entity : GameObject
     protected string[] _currentPixels;
     protected bool CurrentIsRight { get { return Direction.X == 1; } }
 
+
+
+
+
     protected (float X, float Y) _realPosition = (0, 0);
     public Point Position
     {
@@ -25,6 +29,39 @@ public abstract class Entity : GameObject
             _direction = value;
         }
     }
+    public float TopPosition { get { return RectAngle.Max.Y; } }
+    public Point GroundChecker { get { return Position - (0, RectAngle.Height / 2); } }
+    public (Point a, Point b) ForwardSide
+    {
+        get
+        {
+            return (Position + ((RectAngle.Width / 2 + 0) * Direction.X, -RectAngle.Height / 2),
+                Position + ((RectAngle.Width / 2 + 2) * Direction.X, RectAngle.Height / 2));
+        }
+    }
+    public (Point a, Point b) BackwardSide
+    {
+        get
+        {
+            return (Position - ((RectAngle.Width / 2 + 1) * Direction.X, -RectAngle.Height / 2),
+                Position - ((RectAngle.Width / 2 + 1) * Direction.X, RectAngle.Height / 2));
+        }
+    }
+
+
+    protected bool _useGravity;
+    protected float _currentVelocity = 0;
+    protected const float _gravity = 10;
+    public float VirticalVelocity
+    {
+        set
+        {
+            _currentVelocity = MathF.Sqrt(2f * _gravity * value);
+        }
+    }
+    public bool IsLand { get; set; }
+
+
 
 
     private (int X, int Y) _direction = (1, 0);
@@ -127,6 +164,7 @@ public abstract class Entity : GameObject
 
     public override void Update(float deltaTime)
     {
+        //if (_useGravity && !IsLand) VirticalMove();
         if (RectAngle != null)
         {
             RectAngle.SpinRect(Direction);
@@ -136,9 +174,46 @@ public abstract class Entity : GameObject
     public override void Draw(ScreenBuffer buffer)
     {
         DrawEntity(buffer);
-        //if (RectAngle != null) RectAngle.DrawRectAngle(buffer);
+        if (RectAngle != null) RectAngle.DrawRectAngle(buffer);
         //buffer.SetCell(Position + (0, 1), ConsoleColor.Green);
     }
+
+
+
+    protected bool IsOnGround(float deltaTime)
+    {
+        if (Scene is GameScene g)
+        {
+            for (int i = 0; i < g.GroundEntitiyList.Count; i++)
+            {
+                if (_currentVelocity <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((GroundChecker.X - 3, GroundChecker.Y + Math.Min(_currentVelocity - _gravity * deltaTime, -1)), GroundChecker + (3, 0)))
+                {
+                    _currentVelocity = g.GroundEntitiyList[i].TopPosition - GroundChecker.Y + 1;
+                    VirticalMove();
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    protected void VirticalMove()
+    {
+        if (Scene is GameScene g)
+        {
+            for (int i = 0; i < g.GroundEntitiyList.Count; i++)
+            {
+                if (g.GroundEntitiyList[i].RectAngle.IsOverrap((RectAngle.Min.X, TopPosition), (RectAngle.Max.X, TopPosition)))
+                {
+                    _currentVelocity = -1;
+                }
+            }
+        }
+
+        Position += (0, _currentVelocity);
+    }
+
+
 
 
 

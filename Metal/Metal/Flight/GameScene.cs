@@ -19,7 +19,6 @@ public class GameScene : Scene
     Ground ground3;
     Ground ground4;
     Wall wall;
-    Box box;
     GetWeapon GetWeaponTemp;
     GetWeapon GetWeaponTemp2;
     
@@ -29,9 +28,12 @@ public class GameScene : Scene
         player = new Player(this, (30, 30));
         camera = new Camera(this, player);
         ground = new Ground(this, (0, 5), 800, "ground");
-        ground2 = new Ground(this, (40, 25), 40, "platform");
-        ground3 = new Ground(this, (120, 40), 80, "higherPlatform");
-        box = new Box(this, (100, 45));
+        ground2 = new Ground(this, (40, 25), 40, "platform", false);
+        ground3 = new Ground(this, (120, 40), 80, "higherPlatform", false);
+        new Ground(this, (200, 20), 50);
+        new Ground(this, (250, 40), 100);
+        new Wall(this, (250, 20), 21);
+        new ModenInfantryCannon(this, (150, 45), EnemyState.Chase, player);
         GetWeaponTemp = new GetShotgun(this, (150, 20));
         GetWeaponTemp2 = new GetHeavyMachinegun(this, (200, 20));
     }

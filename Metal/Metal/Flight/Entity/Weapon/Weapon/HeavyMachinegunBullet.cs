@@ -62,9 +62,10 @@ public class HeavyMachinegunBullet : BulletEntity, IMoveable
 
     public override void Update(float deltaTime)
     {
+        Move();
+
         base.Update(deltaTime);
 
-        Move();
         RectAngle.Follow(Position);
     }
 

@@ -5,9 +5,11 @@ using System.Text;
 using System.Xml.Linq;
 
 
-public class Wall : Entity
+public class Wall : GroundEntity
 {
-    public Wall(Scene scene, Point point, int height, string name = "w") : base(scene, point)
+    protected int _height;
+
+    public Wall(Scene scene, Point point, int height, string name = "w", bool canHit = true) : base(scene, point, canHit)
     {
         if (Scene is GameScene g)
         {
@@ -16,6 +18,8 @@ public class Wall : Entity
 
         RectAngle = new RectAngle(this, (1, height));
         Name = name;
+
+        _height = height;
     }
 
 
@@ -27,6 +31,6 @@ public class Wall : Entity
     }
     public override void Update(float deltaTime)
     {
-        RectAngle.Follow();
+        RectAngle.Follow(Position + (0, _height / 2 - 1));
     }
 }
