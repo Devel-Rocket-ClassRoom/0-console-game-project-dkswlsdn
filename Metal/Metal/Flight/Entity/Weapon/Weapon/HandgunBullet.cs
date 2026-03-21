@@ -8,7 +8,7 @@ public class HandgunBullet : BulletEntity
 {
     public HandgunBullet(Scene scene, CharacterEntity id, Point point, Point aim, bool isEnemy = false) : base(scene, id, point, aim)
     {
-        RectAngle = new RectAngle(this, (5, 7));
+        RectAngle = new RectAngle(this, (8, 4));
 
         _life = isEnemy ? 3f : 1f;
         _bulletSpeed = isEnemy ? 2 : 6;

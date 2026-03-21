@@ -40,6 +40,14 @@ public abstract class Entity : GameObject
         ID = nextId++;
     }
 
+    public Entity(Scene scene) : base(scene)
+    {
+        ID = nextId++;
+    }
+
+
+
+
     public virtual void DrawEntity(ScreenBuffer buffer)
     {
         int width = _currentPixels[0].Length;

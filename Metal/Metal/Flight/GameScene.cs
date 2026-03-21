@@ -18,6 +18,7 @@ public class GameScene : Scene
     Ground ground2;
     Ground ground3;
     Ground ground4;
+    Wall wall;
     DamagableEntity entity;
     Box box;
     GetWeapon GetWeaponTemp;

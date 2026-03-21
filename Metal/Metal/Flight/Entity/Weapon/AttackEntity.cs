@@ -11,7 +11,7 @@ public abstract class AttackEntity : Entity
 
     protected float _interval = 0; // 다단히트 방지
     protected Entity ownerId; // 피아구분
-    protected List<CharacterEntity> _targetsBuffer = new List<CharacterEntity>(10);
+    protected List<Entity> _targetsBuffer = new List<Entity>(10);
 
     public int Range { get; protected set; }
 
@@ -30,12 +30,16 @@ public abstract class AttackEntity : Entity
 
     protected virtual void DealDamage()
     {
-        List<CharacterEntity> allEntities = null;
+        List<Entity> allEntities = null;
         _targetsBuffer.Clear();
 
         if (Scene is GameScene g)
         {
-            allEntities = g.EntityList;
+            allEntities = new List<Entity>();
+
+            for (int i = 0; i < g.EntityList.Count; i++) allEntities.Add(g.EntityList[i]);
+            for (int i = 0; i < g.GroundEntitiyList.Count; i++) allEntities.Add(g.GroundEntitiyList[i]);
+            for (int i = 0; i < g.WallEntitiyList.Count; i++) allEntities.Add(g.WallEntitiyList[i]);
         }
 
         float rangeSq = Range * Range;
@@ -44,10 +48,7 @@ public abstract class AttackEntity : Entity
         {
             var target = allEntities[i];
 
-            int dx = (int)(target.Position.X - Position.X);
-            int dy = (int)(target.Position.Y - Position.Y);
-
-            if (dx * dx + dy * dy <= rangeSq && target.ID != ownerId.ID && target.IsActive)
+            if (GetDistanceSqToRect(Position, target.RectAngle) <= rangeSq && target.ID != ownerId.ID && target.IsActive)
             {
                 _targetsBuffer.Add(target);
             }
@@ -58,11 +59,32 @@ public abstract class AttackEntity : Entity
         {
             if (RectAngle.IsOverrap(_targetsBuffer[i].RectAngle))
             {
-                _targetsBuffer[i].TakeDamage(ID, _damage, (int)(_interval * 1000));
-                AfterDealDamage();
+                if (_targetsBuffer[i] is CharacterEntity c)
+                {
+                    c.TakeDamage(ID, _damage, (int)(_interval * 1000));
+                    AfterHit();
+                }
+                else if (_targetsBuffer[i] is GroundEntity st)
+                {
+                    if (st.CanHitToBullet)
+                    {
+                        AfterHit();
+                    }
+                }
             }
         }
     }
 
-    protected virtual void AfterDealDamage() { }
+    public float GetDistanceSqToRect(Point pos, RectAngle rect)
+    {
+        float closestX = MathF.Max(rect.Min.X, MathF.Min(pos.X, rect.Max.X));
+        float closestY = MathF.Max(rect.Min.Y, MathF.Min(pos.Y, rect.Max.Y));
+
+        float dx = pos.X - closestX;
+        float dy = pos.Y - closestY;
+
+        return (dx * dx) + (dy * dy);
+    }
+
+    protected virtual void AfterHit() { }
 }

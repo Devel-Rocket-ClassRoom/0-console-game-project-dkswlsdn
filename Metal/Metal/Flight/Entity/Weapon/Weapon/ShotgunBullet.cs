@@ -38,6 +38,10 @@ public class ShotgunBullet : BulletEntity
     {
     }
 
+    protected override void AfterHit()
+    {
+    }
+
     public string[] _idelPixels =
     {
         "                                            G",

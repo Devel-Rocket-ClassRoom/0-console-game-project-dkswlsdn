@@ -36,8 +36,10 @@ public abstract class BulletEntity : AttackEntity
 
     protected abstract void Go();
 
-    protected override void AfterDealDamage()
+    protected override void AfterHit()
     {
+        new HitEffect(Scene, Position);
+
         if (Scene is GameScene g)
         {
             if (_isOnlyTarget)

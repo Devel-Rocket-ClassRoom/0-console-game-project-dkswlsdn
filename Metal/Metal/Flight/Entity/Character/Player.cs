@@ -35,7 +35,19 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 
 
 
-    public Point NextPosition { get { return Position - (RectAngle.Width / 2, 0); } }
+    public (Point a, Point b) ForwardPosition
+    {
+        get { return (Position + ((RectAngle.Width / 2 + 0) * Direction.X, -RectAngle.Height / 2),
+                Position + ((RectAngle.Width / 2 + 2) * Direction.X, RectAngle.Height / 2)); }
+    }
+    public (Point a, Point b) BackwardPosition
+    {
+        get
+        {
+            return (Position - ((RectAngle.Width / 2 + 1) * Direction.X, -RectAngle.Height / 2),
+                Position - ((RectAngle.Width / 2 + 1) * Direction.X, RectAngle.Height / 2));
+        }
+    }
     public Point GroundChecker { get { return Position - (0, RectAngle.Height / 2); } }
     
 
@@ -114,10 +126,20 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
     public void Move()
     {
         if (_input.X != 0) Direction = (_input.X, 0);
+        _isSit = IsLand && Input.IsKey(ConsoleKey.S);
+
+        if (Scene is GameScene g)
+        {
+            for (int i = 0; i < g.WallEntitiyList.Count; i++)
+            {
+                if (g.WallEntitiyList[i].RectAngle.IsOverrap(ForwardPosition.a, ForwardPosition.b))
+                {
+                    return;
+                }
+            }
+        }
 
         Position += (_moveSpeed * _input.X, 0);
-
-        _isSit = IsLand && Input.IsKey(ConsoleKey.S);
     }
 
     public void VirticalMove()
@@ -157,7 +179,6 @@ public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
         }
 
         return false;
-
     }
 
     

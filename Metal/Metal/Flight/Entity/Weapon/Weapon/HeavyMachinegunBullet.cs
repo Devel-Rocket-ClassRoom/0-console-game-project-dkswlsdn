@@ -21,7 +21,7 @@ public class HeavyMachinegunBullet : BulletEntity
     public HeavyMachinegunBullet(Scene scene, CharacterEntity id, Point point, Point aim, int count, Point previous, bool isEnemy = false) 
         : base(scene, id, point + new Point(3, 0).DirectionConverter(id.Aim), aim)
     {
-        RectAngle = new RectAngle(this, (4, 4));
+        RectAngle = new RectAngle(this, (8, 4));
 
         _previous = previous;
         _isRasing = previous.X != 0 && aim.Y != 0;
@@ -42,11 +42,6 @@ public class HeavyMachinegunBullet : BulletEntity
     protected override void Go()
     {
         Position += speed * _bulletSpeed;
-    }
-
-    private void GetNextAngle(int isClockwise)
-    {
-        NextBulletAngle = NextBulletAngle + 20 * isClockwise;
     }
 
     private void DicideDirection()

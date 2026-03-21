@@ -18,8 +18,9 @@ public class RectAngle
     public float Height { get; private set; }
 
     public Point Min => Pibot;
-
     public Point Max => new Point(Pibot.X + Width - 1, Pibot.Y + Height - 1);
+    public Point MinX_MaxY => (Min.X, Max.Y);
+    public Point MaxX_MinY => (Max.X, Min.Y);
 
     public Point Position
     {

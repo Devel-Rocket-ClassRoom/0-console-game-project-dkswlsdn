@@ -6,8 +6,10 @@ using Framework.Engine;
 
 public abstract class GroundEntity : Entity
 {
-    public GroundEntity(Scene scene, Point point) : base(scene, point)
+    public bool CanHitToBullet;
+
+    public GroundEntity(Scene scene, Point point, bool bulletHit = true) : base(scene, point)
     {
-        
+        CanHitToBullet = bulletHit;
     }
 }

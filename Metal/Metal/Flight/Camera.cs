@@ -4,12 +4,15 @@ using System.Text;
 using Framework.Engine;
 
 
-public class Camera : GameObject
+public class Camera : Entity
 {
     private Point _adjustment;
 
     public int LeftClamp = 0;
-    public int RightClamp = 100;
+    public int RightClamp = 200;
+
+    private Wall _leftClampWall;
+    private Wall _rightClampWall;
 
 
     public static Point Position = (0, 0);
@@ -21,6 +24,15 @@ public class Camera : GameObject
     {
         _player = player;
         Adjustment = (4, 5);
+
+        _leftClampWall = new Wall(Scene, (LeftClamp - 1, 50), 100, "LeftClamp");
+        _rightClampWall = new Wall(Scene, (RightClamp + ShottingGame.k_Width / 2, 50), 100, "RightClamp");
+
+        if (Scene is GameScene g)
+        {
+            g.AddGameObject(_leftClampWall);
+            g.AddGameObject(_rightClampWall);
+        }
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -33,5 +45,8 @@ public class Camera : GameObject
         {
             Position.X = Math.Clamp(_player.Position.X - Adjustment.X, 0, RightClamp);
         }
+
+        _leftClampWall.Position = (LeftClamp - 1, 50);
+        _rightClampWall.Position = (RightClamp + ShottingGame.k_Width / 2, 50);
     }
 }

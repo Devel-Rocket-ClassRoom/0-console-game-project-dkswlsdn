@@ -14,7 +14,19 @@ public class Wall : Entity
             g.WallEntitiyList.Add(this);
         }
 
-        RectAngle = new RectAngle(this, (height, 1));
+        RectAngle = new RectAngle(this, (1, height));
         Name = name;
+    }
+
+
+
+    public override void Draw(ScreenBuffer buffer)
+    {
+        RectAngle.DrawRectAngle(buffer);
+        //buffer.WriteText(Position, Position.ToString());
+    }
+    public override void Update(float deltaTime)
+    {
+        RectAngle.Follow();
     }
 }
