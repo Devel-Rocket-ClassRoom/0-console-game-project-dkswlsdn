@@ -33,7 +33,18 @@ public class GameScene : Scene
         new Ground(this, (200, 20), 50);
         new Ground(this, (250, 40), 100);
         new Wall(this, (250, 20), 21);
-        new ModenInfantryCannon(this, (150, 45), EnemyState.Chase, player);
+        new ModenInfantryCannon(this, (150, 45), EnemyState.Idle, player);
+        new ModenInfantryGrenage(this, (300, 45), EnemyState.Idle, player);
+        new ModenInfantryGrenage(this, (400, 10), EnemyState.Idle, player);
+        new ModenInfantryGrenage(this, (410, 10), EnemyState.Idle, player);
+        new ModenInfantryGrenage(this, (420, 10), EnemyState.Idle, player);
+        new ModenInfantryGrenage(this, (430, 10), EnemyState.Idle, player);
+        new ModenInfantryGrenage(this, (440, 10), EnemyState.Search, player);
+        new ModenInfantryGrenage(this, (450, 10), EnemyState.Idle, player);
+        new ModenInfantryGrenage(this, (460, 10), EnemyState.Idle, player);
+        new ModenInfantryGrenage(this, (470, 10), EnemyState.Search, player);
+        new ModenInfantryGrenage(this, (480, 10), EnemyState.Idle, player);
+        new ModenInfantryGrenage(this, (490, 10), EnemyState.Idle, player);
         GetWeaponTemp = new GetShotgun(this, (150, 20));
         GetWeaponTemp2 = new GetHeavyMachinegun(this, (200, 20));
     }

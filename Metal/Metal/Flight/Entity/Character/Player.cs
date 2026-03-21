@@ -28,7 +28,7 @@ public class Player : CharacterEntity
 
 
     private Point _input;
-    private Motion motion = Motion.Idle;
+    private HigherState _state = HigherState.Idle;
 
 
 
@@ -36,6 +36,8 @@ public class Player : CharacterEntity
 
     public Player(Scene scene, Point point) : base(scene, point)
     {
+        Team = 1;
+
         mainWeapon = new Handgun(Scene, this);
         subWeapon = new HeavyMachinegun(Scene, false);
         subWeapon.Arms = 20000;
@@ -51,6 +53,7 @@ public class Player : CharacterEntity
         RectAngle = new RectAngle(this, (5, 11));
 
         _currentPixels = _idlePixels;
+        _useGravity = true;
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -78,24 +81,14 @@ public class Player : CharacterEntity
 
         Move();
 
+        if (IsLand) Jump(deltaTime);
+
         base.Update(deltaTime);
 
-        IsLand = IsOnGround(deltaTime);
-
-        if (IsLand)
-        {
-            VirticalVelocity = 0;
-            Jump(deltaTime);
-        }
-        else
-        {
-            _currentVelocity -= _gravity * deltaTime;
-            VirticalMove();
-        }
         
         Aimming();
         CheckMainArms();
-        Animation();
+        //CheckTransitions();
     }
 
     public void Move()
@@ -159,8 +152,6 @@ public class Player : CharacterEntity
             Aim = _input;
         }
     }
-
-
     private void PlayerInput()
     {
         if (Input.IsKey(ConsoleKey.W))
@@ -189,13 +180,6 @@ public class Player : CharacterEntity
             _input.X = 0;
         }
     }
-
-    public void Animation()
-    {
-        
-    }
-
-
     public void CheckMainArms()
     {
         if (mainWeapon.Arms <= 0)
@@ -207,12 +191,51 @@ public class Player : CharacterEntity
     }
 
 
-    private enum State
+    public void CheckTransitions()
+    {
+        switch (_state)
+        {
+            case HigherState.Idle:
+                //인풋이 위쪽이라면 LookUp상태
+                //인풋이 아래쪽이라면 SitDown상태
+                //인풋이 양옆이라면 Walk상태
+                //점프를 했다면 Jump상태
+                //총을 쐈다면 Shot상태
+                break;
+            case HigherState.LookUp:
+                //인풋이 양옆이라면 LookUpWalk상태
+                //점프를 했다면 JumpLookup상태
+                //총을 쐈다면
+                break;
+
+        }
+    }
+
+
+    protected string[] GetPixels(string[] higher, string[] lower)
+    {
+        string[] union = new string[11];
+
+        for (int i = 0; i < 7; i++) union[i] = higher[i];
+        for (int i = 7; i < lower.Length; i++) union[i] = lower [i];
+
+        return union;
+    }
+
+    public enum HigherState
     {
         Idle,
-        SitDown,
-        Jump,
+        LookUp,
+        LookDown,
+        Shot
     }
+    public enum LowerState
+    {
+        Idle,
+        Run,
+        Jump
+    }
+
 
     private string[] _idlePixels = // C = Cyan, D = DarkBlue, B = Black, G = DarkGray
     {

@@ -198,6 +198,15 @@ public struct Point
         );
     }
 
+    public int CompareX(Point other)
+    {
+        float diff = other.X - X;
+
+        if (diff > 0) return 1;
+        if (diff < -0) return -1;
+        return 0;
+    }
+
     public bool IsInDistance(Point target, float range)
     {
         float dx = target.X - X;

@@ -68,7 +68,7 @@ public abstract class BulletEntity : Entity
         {
             allEntities = new List<Entity>();
 
-            for (int i = 0; i < g.EntityList.Count; i++) allEntities.Add(g.EntityList[i]);
+            for (int i = 0; i < g.EntityList.Count; i++) if (g.EntityList[i].Team != ownerId.Team) allEntities.Add(g.EntityList[i]);
             for (int i = 0; i < g.GroundEntitiyList.Count; i++) allEntities.Add(g.GroundEntitiyList[i]);
             for (int i = 0; i < g.WallEntitiyList.Count; i++) allEntities.Add(g.WallEntitiyList[i]);
         }

@@ -10,7 +10,7 @@ public class Ground : GroundEntity
     public bool IsPlatForm { get; private set; }
 
 
-    public Ground(Scene scene, Point point, int width, string name = "g", bool canHit = true, bool isPlatform = false) : base(scene, point, canHit)
+    public Ground(Scene scene, Point point, int width, string name = "g", bool canHit = true, bool isPlatform = false) : base(scene, point + (width / 2, -3), canHit)
     {
         if (Scene is GameScene g)
         {
@@ -37,9 +37,9 @@ public class Ground : GroundEntity
             buffer.WriteText(Position + (i, 0), i.ToString(), ConsoleColor.White, ConsoleColor.DarkBlue);
         }
     }
-
+    
     public override void Update(float deltaTime)
     {
-        RectAngle.Follow(Position + (_width / 2, -3));
+        RectAngle.Follow(Position);
     }
 }

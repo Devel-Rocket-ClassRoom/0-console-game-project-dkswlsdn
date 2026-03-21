@@ -15,11 +15,13 @@ public interface IEnemyAI
 
     bool CanSeePlayer();
     bool IsPlayerNeering();
+    bool IsPlayerSuperNeering();
     bool IsAttackEnd();
     bool IsPlayerDead();
     bool IsPlayerRebirth();
     bool IsDead();
     bool IsNeerFriendlyDead();
+    bool IsNeerFriendlyPanic();
     bool IsStunEnd();
     bool IsEnd();
 }

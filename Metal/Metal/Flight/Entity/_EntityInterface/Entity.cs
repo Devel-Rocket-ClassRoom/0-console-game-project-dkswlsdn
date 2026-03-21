@@ -4,6 +4,7 @@ using System.Drawing;
 public abstract class Entity : GameObject
 {
     public string Name { get; set; }
+    public int Team;
     public static int nextId = 1;
     public int ID { get; private set; }
 
@@ -51,7 +52,7 @@ public abstract class Entity : GameObject
 
     protected bool _useGravity;
     protected float _currentVelocity = 0;
-    protected const float _gravity = 10;
+    protected float _gravity = 10;
     public float VirticalVelocity
     {
         set
@@ -164,7 +165,21 @@ public abstract class Entity : GameObject
 
     public override void Update(float deltaTime)
     {
-        //if (_useGravity && !IsLand) VirticalMove();
+        if (_useGravity)
+        {
+            IsLand = IsOnGround(deltaTime);
+
+            if (IsOnGround(deltaTime))
+            {
+                VirticalVelocity = 0;
+            }
+            else
+            {
+                _currentVelocity -= _gravity * deltaTime;
+                VirticalMove();
+            }
+        }
+
         if (RectAngle != null)
         {
             RectAngle.SpinRect(Direction);
@@ -173,8 +188,8 @@ public abstract class Entity : GameObject
 
     public override void Draw(ScreenBuffer buffer)
     {
-        DrawEntity(buffer);
-        if (RectAngle != null) RectAngle.DrawRectAngle(buffer);
+        if (_currentPixels != null) DrawEntity(buffer);
+        //if (RectAngle != null) RectAngle.DrawRectAngle(buffer);
         //buffer.SetCell(Position + (0, 1), ConsoleColor.Green);
     }
 

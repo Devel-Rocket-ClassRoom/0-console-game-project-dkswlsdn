@@ -8,6 +8,7 @@ public class ModenInfantryCannon : EnemyEntity
 {
     public ModenInfantryCannon(Scene scene, Point point, EnemyState state, Player player) : base(scene, point, state)
     {
+        Team = 2;
         RectAngle = new RectAngle(this, (5, 11));
         
         _arms = new Cannon(scene);
@@ -16,7 +17,9 @@ public class ModenInfantryCannon : EnemyEntity
         _currentPixels = _combatPixels;
         ChasingTarget = player;
 
-        Health = 100;
+        Health = 1;
+        _reconizePlayer = 100;
+        _attackBeforeDelay = 0.4f;
         Direction = (-1, 0);
     }
 
@@ -37,9 +40,9 @@ public class ModenInfantryCannon : EnemyEntity
         switch (_state)
         {
             case EnemyState.Idle:
-                if (IsPlayerNeering()) ChangeState(EnemyState.Stun);
-                //else if (IsNeerFriendlyDead()) ChangeState(EnemyState.Stun);
-                else if (IsPlayerRebirth()) ChangeState(EnemyState.Stun);
+                if (IsPlayerSuperNeering()) ChangeState(EnemyState.Stun);
+                else if (IsNeerFriendlyDead()) ChangeState(EnemyState.Stun);
+                //else if (IsPlayerRebirth()) ChangeState(EnemyState.Stun);
                 break;
             case EnemyState.Search:
                 if (IsPlayerNeering()) ChangeState(EnemyState.Attack);
@@ -58,21 +61,41 @@ public class ModenInfantryCannon : EnemyEntity
                 if (IsStunEnd()) ChangeState(EnemyState.Chase);
                 break;
             case EnemyState.Dead:
-                if (IsEnd()) Scene.RemoveGameObject(this);
+                if (IsEnd())
+                {
+                    if (Scene is GameScene g)
+                    {
+                        g.EntityList.Remove(this);
+                    }
+                    Scene.RemoveGameObject(this); RectAngle = null;
+                }
                 break;
         }
 
         if (Health <= 0) ChangeState(EnemyState.Dead);
     }
 
+    public override void DoIdle(float deltaTime)
+    {
+        _currentPixels = _idlePixels;
+    }
+
+    public override void DoStun(float deltaTime)
+    {
+        base.DoStun(deltaTime);
+        _currentPixels = _stunPixels;
+    }
+
     public override void DoSearch(float deltaTime)
     {
+        _currentPixels = _combatPixels;
         int n = ChasingTarget.Position.X - Position.X > 0 ? 1 : -1;
         Direction = (n, 0);
     }
 
     public override void DoAttack(float deltaTime)
     {
+        _currentPixels = _combatPixels;
         Aim = (ChasingTarget.Position - Position).HexaNormalize();
         base.DoAttack(deltaTime);
     }
@@ -83,22 +106,9 @@ public class ModenInfantryCannon : EnemyEntity
         _currentPixels = _deadPixels;
     }
 
-    private string[] _idlePixels =
-    {
-        " ggg ",
-        " gCC ",
-        " gCC ",
-        "ggggg",
-        "ggggg",
-        "ggggg",
-        "BgggB",
-        " g g ",
-        " g g ",
-        " g g ",
-        " B B ",
-    };
+    
 
-    private string[] _combatPixels =
+    protected new string[] _combatPixels =
     {
         "   ggg   ",
         "   gCC   ",
@@ -113,34 +123,5 @@ public class ModenInfantryCannon : EnemyEntity
         "   B B   ",
     };
 
-    private string[] _deadPixels =
-    {
-        "           ",
-        "           ",
-        "           ",
-        "           ",
-        "           ",
-        "           ",
-        "   gggB    ",
-        "gCCgggggggB",
-        "gCCgggg    ",
-        "ggggggggggB",
-        "   gggB    ",
-    };
+    
 }
-
-//public class ModenInfantryShiled : EnemyEntity, IMoveable, IJumpable
-//{
-
-
-//    public ModenInfantryShiled(Scene scene, Point point) : base(scene, point)
-//    {
-//    }
-//}
-
-//public class ModenInfantryCannon : EnemyEntity, IMoveable, IJumpable
-//{
-//    public ModenInfantryCannon(Scene scene, Point point) : base(scene, point)
-//    {
-//    }
-//}

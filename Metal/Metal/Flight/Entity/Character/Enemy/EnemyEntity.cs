@@ -7,15 +7,17 @@ using Framework.Engine;
 public abstract class EnemyEntity : CharacterEntity, IEnemyAI
 {
     protected float _attackTimer = 0f;
-    protected const float k_AttackDuration = 1.2f;
+    protected float _attackDuration = 1.2f;
+    protected float _attackBeforeDelay;
 
     protected float _stunTimer = 0f;
-    protected const float k_stunDuration = 1.2f;
+    protected float _stunDuration = 0.5f;
 
     protected float _deadTimer = 0f;
-    protected const float k_deadDuration = 1.0f;
+    protected float _deadDuration = 0.3f;
 
     public Player ChasingTarget;
+    protected float _reconizePlayer;
 
     protected Weapon _arms;
 
@@ -71,7 +73,7 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
             case EnemyState.Stun:
                 break;
             case EnemyState.Dead:
-                if (IsEnd()) Scene.RemoveGameObject(this);
+                if (IsEnd()) { Scene.RemoveGameObject(this); RectAngle = null; }
                 break;
                 
         }
@@ -80,7 +82,7 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
 
     public virtual void DoAttack(float deltaTime)
     {
-        if (_attackTimer == 0f)
+        if (_attackTimer == 0)
         {
             _arms.Fire(Aim);
         }
@@ -124,12 +126,12 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
 
     public virtual bool IsPlayerNeering()
     {
-        return Position.IsInDistance(ChasingTarget.Position, 100f);
+        return Position.IsInDistance(ChasingTarget.Position, _reconizePlayer);
     }
 
     public virtual bool IsAttackEnd()
     {
-        if (_attackTimer >= k_AttackDuration)
+        if (_attackTimer >= _attackDuration)
         {
             _attackTimer = 0;
             return true;
@@ -155,12 +157,26 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
 
     public virtual bool IsNeerFriendlyDead()
     {
-        throw new NotImplementedException();
+        if (Scene is GameScene g)
+        {
+            for (int i = 0; i < g.EntityList.Count; i++)
+            {
+                if (g.EntityList[i] is EnemyEntity e)
+                {
+                    if (Position.IsInDistance(e.Position, 30f))
+                    {
+                        return e._state == EnemyState.Dead;
+                    }
+                }
+            }
+        }
+
+        return false;   
     }
 
     public virtual bool IsStunEnd()
     {
-        if (_stunTimer >= k_stunDuration)
+        if (_stunTimer >= _stunDuration)
         {
             _stunTimer = 0;
             return true;
@@ -171,6 +187,76 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
 
     public bool IsEnd()
     {
-        return _deadTimer >= k_deadDuration;
+        return _deadTimer >= _deadDuration;
     }
+
+    public virtual bool IsPlayerSuperNeering()
+    {
+        return Position.IsInDistance(ChasingTarget.Position, 20f);
+    }
+
+    public bool IsNeerFriendlyPanic()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected string[] _idlePixels =
+    {
+        " ggg ",
+        " gCC ",
+        " gCC ",
+        "ggggg",
+        "ggggg",
+        "ggggg",
+        "BgggB",
+        " g g ",
+        " g g ",
+        " g g ",
+        " B B ",
+    };
+
+    protected string[] _stunPixels =
+    {
+        "B ggg B",
+        "g gCC g",
+        "g gCC g",
+        " ggggg ",
+        "  ggg  ",
+        "  ggg  ",
+        "  ggg  ",
+        "  g g  ",
+        " g   g ",
+        " g   g ",
+        "B     B",
+    };
+
+    protected string[] _combatPixels =
+    {
+        "  ggg  ",
+        "  gCC  ",
+        "  gCC  ",
+        " ggggg ",
+        "g ggg g",
+        "g ggg g",
+        "B ggg B",
+        "  g g  ",
+        "  g g  ",
+        "  g g  ",
+        "  B B  ",
+    };
+
+    protected string[] _deadPixels =
+    {
+        "           ",
+        "           ",
+        "           ",
+        "           ",
+        "           ",
+        "           ",
+        "   gggB    ",
+        "gCCgggggggB",
+        "gCCgggg    ",
+        "ggggggggggB",
+        "   gggB    ",
+    };
 }
