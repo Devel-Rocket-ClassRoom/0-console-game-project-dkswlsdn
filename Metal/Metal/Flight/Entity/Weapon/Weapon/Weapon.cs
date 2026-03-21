@@ -10,17 +10,16 @@ public abstract class Weapon : GameObject
     public int Arms;
     public bool _isMain;
 
-    protected CharacterEntity _ownerID;
+    public CharacterEntity OwnerID { protected get; set; }
     public AttackEntity Arm;
     public float Cooldown = 1;
     protected float _leftCooldown = 0;
 
     protected ConsoleKey _key;
 
-    public Weapon(Scene scene, CharacterEntity id, bool isMain) : base(scene)
+    public Weapon(Scene scene, bool isMain) : base(scene)
     {
         _isMain = isMain;
-        _ownerID = id;
         _key = _isMain ? ConsoleKey.LeftArrow : ConsoleKey.RightArrow;
     }
 

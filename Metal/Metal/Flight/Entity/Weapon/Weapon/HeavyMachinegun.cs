@@ -12,12 +12,16 @@ public class HeavyMachinegun : Weapon
     private bool _reserve = false;
     private Point _priviousDirection = (0, 0);
     private Point a;
+    
 
-    public HeavyMachinegun(Scene scene, CharacterEntity id, bool isMain = true) : base(scene, id, isMain)
+
+    public HeavyMachinegun(Scene scene, bool isMain = true) : base(scene, isMain)
     {
         Name = "HeavyMachingun";
         Cooldown = 0.30f;
     }
+
+
 
     public override void Update(float deltaTime)
     {
@@ -29,7 +33,7 @@ public class HeavyMachinegun : Weapon
             if (_leftCooldown <= 0)
             {
                 if (_priviousDirection.X == 0 && _priviousDirection.Y == 0)
-                    _priviousDirection = _ownerID.Aim;
+                    _priviousDirection = OwnerID.Aim;
 
                 _bulletCount = 0;
                 _leftCooldown = Cooldown;
@@ -49,14 +53,14 @@ public class HeavyMachinegun : Weapon
 
         if (_nextBulletCooldown <= 0 && _bulletCount < 4)
         {
-            if (_bulletCount == 0) a = _ownerID.Aim;
+            if (_bulletCount == 0) a = OwnerID.Aim;
 
             if (Arms <= 0)
                 return;
 
             Arms--;
 
-            Scene.AddGameObject(new HeavyMachinegunBullet(Scene, _ownerID, _ownerID.BulletPoint, a, _bulletCount++, _priviousDirection));
+            Scene.AddGameObject(new HeavyMachinegunBullet(Scene, OwnerID, OwnerID.BulletPoint, a, _bulletCount++, _priviousDirection));
             // 앉음시작 이벤트 발생 시 끊음
             _nextBulletCooldown = 0.06f;
 

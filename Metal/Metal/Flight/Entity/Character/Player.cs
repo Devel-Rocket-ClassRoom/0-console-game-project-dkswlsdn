@@ -6,7 +6,7 @@ using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-public class Player : CharacterEntity, IMoveable, IJumpable
+public class Player : CharacterEntity, IMoveable, IJumpable, IAttackable
 {
     public Weapon mainWeapon;
     public Weapon subWeapon;
@@ -21,12 +21,8 @@ public class Player : CharacterEntity, IMoveable, IJumpable
 
 
     private float _currentVelocity = 0;
-
     public float JumpCooldown { private get;  set; } = 0.1f;
-
-
-    public Point NextPosition { get { return (Position.X + Direction.X, Position.Y); } }
-    public Point GroundChecker { get { return Position - (0, RectAngle.Height / 2); } }
+    public bool IsLand { get; set; }
     public float VirtlcalVelocity
     {
         set
@@ -37,15 +33,29 @@ public class Player : CharacterEntity, IMoveable, IJumpable
     private float _gravity = 10;
 
 
+
+
+    public Point NextPosition { get { return Position - (RectAngle.Width / 2, 0); } }
+    public Point GroundChecker { get { return Position - (0, RectAngle.Height / 2); } }
+    
+
+
+
     private Point _input;
     private Motion motion = Motion.Idle;
+
+
 
 
 
     public Player(Scene scene, Point point) : base(scene, point)
     {
         mainWeapon = new Handgun(Scene, this);
-        subWeapon = new HeavyMachinegun(Scene, this, false);
+        subWeapon = new HeavyMachinegun(Scene, false);
+
+        mainWeapon.OwnerID = this;
+        subWeapon.OwnerID = this;
+
         Scene.AddGameObject(mainWeapon);
         Scene.AddGameObject(subWeapon);
 
@@ -97,7 +107,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
         }
         
         Aimming();
-        CheckArms();
+        CheckMainArms();
         Animation();
     }
 
@@ -210,7 +220,7 @@ public class Player : CharacterEntity, IMoveable, IJumpable
     }
 
 
-    public void CheckArms()
+    public void CheckMainArms()
     {
         if (mainWeapon.Arms <= 0)
         {

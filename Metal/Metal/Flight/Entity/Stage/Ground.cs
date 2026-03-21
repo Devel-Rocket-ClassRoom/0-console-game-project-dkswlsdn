@@ -6,9 +6,15 @@ using Framework.Engine;
 
 public class Ground : GroundEntity
 {
-    public Ground(Scene scene, Point point, int Width, string name = "g") : base(scene, point)
+    public Ground(Scene scene, Point point, int width, string name = "g") : base(scene, point)
     {
-        RectAngle = new RectAngle(this, (Width, 1));
+        if (Scene is GameScene g)
+        {
+            g.GroundEntitiyList.Add(this);
+            g.GroundEntitiyList.Sort((a, b) => b.Position.Y.CompareTo(a.Position.Y));
+        }
+
+        RectAngle = new RectAngle(this, (width, 1));
         Name = name;
     }
 

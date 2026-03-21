@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public class Shotgun : Weapon
 {
-    public Shotgun(Scene scene, CharacterEntity id, bool isMain = true) : base(scene, id, isMain)
+    public Shotgun(Scene scene, bool isMain = true) : base(scene, isMain)
     {
         Name = "Shotgun";
         Cooldown = 0.5f;
@@ -19,6 +19,6 @@ public class Shotgun : Weapon
     protected override AttackEntity GetArms()
     {
         Arms--;
-        return new ShotgunBullet(Scene, _ownerID, _ownerID.BulletPoint, _ownerID.Aim);
+        return new ShotgunBullet(Scene, OwnerID, OwnerID.BulletPoint, OwnerID.Aim);
     }
 }

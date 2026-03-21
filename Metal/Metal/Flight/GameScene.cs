@@ -9,7 +9,8 @@ public class GameScene : Scene
     public event GameAction ToTitleRequest;
 
     public List<CharacterEntity> EntityList = new List<CharacterEntity>();
-    public List<GroundEntity> GroundEntitiyList = new List<GroundEntity>();
+    public List<Ground> GroundEntitiyList = new List<Ground>();
+    public List<Wall> WallEntitiyList = new List<Wall>();
 
     Player player;
     Camera camera;

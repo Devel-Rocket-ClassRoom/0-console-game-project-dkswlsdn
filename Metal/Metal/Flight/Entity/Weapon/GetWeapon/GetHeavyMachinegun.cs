@@ -5,26 +5,13 @@ using System.Text;
 
 public class GetHeavyMachinegun : GetWeapon
 {
-    public GetHeavyMachinegun(Scene scene, Point point) : base(scene, point, 200, 150)
+    public GetHeavyMachinegun(Scene scene, Point point) : base(scene, point, 200)
     {
         Name = "HeavyMachinegun";
+        weapon = new HeavyMachinegun(Scene);
         _currentPixels = _idelPixels;
     }
 
-    protected override void Get(Player p)
-    {
-        if (p.mainWeapon.Name == Name)
-        {
-            p.mainWeapon.Arms += _additionalArms;
-        }
-        else
-        {
-            p.mainWeapon.Drop();
-            p.mainWeapon = new HeavyMachinegun(Scene, p);
-            p.mainWeapon.Arms = _arms;
-            Scene.AddGameObject(p.mainWeapon);
-        }
-    }
 
     private string[] _idelPixels =
     {

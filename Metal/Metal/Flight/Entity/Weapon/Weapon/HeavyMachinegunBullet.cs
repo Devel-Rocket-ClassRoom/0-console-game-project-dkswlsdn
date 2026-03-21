@@ -24,7 +24,7 @@ public class HeavyMachinegunBullet : BulletEntity
         RectAngle = new RectAngle(this, (4, 4));
 
         _previous = previous;
-        _isRasing = previous.X != 0 && aim.Y != 0 && !(previous.Y == -1 && id.IsLand);
+        _isRasing = previous.X != 0 && aim.Y != 0;
         _isLowering = previous.Y != 0 && aim.X != 0;
 
         _life = isEnemy ? 3f : 1f;

@@ -7,14 +7,14 @@ using Framework.Engine;
 public abstract class GetWeapon : Entity
 {
     protected int _arms;
-    protected int _additionalArms;
+    protected Weapon weapon;
 
-    public GetWeapon(Scene scene, Point point, int arms, int additionalArms) : base(scene, point)
+
+    public GetWeapon(Scene scene, Point point, int arms) : base(scene, point)
     {
         RectAngle = new RectAngle(this, (9, 9));
 
         _arms = arms;
-        _additionalArms = additionalArms;
     }
 
     public override void Update(float deltaTime)
@@ -29,7 +29,18 @@ public abstract class GetWeapon : Entity
                 {
                     if (RectAngle.IsOverrap(p.RectAngle))
                     {
-                        Get(p);
+                        if (p.mainWeapon.Name == Name)
+                        {
+                            p.mainWeapon.Arms += _arms;
+                        }
+                        else
+                        {
+                            weapon.OwnerID = p;
+                            p.mainWeapon.Drop();
+                            p.mainWeapon = weapon;
+                            weapon.Arms = _arms;
+                            Scene.AddGameObject(weapon);
+                        }
 
                         Scene.RemoveGameObject(this);
                     }
@@ -38,7 +49,6 @@ public abstract class GetWeapon : Entity
         }
     }
 
-    protected abstract void Get(Player p);
     
 
     
