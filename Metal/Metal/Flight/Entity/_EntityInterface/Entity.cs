@@ -160,7 +160,7 @@ public abstract class Entity : GameObject
     public override void Draw(ScreenBuffer buffer)
     {
         base.Draw(buffer);
-        buffer.DrawBox(Position + (0, Height), Width, Height, bgColor: ConsoleColor.Red);
+        //buffer.DrawBox(Position + (0, Height), Width, Height, bgColor: ConsoleColor.Red);
     }
 
 

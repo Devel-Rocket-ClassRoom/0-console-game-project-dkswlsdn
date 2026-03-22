@@ -22,13 +22,6 @@ public class LastTrigger : StageTrigger
     {
         base.Update(deltaTime);
 
-        if (_reinforcementCooldown <= 0 && _alreadyTriggered)
-        {
-            Scene.AddGameObject(new ModenInfantryCannon(Scene, (600, 6), EnemyState.Chase, _player, -1));
-            _reinforcementCooldown = k_ReinforcementInterval;
-        }
-
-        _reinforcementCooldown -= deltaTime;
     }
 
 

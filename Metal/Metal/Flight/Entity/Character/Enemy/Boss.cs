@@ -5,8 +5,10 @@ using System.Text;
 
 public class Boss : EnemyEntity
 {
+    Cannon _additionalArms;
     public override Point BulletPoint => Position + new Point(3, 6).PointConverter(Direction);
     Point _destination;
+    Point _additionalAim;
 
     public Boss(Scene scene, Point point, EnemyState state, Player player, int direction = -1, int dropRate = 0) : base(scene, point, dropRate, state)
     {
@@ -20,7 +22,10 @@ public class Boss : EnemyEntity
         _dropRate = dropRate;
 
         _arms = new Cannon(scene);
+        _additionalArms = new Cannon(scene);
+
         _arms.Owner = this;
+        _additionalArms.Owner = this;
 
         _currentPixels = _combatPixels;
         ChasingTarget = player;
@@ -91,7 +96,15 @@ public class Boss : EnemyEntity
     public override void DoAttack(float deltaTime)
     {
         Aim = (ChasingTarget.Position - Position).HexaNormalize();
-        base.DoAttack(deltaTime);
+        _additionalAim = (ChasingTarget.Position - Position + (30, 0)).HexaNormalize();
+
+        if (_attackTimer == 0)
+        {
+            _additionalArms.Fire(_additionalAim);
+            _arms.Fire(Aim);
+        }
+
+        _attackTimer += deltaTime;
     }
 
     public override void DoDead(float deltaTime)
