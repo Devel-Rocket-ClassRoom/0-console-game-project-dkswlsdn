@@ -29,11 +29,11 @@ public class GameScene : Scene
         Ground.DrawNormalWall(this, (140, 0), 25);
         Ground.DrawNormalPlatform(this, (200, 25), 50);
 
-        AddGameObject(new ModenInfantryCannon(this, (160, 6), EnemyState.Idle, player, 1));
-        AddGameObject(new ModenInfantryCannon(this, (220, 31), EnemyState.Idle, player));
-        AddGameObject(new ModenInfantryCannon(this, (240, 31), EnemyState.Idle, player));
-        AddGameObject(new ModenInfantryCannon(this, (240, 6), EnemyState.Idle, player));
-        AddGameObject(new GetHeavyMachinegun(this, (50, 20)));
+        AddGameObject(new ModenInfantryCannon(this, (160, 6), EnemyState.Idle, player, 0, 1));
+        AddGameObject(new ModenInfantryCannon(this, (220, 31), EnemyState.Idle, player, 0));
+        AddGameObject(new ModenInfantryCannon(this, (240, 31), EnemyState.Idle, player, 0));
+        AddGameObject(new ModenInfantryCannon(this, (240, 6), EnemyState.Idle, player, 0));
+        AddGameObject(new GetHeavyMachinegun(this, (145, 20)));
         AddGameObject(new FirstTrigger(this, 350));
         AddGameObject(new LastTrigger(this, 470));
     }

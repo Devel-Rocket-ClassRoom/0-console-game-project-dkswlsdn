@@ -42,7 +42,7 @@ public class Tank : EnemyEntity
     {
         base.Draw(buffer);
 
-        buffer.WriteText(Position + (0, 0), Health.ToString());
+        buffer.WriteText(Position + (0, 0), _dropRate.ToString());
     }
 
     public override void CollisionFromDynamic(int id, int damage)
