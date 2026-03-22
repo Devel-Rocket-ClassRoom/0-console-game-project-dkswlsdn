@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-public class HitEffect : Entity
+public class HitEffect : GameObject
 {
     float life = 0.1f;
     public HitEffect(Scene scene, Point point) : base(scene, point)
@@ -17,13 +17,8 @@ public class HitEffect : Entity
 
         if (life <= 0)
         {
-            Scene.RemoveGameObject(this);
+            Destroy();
         }
-    }
-
-    public override void Draw(ScreenBuffer buffer)
-    {
-        DrawEntity(buffer);
     }
 
     public string[] _hitPixels =

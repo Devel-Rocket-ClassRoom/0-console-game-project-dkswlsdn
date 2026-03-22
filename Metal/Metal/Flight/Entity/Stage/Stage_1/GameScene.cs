@@ -1,0 +1,65 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Framework.Engine;
+
+
+public class GameScene : Scene
+{
+    public event GameAction ToTitleRequest;
+
+    public static bool IsPlayerWin = false;
+
+
+    public Player player;
+    Camera camera;
+
+
+    public override void Load()
+    {
+        player = new Player(this, (30, 30));
+        camera = new Camera(this, player);
+
+
+
+        AddGameObject(player);
+        AddGameObject(camera);
+
+        Ground.DrawBottomGround(this, (0, 0), 3000);
+        Ground.DrawNormalWall(this, (140, 0), 25);
+        Ground.DrawNormalPlatform(this, (200, 25), 50);
+
+        AddGameObject(new ModenInfantryCannon(this, (160, 6), EnemyState.Idle, player, 1));
+        AddGameObject(new ModenInfantryCannon(this, (220, 31), EnemyState.Idle, player));
+        AddGameObject(new ModenInfantryCannon(this, (240, 31), EnemyState.Idle, player));
+        AddGameObject(new ModenInfantryCannon(this, (240, 6), EnemyState.Idle, player));
+        AddGameObject(new GetHeavyMachinegun(this, (50, 20)));
+        AddGameObject(new FirstTrigger(this, 350));
+        AddGameObject(new LastTrigger(this, 470));
+    }
+
+    public override void Unload()
+    {
+        ClearGameObjects();
+    }
+
+    public override void Update(float deltaTime)
+    {
+        UpdateGameObjects(deltaTime);
+    }
+
+    public override void Draw(ScreenBuffer buffer)
+    {
+        buffer.FillRect(0, 0, ShottingGame.k_Width, ShottingGame.k_Height, bgColor: ConsoleColor.DarkCyan);
+        buffer.WriteText(Camera.Position + (0, 0), _gameObjects.Count.ToString());
+
+        DrawGameObjects(buffer);
+    }
+
+
+
+    public void Error()
+    {
+        ToTitleRequest?.Invoke();
+    }
+}

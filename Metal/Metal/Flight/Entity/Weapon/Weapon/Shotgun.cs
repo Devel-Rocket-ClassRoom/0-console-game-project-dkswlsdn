@@ -10,15 +10,21 @@ public class Shotgun : Weapon
     {
         Name = "Shotgun";
         Cooldown = 0.5f;
+        _recoil = 0.2f;
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
     }
 
-    public override void Fire(Point dir)
+    public override float Fire(Point dir)
     {
+        if (_leftCooldown > 0) return 0f;
+
         Arms--;
-        new ShotgunBullet(Scene, OwnerID, OwnerID.BulletPoint, dir);
+        Scene.AddGameObject(new ShotgunEffect(Scene));
+        Scene.AddGameObject(new ShotgunBullet(Scene, Owner.BulletPoint, dir));
+        _leftCooldown = Cooldown;
+        return _recoil;
     }
 }

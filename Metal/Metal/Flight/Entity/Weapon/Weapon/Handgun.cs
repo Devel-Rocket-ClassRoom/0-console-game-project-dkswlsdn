@@ -10,12 +10,13 @@ public class Handgun : Weapon
     {
         Name = "Handgun";
         Arms = 1000;
-        Cooldown = 0.1f;
-        OwnerID = id;
+        _recoil = 0.1f;
+        Owner = id;
     }
 
-    public override void Fire(Point dir)
+    public override float Fire(Point dir)
     {
-        new HandgunBullet(Scene, OwnerID, OwnerID.BulletPoint, dir);
+        Scene.AddGameObject(new HandgunBullet(Scene, Owner.BulletPoint, dir));
+        return _recoil;
     }
 }

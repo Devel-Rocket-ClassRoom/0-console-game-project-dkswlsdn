@@ -27,7 +27,6 @@ public class MenuScene : Scene
 
     public override void Draw(ScreenBuffer buffer)
     {
-        buffer.DrawBox((0, 0), ShottingGame.k_Width, ShottingGame.k_Height);
-        buffer.DrawBox((0, 5), 160, 30);
+        buffer.DrawBox((0, ShottingGame.k_Height), ShottingGame.k_Width / 2, ShottingGame.k_Height);
     }
 }

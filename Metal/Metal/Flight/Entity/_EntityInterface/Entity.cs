@@ -1,239 +1,179 @@
 ﻿using Framework.Engine;
 using System.Drawing;
+using System.Security.Cryptography;
 
 public abstract class Entity : GameObject
 {
-    public string Name { get; set; }
-    public int Team;
     public static int nextId = 1;
     public int ID { get; private set; }
 
-
-    protected string[] _currentPixels;
-    protected bool CurrentIsRight { get { return Direction.X == 1; } }
-
-
+    public EntityType Type;
+    public EntityType Mask;
+    public float Threshold { get { return Math.Max(Width, Height); } }
 
 
+    public int Width;
+    public int Height;
 
-    protected (float X, float Y) _realPosition = (0, 0);
-    public Point Position
-    {
-        get { return (_realPosition.X, _realPosition.Y); }
-        set { _realPosition = (value.X, value.Y); }
-    }
-    public Point Direction
-    {
-        get { return _direction; }
-        set
-        {
-            _direction = value;
-        }
-    }
-    public float TopPosition { get { return RectAngle.Max.Y; } }
-    public Point GroundChecker { get { return Position - (0, RectAngle.Height / 2); } }
-    public (Point a, Point b) ForwardSide
-    {
-        get
-        {
-            return (Position + ((RectAngle.Width / 2 + 0) * Direction.X, -RectAngle.Height / 2),
-                Position + ((RectAngle.Width / 2 + 2) * Direction.X, RectAngle.Height / 2));
-        }
-    }
-    public (Point a, Point b) BackwardSide
-    {
-        get
-        {
-            return (Position - ((RectAngle.Width / 2 + 1) * Direction.X, -RectAngle.Height / 2),
-                Position - ((RectAngle.Width / 2 + 1) * Direction.X, RectAngle.Height / 2));
-        }
-    }
+    public float Right { get { return Position.X + Width - 1; } }
+    public float Left { get { return Position.X; } }
+    public float Top { get { return Position.Y + Height - 1; } }
+    public float Bottom { get { return Position.Y; } }
+    public Point Center { get { return (Position.X + Width / 2, Position.Y + Height / 2); } }
+    public (Point a, Point b) Foot { get { return ((Left, Bottom - 1f), (Right, Bottom)); } }
 
 
+    protected bool _canMove;
     protected bool _useGravity;
-    protected float _currentVelocity = 0;
-    protected float _gravity = 10;
-    public float VirticalVelocity
+    protected Point _currentVelocity;
+    protected float _gravity = 180;
+    public Point Velocity
     {
+        get { return _currentVelocity; }
         set
         {
-            _currentVelocity = MathF.Sqrt(2f * _gravity * value);
+            _currentVelocity = value;
         }
     }
-    public bool IsLand { get; set; }
+    protected bool _isLand;
 
 
 
-
-    private (int X, int Y) _direction = (1, 0);
-    public RectAngle RectAngle { get; protected set; }
-
-
-    protected bool _pixelReversed;
-
-
-    public Entity(Scene scene, Point point, bool instant = true) : base(scene)
+    public Entity(Scene scene, Point position, bool isDynamic)
+        : base(scene, position)
     {
-        Position = new Point(point);
         ID = nextId++;
+        Width = 1;
+        Height = 1;
 
-        if (instant) Scene.AddGameObject(this);
-    }
-
-
-
-
-    public virtual void DrawEntity(ScreenBuffer buffer)
-    {
-        int width = _currentPixels[0].Length;
-        int height = _currentPixels.Length;
-
-        int midX = width / 2;
-        int midy = height / 2;
-
-        int n = _pixelReversed ? -1 : 1;
-
-        for (int j = 0; j < height; j++)
-        {
-            for (int i = 0; i < width; i++)
-            {
-                char pixel = _currentPixels[j][i];
-                if (pixel == ' ' || pixel == '\0') continue;
-
-                ConsoleColor color = GetColor(pixel);
-
-                int relX = i - midX;
-                int relY = -j + midy;
-
-                int drawX = 0;
-                int drawY = 0;
-
-                switch ((Direction.X, Direction.Y))
-                {
-                    case (1, 0):
-                        drawX = relX;
-                        drawY = relY * n;
-                        break;
-
-                    case (-1, 0):
-                        drawX = -relX;
-                        drawY = relY * n;
-                        break;
-
-                    case (0, 1):
-                        drawX = relY * n;
-                        drawY = relX;
-                        break;
-
-                    case (0, -1):
-                        drawX = relY * n;
-                        drawY = -relX;
-                        break;
-                }
-
-                buffer.SetCell(Position + new Point(drawX, drawY), color);
-            }
-        }
-    }
-
-    public ConsoleColor GetColor(char c)
-    {
-        switch (c)
-        {
-            case 'C':
-                return ConsoleColor.Cyan;
-            case 'D':
-                return ConsoleColor.DarkBlue;
-            case 'B':
-                return ConsoleColor.Black;
-            case 'G':
-                return ConsoleColor.DarkGray;
-            case 'R':
-                return ConsoleColor.Red;
-            case 'Y':
-                return ConsoleColor.DarkYellow;
-            case 'y':
-                return ConsoleColor.Yellow;
-            case 'g':
-                return ConsoleColor.DarkGreen;
-            case 'W':
-            default:
-                return ConsoleColor.White;
-        }
+        //if (isTrigger) scene.TriggerEntityList.Add(this);
+        if (isDynamic) scene.DynamicEntityList.Add(this);
+        else scene.StaticEntityList.Add(this);
     }
 
 
     public override void Update(float deltaTime)
     {
-        if (_useGravity)
-        {
-            IsLand = IsOnGround(deltaTime);
+        if (_canMove || _useGravity) Move(deltaTime);
+        if (_useGravity) { VirticalMove(deltaTime); }
+    }
 
-            if (IsOnGround(deltaTime))
+    protected virtual void Move(float deltaTime)
+    {
+        float moveX = Velocity.X * deltaTime;
+        float moveY = Velocity.Y * deltaTime;
+
+        int stepsX = (int)Math.Abs(moveX) + 1;
+        float stepX = moveX / stepsX;
+
+        for (int i = 0; i < stepsX; i++)
+        {
+            Position = new Point(Position.X + stepX, Position.Y);
+            if (Physics.IsOverrap(this, Scene.StaticEntityList, out _))
             {
-                VirticalVelocity = 0;
-            }
-            else
-            {
-                _currentVelocity -= _gravity * deltaTime;
-                VirticalMove();
+                Position = new Point(Position.X - stepX, Position.Y);
+                Velocity = new Point(0, Velocity.Y);
+                CollisionToStatic();
+                break;
             }
         }
 
-        if (RectAngle != null)
+        int stepsY = (int)Math.Abs(moveY) + 1;
+        float stepY = moveY / stepsY;
+
+        for (int i = 0; i < stepsY; i++)
         {
-            RectAngle.SpinRect(Direction);
+            Position = new Point(Position.X, Position.Y + stepY);
+            if (Physics.IsOverrap(this, Scene.StaticEntityList, out _))
+            {
+                Position = new Point(Position.X, Position.Y - stepY);
+                Velocity = new Point(Velocity.X, 0);
+                _isLand = true;
+                CollisionToStatic();
+                break;
+            }
         }
     }
+
+    protected virtual void VirticalMove(float deltaTime)
+    {
+        CheckGround();
+        if (!_isLand) { Velocity -= (0, _gravity * deltaTime); }
+    }
+
+
+    public virtual void CollisionToStatic() { }
+    public virtual void CollisionFromDynamic(int attackid = 0, int damage = 0) { }
+
+    
+
+
+
+    protected virtual void CheckCameraBounds(bool immediatelyDelelte)
+    {
+        float screenW = ShottingGame.k_Width / 2;
+        float screenH = ShottingGame.k_Height;
+        float margin = 30;
+
+        float leftBound = immediatelyDelelte ? Camera.Position.X - Width : Camera.LeftClamp - margin;
+        float rightBound = immediatelyDelelte ? Camera.Position.X + screenW: Camera.RightClamp + screenW + margin;
+        float bottomBound = Camera.Position.Y - margin;
+        float topBound = Camera.Position.Y + screenH + margin;
+
+        if (Position.X < leftBound || Position.X > rightBound ||
+            Position.Y < bottomBound || Position.Y > topBound)
+        {
+            Destroy();
+        }
+    }
+
+
+
+    protected virtual void CheckGround()
+    {
+        float checkY = Bottom - 3;
+
+        _isLand = false;
+
+        foreach (var ground in Scene.StaticEntityList)
+        {
+            if (ground is GroundEntity || ground is PlatformEntity)
+            {
+                if (checkY <= ground.Top && Bottom >= ground.Top)
+                {
+                    if (Right >= ground.Left && Left <= ground.Right)
+                    {
+                        _isLand = true;
+                        CollisionToStatic();
+
+                        if (Velocity.Y < 0)
+                            Velocity = new Point(Velocity.X, 0);
+
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
 
     public override void Draw(ScreenBuffer buffer)
     {
-        if (_currentPixels != null) DrawEntity(buffer);
-        //if (RectAngle != null) RectAngle.DrawRectAngle(buffer);
-        //buffer.SetCell(Position + (0, 1), ConsoleColor.Green);
+        base.Draw(buffer);
+        buffer.DrawBox(Position + (0, Height), Width, Height, bgColor: ConsoleColor.Red);
     }
 
 
-
-    protected bool IsOnGround(float deltaTime)
+    [Flags]
+    public enum EntityType
     {
-        if (Scene is GameScene g)
-        {
-            for (int i = 0; i < g.GroundEntitiyList.Count; i++)
-            {
-                if (_currentVelocity <= 0 && g.GroundEntitiyList[i].RectAngle.IsOverrap((GroundChecker.X - 3, GroundChecker.Y + Math.Min(_currentVelocity - _gravity * deltaTime, -1)), GroundChecker + (3, 0)))
-                {
-                    _currentVelocity = g.GroundEntitiyList[i].TopPosition - GroundChecker.Y + 1;
-                    VirticalMove();
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-    protected void VirticalMove()
-    {
-        if (Scene is GameScene g)
-        {
-            for (int i = 0; i < g.GroundEntitiyList.Count; i++)
-            {
-                if (g.GroundEntitiyList[i].RectAngle.IsOverrap((RectAngle.Min.X, TopPosition), (RectAngle.Max.X, TopPosition)))
-                {
-                    _currentVelocity = -1;
-                }
-            }
-        }
-
-        Position += (0, _currentVelocity);
-    }
-
-
-
-
-
-    public enum Motion
-    {
-        Idle, Walk, WalkLookUp, Lookup, Sit, Crawl, Jump, JumpLookUp, LookDown,
+        None = 0,
+        Ground = 1,
+        Player = 1 << 1,
+        Enemy = 1 << 2,
+        Bullet = 1 << 3,
+        Trigger = 1 << 4,
+        Platform = 1 << 5,
     }
 }
+

@@ -30,17 +30,8 @@ public class HeavyMachinegun : Weapon
     {
         if (Arms <= 0) return;
 
-        HandleInput();
         HandleBurstFire();
         UpdateTimers(deltaTime);
-    }
-
-    private void HandleInput()
-    {
-        if (Input.IsKeyDown(_key))
-        {
-            _bulletCount = 4;
-        }
     }
 
     private void HandleBurstFire()
@@ -48,22 +39,22 @@ public class HeavyMachinegun : Weapon
         if (_nextBulletCooldown <= 0 && _bulletCount > 0)
         {
             if (_previousDirection.X == 0 && _previousDirection.Y == 0)
-                _previousDirection = OwnerID.Aim;
+                _previousDirection = Owner.Aim;
 
             // 2. 방향 결정 및 모드 체크
             
 
-            if (_spreadingBulletCount <= 0)
+            if (_spreadingBulletCount <= 1)
             {
-                if (Is90DegreeTurn(_previousDirection, OwnerID.Aim))
+                if (Is90DegreeTurn(_previousDirection, Owner.Aim))
                 {
-                    _spreadingBulletCount = 3; // 흩뿌리기 4발 할당
-                    finalDir = OwnerID.Aim;     // 꺾인 시점의 방향 고정
+                    _spreadingBulletCount = 4; // 흩뿌리기 4발 할당
+                    finalDir = Owner.Aim;     // 꺾인 시점의 방향 고정
                 }
                 else
                 {
-                    finalDir = OwnerID.Aim;     // 일반 사격은 실시간 조준
-                    _previousDirection = OwnerID.Aim; // 일반 사격 시에만 기준점 추적
+                    finalDir = Owner.Aim;     // 일반 사격은 실시간 조준
+                    _previousDirection = Owner.Aim; // 일반 사격 시에만 기준점 추적
                 }
             }
             else
@@ -72,25 +63,28 @@ public class HeavyMachinegun : Weapon
             }
 
             // 3. 발사 실행
-            Fire(finalDir);
+            Arms--;
+
+            if (_spreadingBulletCount == 4 || _bulletPatternCount == 4) _bulletPatternCount = 0;
+
+            Scene.AddGameObject(new HeavyMachinegunBullet(Scene, Owner.BulletPoint, finalDir, _bulletPatternCount++, _previousDirection));
+
+            _nextBulletCooldown = 0.06f;
             _bulletCount--;
 
             // 4. 흩뿌리기가 방금 막 끝났다면, 그 시점의 에임을 다음 기준점으로 설정
-            if (_spreadingBulletCount == 0)
+            if (_spreadingBulletCount == 1)
             {
                 _previousDirection = finalDir;
             }
         }
     }
 
-    public override void Fire(Point finalDir) // 매개변수로 방향을 받도록 수정
+    public override float Fire(Point finalDir) // 매개변수로 방향을 받도록 수정
     {
-        Arms--;
+        _bulletCount = 4;
 
-        if (_spreadingBulletCount == 3 || _bulletPatternCount == 4) _bulletPatternCount = 0;
-        
-        new HeavyMachinegunBullet(Scene, OwnerID, OwnerID.BulletPoint, finalDir, _bulletPatternCount++, _previousDirection);
-        _nextBulletCooldown = 0.06f;
+        return _recoil;
     }
 
     private void UpdateTimers(float deltaTime)

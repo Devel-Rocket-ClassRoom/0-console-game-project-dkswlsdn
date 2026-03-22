@@ -4,42 +4,65 @@ using System.Text;
 using Framework.Engine;
 
 
-public class Ground : GroundEntity
+public static class Ground
 {
-    protected int _width;
-    public bool IsPlatForm { get; private set; }
-
-
-    public Ground(Scene scene, Point point, int width, string name = "g", bool canHit = true, bool isPlatform = false) : base(scene, point + (width / 2, -3), canHit)
+    public static void DrawBottomGround(GameScene scene, Point position, int width)
     {
-        if (Scene is GameScene g)
+        for (int i = 0; i < width; i += 5)
         {
-            g.GroundEntitiyList.Add(this);
-            g.GroundEntitiyList.Sort((a, b) => b.Position.Y.CompareTo(a.Position.Y));
-        }
-
-        RectAngle = new RectAngle(this, (width, 5));
-        Name = name;
-        _width = width;
-
-        IsPlatForm = isPlatform;
-
-        new Wall(scene, point + (0, -4), 5, canHit: canHit);
-        new Wall(scene, point + (width, -4), 5, canHit: canHit);
-    }
-
-    public override void Draw(ScreenBuffer buffer)
-    {
-        RectAngle.DrawRectAngle(buffer);
-
-        for (int i = 0; i < _width; i += 100)
-        {
-            buffer.WriteText(Position + (i, 0), i.ToString(), ConsoleColor.White, ConsoleColor.DarkBlue);
+            SetGround(scene, position + (i, 0));
         }
     }
-    
-    public override void Update(float deltaTime)
+
+    public static void DrawNormalGround(GameScene scene, Point position, int width)
     {
-        RectAngle.Follow(Position);
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < 5; j++)
+            {
+                SetGround(scene, position + (i, j));
+            }
+        }
+    }
+
+    public static void DrawNormalPlatform(GameScene scene, Point position, int width)
+    {
+        for (int i = 0; i < width; i += 5) 
+        {
+            SetGround(scene, position + (i, 0));
+        }
+    }
+
+    public static void DrawNormalWall(GameScene scene, Point position, int height)
+    {
+        for (int i = 0; i < height; i += 5)
+        {
+            SetGround(scene, position + (0, i));
+        }
+    }
+
+    public static void DrawThinWall(GameScene scene, Point position, int height)
+    {
+        for (int i = 0; i < height; i++)
+        {
+            SetWall(scene, position + (0, i));
+        }
+    }
+
+
+
+
+
+    public static void SetGround(GameScene scene, Point position, bool isSmall = false)
+    {
+        scene.AddGameObject(new GroundEntity(scene, position, isSmall));
+    }
+    public static void SetPlatform(GameScene scene, Point position)
+    {
+        scene.AddGameObject(new PlatformEntity(scene, position));
+    }
+    public static void SetWall(GameScene scene, Point position)
+    {
+        scene.AddGameObject(new CameraWall(scene, position));
     }
 }

@@ -9,6 +9,8 @@ public struct Point
     public float X;
     public float Y;
 
+    public float Length { get { return (float)Math.Sqrt(X * X * Y * Y); } }
+
     public Point((float x, float y) point)
     {
         X = point.x;

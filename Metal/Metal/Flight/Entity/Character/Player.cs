@@ -10,47 +10,52 @@ public class Player : CharacterEntity
 {
     public Weapon mainWeapon;
     public Weapon subWeapon;
-
-
-
-    private int _moveSpeed = 2;
-
-    private bool _isSit = false;
-
-
     public float JumpCooldown { private get;  set; } = 0.1f;
-    
 
-    
-    
-    
+    private float _speed = 30f;
+
+
+    public override Point Position
+    {
+        get { return base.Position; }
+        set
+        {
+            if (Velocity.X < 0 && value.X < Camera.LeftClamp) return;
+            if (Velocity.X > 0 && value.X > Camera.RightClamp + ShottingGame.k_Width / 2) return;
+            base.Position = value;
+        }
+    }
 
 
 
     private Point _input;
     private HigherState _state = HigherState.Idle;
 
-
+    public override Point BulletPoint => Position + new Point(3, 6).PointConverter(Direction);
 
 
 
     public Player(Scene scene, Point point) : base(scene, point)
     {
-        Team = 1;
+        Type = EntityType.Player;
+        Mask = EntityType.Ground | EntityType.Platform | EntityType.Bullet | EntityType.Trigger;
+
+        Width = 5;
+        Height = 11;
+
+        _useGravity = true;
+        _canMove = true;
 
         mainWeapon = new Handgun(Scene, this);
-        subWeapon = new HeavyMachinegun(Scene, false);
-        subWeapon.Arms = 20000;
+        subWeapon = new Granade(Scene, this);
 
-        mainWeapon.OwnerID = this;
-        subWeapon.OwnerID = this;
+        mainWeapon.Owner = this;
+        subWeapon.Owner = this;
 
         Scene.AddGameObject(mainWeapon);
         Scene.AddGameObject(subWeapon);
 
-        Health = 100;
-
-        RectAngle = new RectAngle(this, (5, 11));
+        Health = 1;
 
         _currentPixels = _idlePixels;
         _useGravity = true;
@@ -60,70 +65,46 @@ public class Player : CharacterEntity
     {
         base.Draw(buffer);
 
-        buffer.WriteText(Position - (0, 1), Health.ToString());
         buffer.WriteText(Camera.Position + (20, 5), mainWeapon.Name);
         buffer.WriteText(Camera.Position + (20, 4), mainWeapon.Arms.ToString());
         buffer.WriteText(Camera.Position + (30, 5), subWeapon.Name);
         buffer.WriteText(Camera.Position + (30, 4), subWeapon.Arms.ToString());
 
-        buffer.WriteText(Position + (0, -1), Aim.ToString());
-        buffer.WriteText(Position + (0, -2), Direction.ToString());
+        buffer.WriteText(Camera.Position + (0, 79), _isLand.ToString());
+        buffer.WriteText(Camera.Position + (0, 78), Aim.ToString());
+        buffer.WriteText(Camera.Position + (0, 77), Direction.ToString());
+        buffer.WriteText(Camera.Position + (0, 76), _input.ToString());
+        buffer.WriteText(Camera.Position + (0, 75), Velocity.ToString());
+        //buffer.WriteText(Camera.Position + (0, 74), Velocity.ToString());
+        buffer.WriteText(Camera.Position + (0, 73), $"Player : {Position.ToString()}");
+        buffer.WriteText(Camera.Position + (0, 72), $"Camera : {Camera.Position.ToString()}");
+        buffer.WriteText(Camera.Position + (0, 71), $"LeftClamp : {Camera.LeftClamp.ToString()}");
 
-        buffer.SetCell(GroundChecker, ConsoleColor.Green);
     }
-
-
-
 
     public override void Update(float deltaTime)
     {
         PlayerInput();
-
-        Move();
-
-        if (IsLand) Jump(deltaTime);
+        Velocity = (_input.X * _speed, Velocity.Y);
+        if (_input.X != 0) Direction = (_input.X, 0);
 
         base.Update(deltaTime);
-
         
         Aimming();
         CheckMainArms();
-        //CheckTransitions();
-    }
-
-    public void Move()
-    {
-        if (_input.X != 0) Direction = (_input.X, 0);
-        _isSit = IsLand && Input.IsKey(ConsoleKey.S);
-
-        if (Scene is GameScene g)
-        {
-            for (int i = 0; i < g.WallEntitiyList.Count; i++)
-            {
-                if (g.WallEntitiyList[i].RectAngle.IsOverrap(ForwardSide.a, ForwardSide.b))
-                {
-                    return;
-                }
-            }
-        }
-
-        Position += (_moveSpeed * _input.X, 0);
+        _recoil -= deltaTime;
     }
 
     
 
-    public void Jump(float deltaTime)
-    {
-        if (JumpCooldown > 0)
-        {
-            JumpCooldown -= deltaTime;
-            return;
-        }
+    
 
-        if (Input.IsKey(ConsoleKey.Spacebar))
+    public void Jump()
+    {
+        if (_isLand)
         {
-            VirticalVelocity = 1f;
-            IsLand = false;
+            _isLand = false;
+            Velocity = (Velocity.X, 100);
         }
     }
 
@@ -135,13 +116,11 @@ public class Player : CharacterEntity
     {
         if (_input.X == 0 && _input.Y == 0)
         {
-            int n = CurrentIsRight ? 1 : -1;
-            Aim = (n, 0);
+            Aim = (Direction.X, 0);
         }
-        else if (IsLand && _input.Y == -1)
+        else if (_isLand && _input.Y == -1)
         {
-            int n = CurrentIsRight ? 1 : -1;
-            Aim = (n, 0);
+            Aim = (Direction.X, 0);
         }
         else if (_input.Y != 0)
         {
@@ -179,6 +158,22 @@ public class Player : CharacterEntity
         {
             _input.X = 0;
         }
+
+        if (Input.IsKeyDown(ConsoleKey.LeftArrow) && _recoil <= 0)
+        {
+            _recoil = mainWeapon.Fire(Aim);
+        }
+        if (Input.IsKeyDown(ConsoleKey.RightArrow) && _recoil <= 0)
+        {
+            int granadeAim = Velocity.X < 0.1f && Velocity.X > -0.1f ? 1 : 3;
+            granadeAim *= Direction.X > 0 ? 1 : -1;
+
+            _recoil = subWeapon.Fire((granadeAim, 3));
+        }
+        if (Input.IsKeyDown(ConsoleKey.Spacebar))
+        {
+            Jump();
+        }
     }
     public void CheckMainArms()
     {
@@ -189,28 +184,6 @@ public class Player : CharacterEntity
             Scene.AddGameObject(mainWeapon);
         }
     }
-
-
-    public void CheckTransitions()
-    {
-        switch (_state)
-        {
-            case HigherState.Idle:
-                //인풋이 위쪽이라면 LookUp상태
-                //인풋이 아래쪽이라면 SitDown상태
-                //인풋이 양옆이라면 Walk상태
-                //점프를 했다면 Jump상태
-                //총을 쐈다면 Shot상태
-                break;
-            case HigherState.LookUp:
-                //인풋이 양옆이라면 LookUpWalk상태
-                //점프를 했다면 JumpLookup상태
-                //총을 쐈다면
-                break;
-
-        }
-    }
-
 
     protected string[] GetPixels(string[] higher, string[] lower)
     {
@@ -239,17 +212,17 @@ public class Player : CharacterEntity
 
     private string[] _idlePixels = // C = Cyan, D = DarkBlue, B = Black, G = DarkGray
     {
-        "    DDD    ",
-        "    DCC    ",
-        "    DCC    ",
-        "   BBBBB   ",
-        "   BGGGB   ",
-        "   BGGGB   ",
-        "   DBBBD   ",
-        "    B B    ",
-        "    B B    ",
-        "    B B    ",
-        "    D D    "
+        " DDD ",
+        " DCC ",
+        " DCC ",
+        "BBBBB",
+        "BGGGB",
+        "BGGGB",
+        "DBBBD",
+        " B B ",
+        " B B ",
+        " B B ",
+        " D D "
     };
 
     private string[] _lookUpPixels = // C = Cyan, D = DarkBlue, B = Black, G = DarkGray

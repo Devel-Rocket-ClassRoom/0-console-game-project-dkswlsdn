@@ -4,15 +4,22 @@ using System.Text;
 using Framework.Engine;
 
 
-public abstract class GetWeapon : Entity
+public abstract class GetWeapon : EventTrigger
 {
     protected int _arms;
     protected Weapon weapon;
-
+    
 
     public GetWeapon(Scene scene, Point point, int arms) : base(scene, point)
     {
-        RectAngle = new RectAngle(this, (9, 9));
+        Type = EntityType.Trigger;
+        Mask = EntityType.Player;
+
+        _canMove = true;
+        _useGravity = true;
+
+        Width = 9;
+        Height = 9;
 
         _arms = arms;
     }
@@ -21,35 +28,24 @@ public abstract class GetWeapon : Entity
     {
         base.Update(deltaTime);
 
-        if (Scene is GameScene g)
-        {
-            for (int i = 0; i < g.EntityList.Count; i++)
-            {
-                if (g.EntityList[i] is Player p)
-                {
-                    if (RectAngle.IsOverrap(p.RectAngle))
-                    {
-                        if (p.mainWeapon.Name == Name)
-                        {
-                            p.mainWeapon.Arms += _arms;
-                        }
-                        else
-                        {
-                            weapon.OwnerID = p;
-                            p.mainWeapon.Drop();
-                            p.mainWeapon = weapon;
-                            weapon.Arms = _arms;
-                            Scene.AddGameObject(weapon);
-                        }
-
-                        Scene.RemoveGameObject(this);
-                    }
-                }
-            }
-        }
+        CheckCameraBounds(false);
     }
 
-    
+    protected override void WhenOverrap()
+    {
+        if (_player.mainWeapon.Name == Name)
+        {
+            _player.mainWeapon.Arms += _arms;
+        }
+        else
+        {
+            weapon.Owner = _player;
+            _player.mainWeapon.Drop();
+            _player.mainWeapon = weapon;
+            weapon.Arms = _arms;
+            Scene.AddGameObject(weapon);
+        }
 
-    
+        Destroy();
+    }
 }

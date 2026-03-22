@@ -6,6 +6,9 @@ using Framework.Engine;
 
 public abstract class EnemyEntity : CharacterEntity, IEnemyAI
 {
+    protected Random rand = new Random();
+    protected int _dropRate;
+
     protected float _attackTimer = 0f;
     protected float _attackDuration = 1.2f;
     protected float _attackBeforeDelay;
@@ -29,7 +32,7 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
 
 
 
-    public EnemyEntity(Scene scene, Point point, EnemyState state = EnemyState.Idle) : base(scene, point)
+    public EnemyEntity(Scene scene, Point point, int dropRate, EnemyState state = EnemyState.Idle) : base(scene, point)
     {
         _state = state;
     }
@@ -73,7 +76,7 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
             case EnemyState.Stun:
                 break;
             case EnemyState.Dead:
-                if (IsEnd()) { Scene.RemoveGameObject(this); RectAngle = null; }
+                if (IsEnd()) { Destroy(); }
                 break;
                 
         }
@@ -124,7 +127,7 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
         return false;
     }
 
-    public virtual bool IsPlayerNeering()
+    public virtual bool IsPlayerNearing()
     {
         return Position.IsInDistance(ChasingTarget.Position, _reconizePlayer);
     }
@@ -155,23 +158,26 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
         return !IsAlive;
     }
 
-    public virtual bool IsNeerFriendlyDead()
+    public virtual bool IsNearFriendlyDead()
     {
-        if (Scene is GameScene g)
+        for (int i = 0; i < Scene.DynamicEntityList.Count; i++)
         {
-            for (int i = 0; i < g.EntityList.Count; i++)
+            Entity e = Scene.DynamicEntityList[i];
+            if (e == this) continue; 
+
+            if ((e.Type & EntityType.Enemy) != 0)
             {
-                if (g.EntityList[i] is EnemyEntity e)
+                if (Position.IsInDistance(e.Position, 30f))
                 {
-                    if (Position.IsInDistance(e.Position, 30f))
+                    if (e is EnemyEntity enemy && enemy._state == EnemyState.Dead)
                     {
-                        return e._state == EnemyState.Dead;
+                        return true;
                     }
                 }
             }
         }
 
-        return false;   
+        return false;
     }
 
     public virtual bool IsStunEnd()
@@ -185,7 +191,7 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
         return false;
     }
 
-    public bool IsEnd()
+    public virtual bool IsEnd()
     {
         return _deadTimer >= _deadDuration;
     }
@@ -195,10 +201,29 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
         return Position.IsInDistance(ChasingTarget.Position, 20f);
     }
 
-    public bool IsNeerFriendlyPanic()
+    public bool IsNearFriendlyPanic()
     {
-        throw new NotImplementedException();
+        for (int i = 0; i < Scene.DynamicEntityList.Count; i++)
+        {
+            Entity e = Scene.DynamicEntityList[i];
+            if (e == this) continue;
+
+            if ((e.Type & EntityType.Enemy) != 0)
+            {
+                if (Position.IsInDistance(e.Position, 30f))
+                {
+                    if (e is EnemyEntity enemy && enemy._state == EnemyState.Stun)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
+
+    public abstract bool IsOutOfCamera();
 
     protected string[] _idlePixels =
     {

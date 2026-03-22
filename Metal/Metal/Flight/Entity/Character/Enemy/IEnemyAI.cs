@@ -14,16 +14,17 @@ public interface IEnemyAI
     void DoDead(float deltaTime);
 
     bool CanSeePlayer();
-    bool IsPlayerNeering();
+    bool IsPlayerNearing();
     bool IsPlayerSuperNeering();
     bool IsAttackEnd();
     bool IsPlayerDead();
     bool IsPlayerRebirth();
     bool IsDead();
-    bool IsNeerFriendlyDead();
-    bool IsNeerFriendlyPanic();
+    bool IsNearFriendlyDead();
+    bool IsNearFriendlyPanic();
     bool IsStunEnd();
     bool IsEnd();
+    bool IsOutOfCamera();
 }
 
 public enum EnemyState

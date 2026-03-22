@@ -1,22 +1,21 @@
-﻿using System;
+﻿using Framework.Engine;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Framework.Engine;
 
-
-public class ModenInfantryCannon : EnemyEntity
+public class Boss : EnemyEntity
 {
     public override Point BulletPoint => Position + new Point(3, 6).PointConverter(Direction);
+    Point _destination;
 
-    public ModenInfantryCannon(Scene scene, Point point, EnemyState state, Player player, int direction = -1, int dropRate = 100) : base(scene, point, dropRate, state)
+    public Boss(Scene scene, Point point, EnemyState state, Player player, int direction = -1, int dropRate = 0) : base(scene, point, dropRate, state)
     {
         Type = EntityType.Enemy;
         Mask = EntityType.Bullet | EntityType.Ground | EntityType.Platform;
 
-        Width = 5;
-        Height = 11;
+        Width = 33;
+        Height = 22;
         _canMove = true;
-        _useGravity = true;
 
         _dropRate = dropRate;
 
@@ -26,8 +25,8 @@ public class ModenInfantryCannon : EnemyEntity
         _currentPixels = _combatPixels;
         ChasingTarget = player;
 
-        Health = 1;
-        _reconizePlayer = 100;
+        Health = 5000;
+        _reconizePlayer = 1000;
         _attackBeforeDelay = 0.4f;
         _attackDuration = 1.5f;
         Direction = (direction, 0);
@@ -57,17 +56,11 @@ public class ModenInfantryCannon : EnemyEntity
         switch (_state)
         {
             case EnemyState.Idle:
-                if (IsPlayerSuperNeering()) ChangeState(EnemyState.Stun);
-                else if (IsNearFriendlyDead()) ChangeState(EnemyState.Stun);
-                else if (IsNearFriendlyPanic()) ChangeState(EnemyState.Stun);
-                //else if (IsPlayerRebirth()) ChangeState(EnemyState.Stun);
                 break;
             case EnemyState.Search:
                 if (IsPlayerNearing()) ChangeState(EnemyState.Attack);
                 break;
             case EnemyState.Chase:
-                if (CanSeePlayer()) ChangeState(EnemyState.Attack);
-                else if (IsPlayerNearing()) ChangeState(EnemyState.Attack);
                 break;
             case EnemyState.Attack:
                 if (IsAttackEnd()) ChangeState(EnemyState.Search);
@@ -75,30 +68,17 @@ public class ModenInfantryCannon : EnemyEntity
             case EnemyState.Avoid:
                 break;
             case EnemyState.Stun:
-                if (IsStunEnd()) { ChangeState(EnemyState.Search); }
                 break;
             case EnemyState.Dead:
                 if (IsEnd())
                 {
-                    if (_dropRate == 100) Scene.AddGameObject(new GetShotgun(Scene, Position));
+                    GameScene.IsPlayerWin = true;
                     Destroy();
                 }
                 break;
         }
 
         if (Health <= 0) ChangeState(EnemyState.Dead);
-        else if (IsOutOfCamera()) ChangeState(EnemyState.Chase);
-    }
-
-    public override void DoIdle(float deltaTime)
-    {
-        _currentPixels = _idlePixels;
-    }
-
-    public override void DoStun(float deltaTime)
-    {
-        base.DoStun(deltaTime);
-        _currentPixels = _stunPixels;
     }
 
     public override void DoSearch(float deltaTime)
@@ -110,7 +90,6 @@ public class ModenInfantryCannon : EnemyEntity
 
     public override void DoAttack(float deltaTime)
     {
-        _currentPixels = _combatPixels;
         Aim = (ChasingTarget.Position - Position).HexaNormalize();
         base.DoAttack(deltaTime);
     }
@@ -130,31 +109,52 @@ public class ModenInfantryCannon : EnemyEntity
 
     public override bool IsOutOfCamera()
     {
-        return Position.X > Camera.RightClamp + ShottingGame.k_Width / 2 - 20 || Position.X < Camera.LeftClamp;
+        return Position.X > Camera.RightClamp + ShottingGame.k_Width / 2 || Position.X < Camera.LeftClamp;
     }
-
-
-    public override void DrawEntity(ScreenBuffer buffer)
-    {
-        base.DrawEntity(buffer);
-        buffer.WriteText(Position, _dropRate.ToString());
-    }
-
 
     protected new string[] _combatPixels =
     {
-        "   ggg   ",
-        "   gCC   ",
-        "   gCC   ",
-        "GGggggGGG",
-        "GGggggGBG",
-        "  gBgg   ",
-        "   ggg   ",
-        "   g g   ",
-        "   g g   ",
-        "   g g   ",
-        "   B B   ",
+        "            GGGGGGGG             ",
+        "         yyyyyyyyyyyyyy          ",
+        "        yyyyyyyyyyyyyyyyyyyyy    ",
+        "        yyyyyyyyyyyyyyyyyyyyy    ",
+        "        BBBBBBBBBBBBBBBB         ",
+        " BBBBBBByyyyyyyyyyyyyyyyyyyyy    ",
+        " yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy ",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        " yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "      GGGGGyyyyyyyyyyyyyyyyyyyyyy",
+        "    GG               yyyyyyyyyyy ",
+        "   G   GGG             GGG   G   ",
+        "  G   GBBBG           GBBBG   G  ",
+        "  G   GBGBG           GBGBG   G  ",
+        "  G   GBBBG           GBBBG   G  ",
+        "   G   GGG             GGG   G   ",
+        "    GG                     GG    ",
+        "      GGGGGGGGGGGGGGGGGGGGG      ",
     };
 
-    
+    protected new string[] _deadPixels =
+    {
+        "  R R       GGGGGGGG             ",
+        "   R     yyyyyyyyyyyyyy        R ",
+        "  R R   yyyyyyyyyyyyyyyyyyyyy RRR",
+        "        yyyyyyyyyyyyyyyyyyyyy  R ",
+        "        BBBBBBBBBBBBBBBB         ",
+        " BBBBBBByyyyyyyyyyyyyyyyyyyyy    ",
+        " yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy ",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        " yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "      GGGGGyyyyyyyyyyyyyyyyyyyyyy",
+        "    GG               yyyyyyyyyyy ",
+        "   G   GGG   R R       GGG   G   ",
+        "  G   GBBBG   R       GBBBG   G  ",
+        "  G   GBGBG  R R      GBGBG   G  ",
+        "  G   GBBBG           GBBBG   G  ",
+        "   G   GGG             GGG   G   ",
+        "    GG                     GG    ",
+        "      GGGGGGGGGGGGGGGGGGGGG      ",
+    };
 }

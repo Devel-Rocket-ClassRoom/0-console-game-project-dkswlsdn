@@ -3,16 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-public class ModenInfantryGrenage : EnemyEntity
+public class ModenInfantryGrenade : EnemyEntity
 {
-    public ModenInfantryGrenage(Scene scene, Point point, EnemyState state, Player player) : base(scene, point, state)
+    public ModenInfantryGrenade(Scene scene, Point point, EnemyState state, Player player, int dropRate = 0) : base(scene, point, dropRate, state)
     {
-        Team = 2;
+        Type = EntityType.Enemy;
+        Mask = EntityType.Bullet | EntityType.Ground | EntityType.Platform;
 
-        RectAngle = new RectAngle(this, (5, 11));
+        Width = 5;
+        Height = 11;
+        _canMove = true;
+        _useGravity = true;
 
-        _arms = new Granade(scene);
-        _arms.OwnerID = this;
+        _dropRate = dropRate;
+
+        _arms = new EnemyGranade(scene, this);
 
         _currentPixels = _combatPixels;
         ChasingTarget = player;
@@ -41,15 +46,16 @@ public class ModenInfantryGrenage : EnemyEntity
         {
             case EnemyState.Idle:
                 if (IsPlayerSuperNeering()) ChangeState(EnemyState.Stun);
-                else if (IsNeerFriendlyDead()) ChangeState(EnemyState.Stun);
+                else if (IsNearFriendlyDead()) ChangeState(EnemyState.Stun);
+                else if (IsNearFriendlyPanic()) ChangeState(EnemyState.Stun);
                 //else if (IsPlayerRebirth()) ChangeState(EnemyState.Stun);
                 break;
             case EnemyState.Search:
-                if (IsPlayerNeering()) ChangeState(EnemyState.Attack);
+                if (IsPlayerNearing()) ChangeState(EnemyState.Attack);
                 break;
             case EnemyState.Chase:
                 if (CanSeePlayer()) ChangeState(EnemyState.Attack);
-                else if (IsPlayerNeering()) ChangeState(EnemyState.Attack);
+                else if (IsPlayerNearing()) ChangeState(EnemyState.Attack);
                 else if (IsPlayerDead()) ChangeState(EnemyState.Idle);
                 break;
             case EnemyState.Attack:
@@ -58,27 +64,22 @@ public class ModenInfantryGrenage : EnemyEntity
             case EnemyState.Avoid:
                 break;
             case EnemyState.Stun:
-                if (IsStunEnd()) ChangeState(EnemyState.Chase);
+                Mask &= ~EntityType.Bullet;
+                if (IsStunEnd()) { ChangeState(EnemyState.Search); Mask |= EntityType.Bullet; }
                 break;
             case EnemyState.Dead:
                 if (IsEnd())
                 {
-                    if (Scene is GameScene g)
-                    {
-                        g.EntityList.Remove(this);
-                    }
-                    Scene.RemoveGameObject(this); RectAngle = null;
+                    if (rand.Next(100) < _dropRate) Scene.AddGameObject(new GetHeavyMachinegun(Scene, Position));
+                    Destroy();
                 }
                 break;
         }
 
-        if (Health <= 0) ChangeState(EnemyState.Dead);
+        if (Health <= 0) { ChangeState(EnemyState.Dead); return; }
+        if (IsOutOfCamera()) ChangeState(EnemyState.Chase);
     }
 
-    public override void DoChase(float deltaTime)
-    {
-        _currentPixels = _combatPixels;
-    }
 
     public override void DoIdle(float deltaTime)
     {
@@ -101,7 +102,7 @@ public class ModenInfantryGrenage : EnemyEntity
     public override void DoAttack(float deltaTime)
     {
         _currentPixels = _combatPixels;
-        Aim = (Position.CompareX(ChasingTarget.Position), 2);
+        Aim = (Direction.X, 3);
         base.DoAttack(deltaTime);
     }
 
@@ -109,6 +110,18 @@ public class ModenInfantryGrenage : EnemyEntity
     {
         base.DoDead(deltaTime);
         _currentPixels = _deadPixels;
+    }
+
+    public override void DoChase(float deltaTime)
+    {
+        base.DoChase(deltaTime);
+        _currentPixels = _combatPixels;
+        Position += Direction * 10 * deltaTime;
+    }
+
+    public override bool IsOutOfCamera()
+    {
+        return Position.X > Camera.RightClamp || Position.X < Camera.LeftClamp;
     }
 
 

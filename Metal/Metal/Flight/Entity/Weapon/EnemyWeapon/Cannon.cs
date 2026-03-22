@@ -10,8 +10,9 @@ public class Cannon : Weapon
     {
     }
 
-    public override void Fire(Point dir)
+    public override float Fire(Point dir)
     {
-        new CannonBullet(Scene, OwnerID, OwnerID.BulletPoint, dir);
+        Scene.AddGameObject(new CannonBullet(Scene, Owner.BulletPoint, dir));
+        return _recoil;
     }
 }

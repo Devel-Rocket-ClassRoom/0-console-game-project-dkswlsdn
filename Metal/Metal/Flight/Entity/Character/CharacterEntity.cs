@@ -4,35 +4,25 @@ using System.Text;
 
 using Framework.Engine;
 
-public abstract class CharacterEntity : Entity, IHitable
+public abstract class CharacterEntity : Entity
 {
-
-
     public bool IsAlive { get; private set; } = true;
     public bool IsImmune { get; set; }
     public int Health { get; protected set; }
-
     public Dictionary<int, long> ImmunityList { get; } = new Dictionary<int, long>();
-    // 체력과 피격, 전투관련
-
+    // 다단히트 방지
+    protected float _recoil = 0f;
 
 
     public virtual Point BulletPoint { get { return Position; } }
-
     public Point Aim = (1, 0);
 
 
 
-    protected float _motionTime = 0.7f;
 
 
-    public CharacterEntity(Scene scene, Point point) : base(scene, point)
+    public CharacterEntity(Scene scene, Point point) : base(scene, point, true)
     {
-        if (scene is GameScene g_scene)
-        {
-            g_scene.EntityList.Add(this);
-        }
-
         Direction = (1, 0);
     }
 
@@ -40,18 +30,13 @@ public abstract class CharacterEntity : Entity, IHitable
     public override void Update(float deltaTime)
     {
         base.Update(deltaTime);
-
-        if (IsActive)
-            RectAngle.Follow();
     }
-
 
     
 
-
-    public void TakeDamage(int attackId, int damage, int immuneDuration)
+    public void TakeDamage(int attackId, int damage)
     {
-        if (IsImmune) return;
+        if (IsImmune || damage == 0) return;
 
         long currentTime = Environment.TickCount64;
 
@@ -72,6 +57,11 @@ public abstract class CharacterEntity : Entity, IHitable
             IsAlive = false;
         }
 
-        ImmunityList[attackId] = currentTime + immuneDuration;
+        ImmunityList[attackId] = currentTime + 1000;
+    }
+
+    public override void CollisionFromDynamic(int id = 0, int damage = 0)
+    {
+        TakeDamage(id, damage);
     }
 }

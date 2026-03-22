@@ -4,6 +4,10 @@ namespace Framework.Engine
 {
     public abstract class Scene
     {
+        public List<Entity> DynamicEntityList = new List<Entity>();
+        public List<Entity> StaticEntityList = new List<Entity>();
+        //public List<Entity> TriggerEntityList = new List<Entity>();
+
         protected readonly List<GameObject> _gameObjects = new List<GameObject>();
         private readonly List<GameObject> _pendingAdd = new List<GameObject>();
         private readonly List<GameObject> _pendingRemove = new List<GameObject>();
@@ -34,7 +38,16 @@ namespace Framework.Engine
             }
             else
             {
-                _gameObjects.Remove(gameObject);
+                if (gameObject.IsDestroy)
+                {
+                    _gameObjects.Remove(gameObject);
+
+                    if (gameObject is Entity entity)
+                    {
+                        StaticEntityList.Remove(entity);
+                        DynamicEntityList.Remove(entity);
+                    }
+                }
             }
         }
 
@@ -43,6 +56,8 @@ namespace Framework.Engine
             _gameObjects.Clear();
             _pendingAdd.Clear();
             _pendingRemove.Clear();
+            StaticEntityList.Clear();
+            DynamicEntityList.Clear();
         }
 
         protected void UpdateGameObjects(float deltaTime)
@@ -121,6 +136,12 @@ namespace Framework.Engine
                 for (int i = 0; i < _pendingRemove.Count; i++)
                 {
                     _gameObjects.Remove(_pendingRemove[i]);
+
+                    if (_pendingRemove[i] is Entity entity)
+                    {
+                        StaticEntityList.Remove(entity);
+                        DynamicEntityList.Remove(entity);
+                    }
                 }
                 _pendingRemove.Clear();
             }

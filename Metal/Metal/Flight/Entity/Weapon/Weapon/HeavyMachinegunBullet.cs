@@ -4,7 +4,7 @@ using System.Text;
 using Framework.Engine;
 
 
-public class HeavyMachinegunBullet : BulletEntity, IMoveable
+public class HeavyMachinegunBullet : BulletEntity
 {
     private static int currentBulletCount = 0;
 
@@ -12,40 +12,26 @@ public class HeavyMachinegunBullet : BulletEntity, IMoveable
     //private Point[] _spreadPattern = { (0.985f, 0.174f), (0.866f, 0.5f), (0.643f, 0.766f), (0.342f, 0.94f) };
     private float[] _bulletPattern = { 0.02f, -0.06f, 0.06f, -0.02f };
     private int _bulletCount;
-    private int _spreadingBulletCount;
     private Point _previous;
 
     private bool _isRasing = false;
     private bool _isLowering = false;
-    private Point speed;
 
 
-    public Point ForwardPosition
-    { // 픽셀의 정면점
-        get { return Position + new Point(Breadth / 2, 0).PointConverter(Direction); }
-    }
-    public Point BackwardPosition
-    { // 픽셀이 판정보다 작을 때 픽셀의 뒷면에 판정의 뒷면을 붙임
-        get { return Position - (((RectAngle.Width - Breadth) / 2 + 1) * Direction.X, 0); }
-    }
-
-
-
-
-    public HeavyMachinegunBullet(Scene scene, CharacterEntity id, Point point, Point aim, int count, Point previous, bool isEnemy = false) 
-        : base(scene, id, point + new Point(3, 0).PointConverter(id.Aim), aim)
+    public HeavyMachinegunBullet(Scene scene, Point point, Point aim, int count, Point previous) 
+        : base(scene, point, aim, 6, 6)
     {
-        RectAngle = new RectAngle(this, (8, 4));
+        Type = EntityType.Bullet;
+        Mask = EntityType.Enemy | EntityType.Ground;
 
         _previous = previous;
         _isRasing = previous.X != 0 && aim.Y != 0;
         _isLowering = previous.Y != 0 && aim.X != 0;
 
-        _life = isEnemy ? 3f : 1f;
-        _bulletSpeed = isEnemy ? 2f : 6f;
-        _damage = 1;
+        _life = 1f;
+        _bulletSpeed = 150f;
+        Damage = 5;
 
-        _isOnlyTarget = true;
         _interval = 0.2f;
 
         _bulletCount = count;
@@ -54,21 +40,6 @@ public class HeavyMachinegunBullet : BulletEntity, IMoveable
 
         currentBulletCount++;
     }
-
-    public void Move()
-    {
-        Position += speed * _bulletSpeed;
-    }
-
-    public override void Update(float deltaTime)
-    {
-        Move();
-
-        base.Update(deltaTime);
-
-        RectAngle.Follow(Position);
-    }
-
 
 
 
@@ -88,7 +59,7 @@ public class HeavyMachinegunBullet : BulletEntity, IMoveable
                 case 3: _currentPixels = _1020Pixels; break;
             }
 
-            speed = _spreadPattern[_bulletCount].DirectionConverter(_previous, Direction, out _pixelReversed);
+            Velocity = _spreadPattern[_bulletCount].DirectionConverter(_previous, Direction, out _pixelReversed) * _bulletSpeed;
         }
         else
         {
@@ -96,13 +67,15 @@ public class HeavyMachinegunBullet : BulletEntity, IMoveable
 
             if (Direction.Y != 0)
             {
-                speed = (_bulletPattern[_bulletCount], Direction.Y);
+                Velocity = new Point(_bulletPattern[_bulletCount], Direction.Y) * _bulletSpeed;
                 return;
             }
 
-            speed = (ownerId.Direction.X, _bulletPattern[_bulletCount]);
+            Velocity = new Point(Direction.X, _bulletPattern[_bulletCount]) * _bulletSpeed;
         }   
     }
+
+
 
     public override void Draw(ScreenBuffer buffer)
     {

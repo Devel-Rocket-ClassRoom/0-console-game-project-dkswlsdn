@@ -10,10 +10,12 @@ public class TitleScene : Scene
 
     public override void Load()
     {
+        AddGameObject(new Title(this, (50, 30)));
     }
 
     public override void Unload()
     {
+        ClearGameObjects();
     }
 
     public override void Update(float deltaTime)
@@ -26,8 +28,6 @@ public class TitleScene : Scene
 
     public override void Draw(ScreenBuffer buffer)
     {
-        buffer.DrawBox((0, 0), ShottingGame.k_Width, ShottingGame.k_Height);
-
-        buffer.WriteTextCentered(10, "F L I G H T");
+        DrawGameObjects(buffer);
     }
 }

@@ -6,13 +6,19 @@ using Framework.Engine;
 
 public class ShotgunBullet : BulletEntity
 {
-    public ShotgunBullet(Scene scene, CharacterEntity id, Point point, Point aim) : base(scene, id, point + new Point(23, 0).PointConverter(aim), aim)
+    public ShotgunBullet(Scene scene, Point point, Point aim)
+        : base(scene, point, aim, 46, 17)
     {
-        RectAngle = new RectAngle(this, (46, 17));
+        Type = EntityType.Bullet;
+        Mask = EntityType.Enemy;
+
+        
+        _canMove = false;
+        _useGravity = false;
 
         _bulletSpeed = 0;
         _life = 0.2f;
-        _damage = 20;
+        Damage = 200;
 
         _interval = 0.3f;
         _isOnlyTarget = false;
@@ -27,16 +33,19 @@ public class ShotgunBullet : BulletEntity
         buffer.WriteText(Position, Position.ToString());
     }
 
-    public override void Update(float deltaTime)
+    protected override void CheckDynamicCollision()
     {
-        base.Update(deltaTime);
-
-        RectAngle.Follow(Position);
+        for (int i = 0; i < Scene.DynamicEntityList.Count; i++)
+        {
+            if (Physics.IsOverrap(this, Scene.DynamicEntityList[i]))
+            {
+                Scene.DynamicEntityList[i].CollisionFromDynamic(ID, Damage);
+                CollisionFromDynamic();
+            }
+        }
     }
 
-    protected override void AfterHit()
-    {
-    }
+
 
     public string[] _idelPixels =
     {
