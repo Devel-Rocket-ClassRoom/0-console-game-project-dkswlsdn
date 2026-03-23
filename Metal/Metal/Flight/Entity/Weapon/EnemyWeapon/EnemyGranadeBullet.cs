@@ -31,13 +31,11 @@ public class EnemyGranadeBullet : BulletEntity
     public override void CollisionToStatic()
     {
         Scene.AddGameObject(new HitEffect(Scene, Position));
-        Granade.granadeCount--;
         Destroy();
     }
     public override void CollisionFromDynamic(int id = 0, int damage = 0)
     {
         Scene.AddGameObject(new HitEffect(Scene, Position));
-        Granade.granadeCount--;
         Destroy();
     }
 

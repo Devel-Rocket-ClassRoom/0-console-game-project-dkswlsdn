@@ -10,7 +10,7 @@ public class TitleScene : Scene
 
     public override void Load()
     {
-        AddGameObject(new Title(this, (50, 30)));
+        AddGameObject(new Title(this, (45, 20)));
     }
 
     public override void Unload()

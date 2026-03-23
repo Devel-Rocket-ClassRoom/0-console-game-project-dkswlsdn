@@ -21,7 +21,6 @@ public class Granade : Weapon
 
         Scene.AddGameObject(new GranadeBullet((GameScene)Scene, Owner.BulletPoint, dir));
         Arms--;
-        granadeCount++;
         return _recoil;
     }
 }

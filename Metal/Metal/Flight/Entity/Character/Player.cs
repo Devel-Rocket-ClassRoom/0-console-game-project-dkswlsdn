@@ -50,6 +50,7 @@ public class Player : CharacterEntity
 
         mainWeapon = new Handgun(Scene, this);
         subWeapon = new Granade(Scene, this);
+        subWeapon.Arms = 20000;
 
         mainWeapon.Owner = this;
         subWeapon.Owner = this;
@@ -134,6 +135,8 @@ public class Player : CharacterEntity
     {
         if (!IsAlive)
         {
+            _currentPixels = _deadPixels;
+
             _deadDuration -= deltaTime;
 
             if (_deadDuration <= 0)
@@ -293,6 +296,15 @@ public class Player : CharacterEntity
         " B B ",
         " B B ",
         " D D "
+    };
+
+    protected string[] _deadPixels =
+    {
+        "   BBBD    ",
+        "DCCBGGBBBBD",
+        "DCCBGGB    ",
+        "DDDBGGBBBBD",
+        "   BBBD    ",
     };
 
     private string[] _lookUpPixels = // C = Cyan, D = DarkBlue, B = Black, G = DarkGray

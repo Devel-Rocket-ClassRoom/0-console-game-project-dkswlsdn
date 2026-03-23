@@ -13,7 +13,7 @@ public class FirstTrigger : StageTrigger
         Width = 5;
         Height = 80;
 
-        _elite = new Tank(Scene, (200, 6), EnemyState.Search, PlayerReferance, 100);
+        _elite = new Tank(Scene, (250, 6), EnemyState.Search, PlayerReferance, 100);
         _elite.IsActive = false;
     }
 
@@ -47,6 +47,7 @@ public class FirstTrigger : StageTrigger
         _elite.IsActive = true;
         Scene.AddGameObject(new Tank(Scene, (460, 6), EnemyState.Search, PlayerReferance, 0));
         Scene.AddGameObject(_elite);
+        Camera.LeftClamp = 300;
         Camera.LockLeftClamp = true;
     }
 }

@@ -82,14 +82,17 @@ namespace Framework.Engine
                 _bgColors[y, x] = bgColor;
             }
         }
-        public void SetCell((int x, int y) position, char ch1, char ch2 = ' ', ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
+        public void SetCell((float x, float y) position, char ch1, char ch2 = ' ', ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
             if (position.x >= 0 && position.x * 2 < _width && position.y >= 0 && position.y < _height)
             {
-                _chars[position.y, position.x * 2] = ch1;
-                _chars[position.y, position.x * 2 + 1] = ch2;
-                _bgColors[position.y, position.x * 2] = bgColor;
-                _bgColors[position.y, position.x * 2 + 1] = bgColor;
+                int newPositionX = (int)Math.Round(position.x);
+                int newPositionY = (int)Math.Round(position.y);
+
+                _chars[newPositionY, newPositionX * 2] = ch1;
+                _chars[newPositionY, newPositionX * 2 + 1] = ch2;
+                _bgColors[newPositionY, newPositionX * 2] = bgColor;
+                _bgColors[newPositionY, newPositionX * 2 + 1] = bgColor;
             }
         }
 
