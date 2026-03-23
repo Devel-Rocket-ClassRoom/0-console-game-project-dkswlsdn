@@ -43,22 +43,20 @@ public class ShottingGame : GameApp
     private void ChangeToTitle()
     {
         var title = new TitleScene();
-        title.StartRequested += ChangeToStageMenu;
+        title.StartRequested += ChangeToGame;
         scene.ChangeScene(title);
     }
 
-    private void ChangeToStageMenu()
+    private void ChangeToEnding()
     {
         var menu = new MenuScene();
-        menu.ToTitleRequest += ChangeToTitle;
-        menu.GameStartRequest += ChangeToGame;
         scene.ChangeScene(menu);
     }
 
     private void ChangeToGame()
     {
         var game = new GameScene();
-        game.ToTitleRequest += ChangeToTitle;
+        game.ToMenuRequest += ChangeToEnding;
         scene.ChangeScene(game);
     }
 }

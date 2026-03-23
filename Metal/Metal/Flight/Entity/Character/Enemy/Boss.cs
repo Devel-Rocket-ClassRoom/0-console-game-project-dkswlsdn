@@ -27,6 +27,8 @@ public class Boss : EnemyEntity
         _arms.Owner = this;
         _additionalArms.Owner = this;
 
+        _deadDuration = 3f;
+
         _currentPixels = _combatPixels;
         ChasingTarget = player;
 
@@ -77,7 +79,11 @@ public class Boss : EnemyEntity
             case EnemyState.Dead:
                 if (IsEnd())
                 {
-                    GameScene.IsPlayerWin = true;
+                    if (Scene is GameScene g)
+                    {
+                        g.Ending();
+                    }
+
                     Destroy();
                 }
                 break;

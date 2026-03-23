@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public class GameScene : Scene
 {
-    public event GameAction ToTitleRequest;
+    public event GameAction ToMenuRequest;
 
     public static bool IsPlayerWin = false;
 
@@ -58,8 +58,8 @@ public class GameScene : Scene
 
 
 
-    public void Error()
+    public void Ending()
     {
-        ToTitleRequest?.Invoke();
+        ToMenuRequest?.Invoke();
     }
 }

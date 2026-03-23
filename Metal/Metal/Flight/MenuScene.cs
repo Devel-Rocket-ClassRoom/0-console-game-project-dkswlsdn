@@ -11,6 +11,7 @@ public class MenuScene : Scene
 
     public override void Load()
     {
+        AddGameObject(new Ending(this, (60, 40)));
     }
 
     public override void Unload()
@@ -19,14 +20,11 @@ public class MenuScene : Scene
 
     public override void Update(float deltaTime)
     {
-        if (Input.IsKeyDown(ConsoleKey.Enter))
-        {
-            GameStartRequest?.Invoke();
-        }
+        
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
-        buffer.DrawBox((0, ShottingGame.k_Height), ShottingGame.k_Width / 2, ShottingGame.k_Height);
+        DrawGameObjects(buffer);
     }
 }
