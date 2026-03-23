@@ -5,7 +5,9 @@ using System.Text;
 
 public class ModenInfantryGrenade : EnemyEntity
 {
-    public ModenInfantryGrenade(GameScene scene, Point point, EnemyState state, Player player, int dropRate = 0) : base(scene, point, dropRate, state)
+    public override Point BulletPoint => Position + new Point(3, 6).PointConverter(Direction);
+
+    public ModenInfantryGrenade(GameScene scene, Point point, EnemyState state, int dropRate = 0) : base(scene, point, dropRate, state)
     {
         Type = EntityType.Enemy;
         Mask = EntityType.Bullet | EntityType.Ground | EntityType.Platform;
@@ -20,7 +22,7 @@ public class ModenInfantryGrenade : EnemyEntity
         _arms = new EnemyGranade(scene, this);
 
         _currentPixels = _combatPixels;
-        PlayerReferance = player;
+        PlayerReferance = Scene.player;
 
         Health = 1;
         _reconizePlayer = 70;
@@ -42,6 +44,8 @@ public class ModenInfantryGrenade : EnemyEntity
     }
     protected override void CheckTransitions()
     {
+        if (PlayerReferance == null) return;
+
         switch (_state)
         {
             case EnemyState.Idle:
@@ -76,8 +80,9 @@ public class ModenInfantryGrenade : EnemyEntity
                 break;
         }
 
-        if (Health <= 0) { ChangeState(EnemyState.Dead); return; }
-        if (IsOutOfCamera()) ChangeState(EnemyState.Chase);
+        if (Health <= 0) ChangeState(EnemyState.Dead);
+        else if (IsOutOfCamera()) ChangeState(EnemyState.Chase);
+        else if (!PlayerReferance.IsAlive) PlayerReferance = null;
     }
 
 
@@ -116,7 +121,8 @@ public class ModenInfantryGrenade : EnemyEntity
     {
         base.DoChase(deltaTime);
         _currentPixels = _combatPixels;
-        Position += Direction * 10 * deltaTime;
+
+        Position += (Position.CompareX(PlayerReferance.Position) * 10 * deltaTime, 0);
     }
 
     public override bool IsOutOfCamera()

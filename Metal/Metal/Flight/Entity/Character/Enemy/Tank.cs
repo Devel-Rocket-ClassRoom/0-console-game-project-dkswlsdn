@@ -79,7 +79,7 @@ public class Tank : EnemyEntity
                 Height = 1;
                 if (IsEnd())
                 {
-                    Scene.AddGameObject(new ModenInfantryCannon(Scene, Position, EnemyState.Stun, PlayerReferance, _dropRate));
+                    Scene.AddGameObject(new ModenInfantryCannon(Scene, Position, EnemyState.Stun, _dropRate));
                     Destroy();
                 }
                 break;

@@ -16,7 +16,7 @@ public class EnemyGranadeBullet : BulletEntity
 
         _life = 10f;
         _bulletSpeed = 80f;
-        _gravity = 240f;
+        _gravity = 120f;
         Damage = 100;
 
         _isOnlyTarget = true;

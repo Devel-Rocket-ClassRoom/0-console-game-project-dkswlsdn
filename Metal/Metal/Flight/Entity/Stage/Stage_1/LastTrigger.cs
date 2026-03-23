@@ -13,7 +13,7 @@ public class LastTrigger : StageTrigger
         Width = 5;
         Height = 80;
 
-        _elite = new Boss(Scene, (470, 40), EnemyState.Search, PlayerReferance);
+        _elite = new Boss(Scene, (570, 40), EnemyState.Search, PlayerReferance);
         _elite.IsActive = false;
     }
 

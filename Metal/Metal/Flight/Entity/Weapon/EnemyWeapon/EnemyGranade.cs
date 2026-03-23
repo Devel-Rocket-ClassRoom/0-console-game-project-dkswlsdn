@@ -11,7 +11,7 @@ using System.Xml.Linq;
             Name = "EnemyGranade";
             Arms = 10;
             _recoil = 0.2f;
-            Owner = id;
+            Owner = id; 
         }
 
         public override float Fire(Point dir)

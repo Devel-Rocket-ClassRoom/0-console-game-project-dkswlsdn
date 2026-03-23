@@ -24,7 +24,7 @@ public class FirstTrigger : StageTrigger
 
         if (_reinforcementCooldown <= 0 && _alreadyTriggered)
         {
-            Scene.AddGameObject(new ModenInfantryCannon(Scene, (460, 6), EnemyState.Chase, PlayerReferance, -1));
+            Scene.AddGameObject(new ModenInfantryCannon(Scene, (460, 6), EnemyState.Chase, -1));
             _reinforcementCooldown = k_ReinforcementInterval;
         }
 

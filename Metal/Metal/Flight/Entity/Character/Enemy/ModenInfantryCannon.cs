@@ -8,7 +8,7 @@ public class ModenInfantryCannon : EnemyEntity
 {
     public override Point BulletPoint => Position + new Point(3, 6).PointConverter(Direction);
 
-    public ModenInfantryCannon(GameScene scene, Point point, EnemyState state, Player player, int dropRate, int direction = -1) : base(scene, point, dropRate, state)
+    public ModenInfantryCannon(GameScene scene, Point point, EnemyState state, int dropRate, int direction = -1) : base(scene, point, dropRate, state)
     {
         Type = EntityType.Enemy;
         Mask = EntityType.Bullet | EntityType.Ground | EntityType.Platform;
@@ -24,7 +24,7 @@ public class ModenInfantryCannon : EnemyEntity
         _arms.Owner = this;
 
         _currentPixels = _combatPixels;
-        PlayerReferance = player;
+        PlayerReferance = Scene.player;
 
         Health = 1;
         _reconizePlayer = 100;
