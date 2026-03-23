@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 public class PlatformEntity : Entity
 {
-    public PlatformEntity(Scene scene, Point point) : base(scene, point, false)
+    public PlatformEntity(GameScene scene, Point point) : base(scene, point, false)
     {
         Type = EntityType.Platform;
         Mask = EntityType.Player | EntityType.Enemy | EntityType.Trigger;

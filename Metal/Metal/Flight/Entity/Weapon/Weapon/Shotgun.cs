@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public class Shotgun : Weapon
 {
-    public Shotgun(Scene scene, bool isMain = true) : base(scene, isMain)
+    public Shotgun(GameScene scene, bool isMain = true) : base(scene, isMain)
     {
         Name = "Shotgun";
         Cooldown = 0.5f;
@@ -23,7 +23,7 @@ public class Shotgun : Weapon
 
         Arms--;
         Scene.AddGameObject(new ShotgunEffect(Scene));
-        Scene.AddGameObject(new ShotgunBullet(Scene, Owner.BulletPoint, dir));
+        Scene.AddGameObject(new ShotgunBullet((GameScene)Scene, Owner.BulletPoint, dir));
         _leftCooldown = Cooldown;
         return _recoil;
     }

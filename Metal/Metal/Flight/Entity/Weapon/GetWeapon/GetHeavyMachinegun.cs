@@ -5,7 +5,7 @@ using System.Text;
 
 public class GetHeavyMachinegun : GetWeapon
 {
-    public GetHeavyMachinegun(Scene scene, Point point) : base(scene, point, 200)
+    public GetHeavyMachinegun(GameScene scene, Point point) : base(scene, point, 200)
     {
         Name = "HeavyMachinegun";
         weapon = new HeavyMachinegun(Scene);

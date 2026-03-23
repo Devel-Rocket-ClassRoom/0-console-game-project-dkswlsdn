@@ -7,7 +7,7 @@ public class Granade : Weapon
 {
     static public int granadeCount = 0;
 
-    public Granade(Scene scene, CharacterEntity id) : base(scene, true)
+    public Granade(GameScene scene, CharacterEntity id) : base(scene, true)
     {
         Name = "Granade";
         Arms = 10;
@@ -19,7 +19,7 @@ public class Granade : Weapon
     {
         if (granadeCount >= 2 || Arms <= 0) return 0;
 
-        Scene.AddGameObject(new GranadeBullet(Scene, Owner.BulletPoint, dir));
+        Scene.AddGameObject(new GranadeBullet((GameScene)Scene, Owner.BulletPoint, dir));
         Arms--;
         granadeCount++;
         return _recoil;

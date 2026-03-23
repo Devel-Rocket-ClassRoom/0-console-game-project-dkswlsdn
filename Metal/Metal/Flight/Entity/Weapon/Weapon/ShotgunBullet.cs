@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public class ShotgunBullet : BulletEntity
 {
-    public ShotgunBullet(Scene scene, Point point, Point aim)
+    public ShotgunBullet(GameScene scene, Point point, Point aim)
         : base(scene, point, aim, 46, 17)
     {
         Type = EntityType.Bullet;

@@ -8,7 +8,7 @@ public class ModenInfantryCannon : EnemyEntity
 {
     public override Point BulletPoint => Position + new Point(3, 6).PointConverter(Direction);
 
-    public ModenInfantryCannon(Scene scene, Point point, EnemyState state, Player player, int dropRate, int direction = -1) : base(scene, point, dropRate, state)
+    public ModenInfantryCannon(GameScene scene, Point point, EnemyState state, Player player, int dropRate, int direction = -1) : base(scene, point, dropRate, state)
     {
         Type = EntityType.Enemy;
         Mask = EntityType.Bullet | EntityType.Ground | EntityType.Platform;
@@ -24,7 +24,7 @@ public class ModenInfantryCannon : EnemyEntity
         _arms.Owner = this;
 
         _currentPixels = _combatPixels;
-        ChasingTarget = player;
+        PlayerReferance = player;
 
         Health = 1;
         _reconizePlayer = 100;
@@ -43,7 +43,7 @@ public class ModenInfantryCannon : EnemyEntity
     {
         base.Draw(buffer);
 
-        buffer.WriteText(Position + (0, 0), Health.ToString());
+        buffer.WriteText(Position + (0, 0), _state.ToString());
     }
 
     public override void CollisionFromDynamic(int id, int damage)
@@ -54,6 +54,8 @@ public class ModenInfantryCannon : EnemyEntity
 
     protected override void CheckTransitions()
     {
+        if (PlayerReferance == null) return;
+
         switch (_state)
         {
             case EnemyState.Idle:
@@ -87,6 +89,7 @@ public class ModenInfantryCannon : EnemyEntity
 
         if (Health <= 0) ChangeState(EnemyState.Dead);
         else if (IsOutOfCamera()) ChangeState(EnemyState.Chase);
+        else if (!PlayerReferance.IsAlive) PlayerReferance = null;
     }
 
     public override void DoIdle(float deltaTime)
@@ -103,14 +106,14 @@ public class ModenInfantryCannon : EnemyEntity
     public override void DoSearch(float deltaTime)
     {
         _currentPixels = _combatPixels;
-        int n = ChasingTarget.Position.X - Position.X > 0 ? 1 : -1;
+        int n = PlayerReferance.Position.X - Position.X > 0 ? 1 : -1;
         Direction = (n, 0);
     }
 
     public override void DoAttack(float deltaTime)
     {
         _currentPixels = _combatPixels;
-        Aim = (ChasingTarget.Position - Position).HexaNormalize();
+        Aim = (PlayerReferance.Position - Position).HexaNormalize();
         base.DoAttack(deltaTime);
     }
 

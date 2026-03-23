@@ -10,7 +10,7 @@ public class Boss : EnemyEntity
     Point _destination;
     Point _additionalAim;
 
-    public Boss(Scene scene, Point point, EnemyState state, Player player, int direction = -1, int dropRate = 0) : base(scene, point, dropRate, state)
+    public Boss(GameScene scene, Point point, EnemyState state, Player player, int direction = -1, int dropRate = 0) : base(scene, point, dropRate, state)
     {
         Type = EntityType.Enemy;
         Mask = EntityType.Bullet | EntityType.Ground | EntityType.Platform;
@@ -30,7 +30,7 @@ public class Boss : EnemyEntity
         _deadDuration = 3f;
 
         _currentPixels = _combatPixels;
-        ChasingTarget = player;
+        PlayerReferance = player;
 
         Health = 5000;
         _reconizePlayer = 1000;
@@ -79,7 +79,7 @@ public class Boss : EnemyEntity
             case EnemyState.Dead:
                 if (IsEnd())
                 {
-                    if (Scene is GameScene g)
+                    if (Scene is StageScene g)
                     {
                         g.Ending();
                     }
@@ -95,14 +95,14 @@ public class Boss : EnemyEntity
     public override void DoSearch(float deltaTime)
     {
         _currentPixels = _combatPixels;
-        int n = ChasingTarget.Position.X - Position.X > 0 ? 1 : -1;
+        int n = PlayerReferance.Position.X - Position.X > 0 ? 1 : -1;
         Direction = (n, 0);
     }
 
     public override void DoAttack(float deltaTime)
     {
-        Aim = (ChasingTarget.Position - Position).HexaNormalize();
-        _additionalAim = (ChasingTarget.Position - Position + (30, 0)).HexaNormalize();
+        Aim = (PlayerReferance.Position - Position).HexaNormalize();
+        _additionalAim = (PlayerReferance.Position - Position + (30, 0)).HexaNormalize();
 
         if (_attackTimer == 0)
         {

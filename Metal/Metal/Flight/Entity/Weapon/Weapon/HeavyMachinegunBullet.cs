@@ -18,7 +18,7 @@ public class HeavyMachinegunBullet : BulletEntity
     private bool _isLowering = false;
 
 
-    public HeavyMachinegunBullet(Scene scene, Point point, Point aim, int count, Point previous) 
+    public HeavyMachinegunBullet(GameScene scene, Point point, Point aim, int count, Point previous) 
         : base(scene, point, aim, 6, 6)
     {
         Type = EntityType.Bullet;

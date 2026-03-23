@@ -5,7 +5,7 @@ using System.Text;
 
 public class CameraWall : Entity
 {
-    public CameraWall(Scene scene, Point point) : base(scene, point, false)
+    public CameraWall(GameScene scene, Point point) : base(scene, point, false)
     {
         Type = EntityType.Ground;
         Mask = EntityType.Player;

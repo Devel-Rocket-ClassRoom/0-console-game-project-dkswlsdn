@@ -10,8 +10,10 @@ public abstract class GetWeapon : EventTrigger
     protected Weapon weapon;
     
 
-    public GetWeapon(Scene scene, Point point, int arms) : base(scene, point)
+    public GetWeapon(GameScene scene, Point point, int arms) : base(scene, point)
     {
+        PlayerReferance = scene.player;
+
         Type = EntityType.Trigger;
         Mask = EntityType.Player;
 
@@ -33,15 +35,15 @@ public abstract class GetWeapon : EventTrigger
 
     protected override void WhenOverrap()
     {
-        if (_player.mainWeapon.Name == Name)
+        if (PlayerReferance.mainWeapon.Name == Name)
         {
-            _player.mainWeapon.Arms += _arms;
+            PlayerReferance.mainWeapon.Arms += _arms;
         }
         else
         {
-            weapon.Owner = _player;
-            _player.mainWeapon.Drop();
-            _player.mainWeapon = weapon;
+            weapon.Owner = PlayerReferance;
+            PlayerReferance.mainWeapon.Drop();
+            PlayerReferance.mainWeapon = weapon;
             weapon.Arms = _arms;
             Scene.AddGameObject(weapon);
         }

@@ -4,30 +4,25 @@ using System.Text;
 using Framework.Engine;
 
 
-public class GameScene : Scene
+public class StageScene : GameScene
 {
     public event GameAction ToMenuRequest;
 
     public static bool IsPlayerWin = false;
 
 
-    public Player player;
-    Camera camera;
 
 
     public override void Load()
     {
-        player = new Player(this, (30, 30));
-        camera = new Camera(this, player);
-
-
-
-        AddGameObject(player);
-        AddGameObject(camera);
+        base.Load();
 
         Ground.DrawBottomGround(this, (0, 0), 3000);
         Ground.DrawNormalWall(this, (140, 0), 25);
         Ground.DrawNormalPlatform(this, (200, 25), 50);
+
+        Ground.DrawNormalWall(this, (260, 0), 50);
+        Ground.DrawNormalGround(this, (260, 50), 100);
 
         AddGameObject(new ModenInfantryCannon(this, (160, 6), EnemyState.Idle, player, 0, 1));
         AddGameObject(new ModenInfantryCannon(this, (220, 31), EnemyState.Idle, player, 0));
@@ -45,6 +40,8 @@ public class GameScene : Scene
 
     public override void Update(float deltaTime)
     {
+        base.Update(deltaTime);
+
         UpdateGameObjects(deltaTime);
     }
 

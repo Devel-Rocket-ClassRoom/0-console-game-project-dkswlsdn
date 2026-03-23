@@ -5,7 +5,7 @@ using System.Text;
 
 public class ModenInfantryGrenade : EnemyEntity
 {
-    public ModenInfantryGrenade(Scene scene, Point point, EnemyState state, Player player, int dropRate = 0) : base(scene, point, dropRate, state)
+    public ModenInfantryGrenade(GameScene scene, Point point, EnemyState state, Player player, int dropRate = 0) : base(scene, point, dropRate, state)
     {
         Type = EntityType.Enemy;
         Mask = EntityType.Bullet | EntityType.Ground | EntityType.Platform;
@@ -20,7 +20,7 @@ public class ModenInfantryGrenade : EnemyEntity
         _arms = new EnemyGranade(scene, this);
 
         _currentPixels = _combatPixels;
-        ChasingTarget = player;
+        PlayerReferance = player;
 
         Health = 1;
         _reconizePlayer = 70;
@@ -95,7 +95,7 @@ public class ModenInfantryGrenade : EnemyEntity
     public override void DoSearch(float deltaTime)
     {
         _currentPixels = _combatPixels;
-        int n = ChasingTarget.Position.X - Position.X > 0 ? 1 : -1;
+        int n = PlayerReferance.Position.X - Position.X > 0 ? 1 : -1;
         Direction = (n, 0);
     }
 

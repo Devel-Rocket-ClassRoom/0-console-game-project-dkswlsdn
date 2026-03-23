@@ -19,7 +19,7 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
     protected float _deadTimer = 0f;
     protected float _deadDuration = 0.3f;
 
-    public Player ChasingTarget;
+   
     protected float _reconizePlayer;
 
     protected Weapon _arms;
@@ -32,7 +32,7 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
 
 
 
-    public EnemyEntity(Scene scene, Point point, int dropRate, EnemyState state = EnemyState.Idle) : base(scene, point)
+    public EnemyEntity(GameScene scene, Point point, int dropRate, EnemyState state = EnemyState.Idle) : base(scene, point)
     {
         _state = state;
     }
@@ -48,6 +48,8 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
 
     private void ExecuteStateAction(float deltaTime)
     {
+        if (PlayerReferance == null) _state = EnemyState.Idle;
+
         switch (_state)
         {
             case EnemyState.Idle: DoIdle(deltaTime); break;
@@ -61,6 +63,8 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
     }
     protected virtual void CheckTransitions()
     {
+
+
         switch (_state)
         {
             case EnemyState.Idle:
@@ -80,6 +84,9 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
                 break;
                 
         }
+
+        if (!IsAlive) ChangeState(EnemyState.Dead);
+        else if (!PlayerReferance.IsAlive) PlayerReferance = null;
     }
     protected void ChangeState(EnemyState state) { _state = state; }
 
@@ -129,7 +136,7 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
 
     public virtual bool IsPlayerNearing()
     {
-        return Position.IsInDistance(ChasingTarget.Position, _reconizePlayer);
+        return Position.IsInDistance(PlayerReferance.Position, _reconizePlayer);
     }
 
     public virtual bool IsAttackEnd()
@@ -145,17 +152,17 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
 
     public virtual bool IsPlayerDead()
     {
-        return !ChasingTarget.IsAlive;
+        return !PlayerReferance.IsAlive;
     }
 
     public virtual bool IsPlayerRebirth()
     {
-        return ChasingTarget.IsAlive;
+        return false;
     }
 
     public virtual bool IsDead()
     {
-        return !IsAlive;
+        return !(_state == EnemyState.Dead); ;
     }
 
     public virtual bool IsNearFriendlyDead()
@@ -198,7 +205,7 @@ public abstract class EnemyEntity : CharacterEntity, IEnemyAI
 
     public virtual bool IsPlayerSuperNeering()
     {
-        return Position.IsInDistance(ChasingTarget.Position, 20f);
+        return Position.IsInDistance(PlayerReferance.Position, 20f);
     }
 
     public bool IsNearFriendlyPanic()

@@ -13,6 +13,7 @@ public class Player : CharacterEntity
     public float JumpCooldown { private get;  set; } = 0.1f;
 
     private float _speed = 30f;
+    private bool _canShot = true;
 
 
     public override Point Position
@@ -29,13 +30,14 @@ public class Player : CharacterEntity
 
 
     private Point _input;
-    private HigherState _state = HigherState.Idle;
+    //public PlayerState State { get; private set; }
+    private float _deadDuration = 1f;
 
     public override Point BulletPoint => Position + new Point(3, 6).PointConverter(Direction);
 
 
 
-    public Player(Scene scene, Point point) : base(scene, point)
+    public Player(GameScene scene, Point point) : base(scene, point)
     {
         Type = EntityType.Player;
         Mask = EntityType.Ground | EntityType.Platform | EntityType.Bullet | EntityType.Trigger;
@@ -70,21 +72,20 @@ public class Player : CharacterEntity
         buffer.WriteText(Camera.Position + (30, 5), subWeapon.Name);
         buffer.WriteText(Camera.Position + (30, 4), subWeapon.Arms.ToString());
 
-        buffer.WriteText(Camera.Position + (0, 79), _isLand.ToString());
-        buffer.WriteText(Camera.Position + (0, 78), Aim.ToString());
-        buffer.WriteText(Camera.Position + (0, 77), Direction.ToString());
-        buffer.WriteText(Camera.Position + (0, 76), _input.ToString());
         buffer.WriteText(Camera.Position + (0, 75), Velocity.ToString());
-        //buffer.WriteText(Camera.Position + (0, 74), Velocity.ToString());
         buffer.WriteText(Camera.Position + (0, 73), $"Player : {Position.ToString()}");
         buffer.WriteText(Camera.Position + (0, 72), $"Camera : {Camera.Position.ToString()}");
         buffer.WriteText(Camera.Position + (0, 71), $"LeftClamp : {Camera.LeftClamp.ToString()}");
+
+        buffer.WriteText(Position + (0, 0), Health.ToString());
+        buffer.WriteText(Position + (0, 1), IsAlive.ToString());
 
     }
 
     public override void Update(float deltaTime)
     {
-        PlayerInput();
+        PlayerInput(deltaTime);
+
         Velocity = (_input.X * _speed, Velocity.Y);
         if (_input.X != 0) Direction = (_input.X, 0);
 
@@ -95,18 +96,16 @@ public class Player : CharacterEntity
         _recoil -= deltaTime;
     }
 
-    
 
-    
-
-    public void Jump()
+    public override void CollisionFromDynamic(int id, int damage)
     {
-        if (_isLand)
-        {
-            _isLand = false;
-            Velocity = (Velocity.X, 100);
-        }
+        TakeDamage(id, damage);
     }
+    
+
+    
+
+   
 
 
     
@@ -131,8 +130,20 @@ public class Player : CharacterEntity
             Aim = _input;
         }
     }
-    private void PlayerInput()
+    private void PlayerInput(float deltaTime)
     {
+        if (!IsAlive)
+        {
+            _deadDuration -= deltaTime;
+
+            if (_deadDuration <= 0)
+            {
+                Destroy();
+            }
+
+            return;
+        }
+
         if (Input.IsKey(ConsoleKey.W))
         {
             _input.Y = 1;
@@ -161,7 +172,8 @@ public class Player : CharacterEntity
 
         if (Input.IsKeyDown(ConsoleKey.LeftArrow) && _recoil <= 0)
         {
-            _recoil = mainWeapon.Fire(Aim);
+            float n = _isLand && _input.Y == -1 ? 0.8f : 1;
+            _recoil = mainWeapon.Fire(Aim) * n;
         }
         if (Input.IsKeyDown(ConsoleKey.RightArrow) && _recoil <= 0)
         {
@@ -173,6 +185,14 @@ public class Player : CharacterEntity
         if (Input.IsKeyDown(ConsoleKey.Spacebar))
         {
             Jump();
+        }
+    }
+    public void Jump()
+    {
+        if (_isLand)
+        {
+            _isLand = false;
+            Velocity = (Velocity.X, 100);
         }
     }
     public void CheckMainArms()
@@ -194,20 +214,70 @@ public class Player : CharacterEntity
 
         return union;
     }
+    
 
-    public enum HigherState
+
+
+    //private void ExecuteStateAction(float deltaTime)
+    //{
+    //    switch (State)
+    //    {
+    //        case PlayerState.Idle: DoIdle(deltaTime); break;
+    //        case PlayerState.SitDown: DoIdle(deltaTime); break;
+    //        case PlayerState.Jump: DoIdle(deltaTime); break;
+    //        case PlayerState.Shot: DoIdle(deltaTime); break;
+    //        case PlayerState.Dead: DoIdle(deltaTime); break;
+    //    }
+    //}
+
+    //protected void ChangeState(PlayerState state) { State = state; }
+
+    //void DoIdle(float deltaTime)
+    //{
+    //    _currentPixels = _idlePixels;
+    //}
+
+    //void DoSitDown(float deltaTime)
+    //{
+    //    _currentPixels = _sitPixels;
+    //}
+    //void DoJump(float deltaTime)
+    //{
+    //    _currentPixels = _idlePixels;
+    //}
+
+    //void DoDoShotIdle(float deltaTime)
+    //{
+    //    _currentPixels = _idlePixels;
+    //}
+    //void DoDead(float deltaTime)
+    //{
+    //    _currentPixels = _de;
+    //}
+
+    //bool IsEnd()
+    //{
+
+    //}
+
+
+
+    public enum PlayerState
     {
         Idle,
-        LookUp,
-        LookDown,
-        Shot
+        Shot,
+        Jump,
+        SitDown,
+        Dead
     }
-    public enum LowerState
-    {
-        Idle,
-        Run,
-        Jump
-    }
+    
+
+
+
+
+
+
+
 
 
     private string[] _idlePixels = // C = Cyan, D = DarkBlue, B = Black, G = DarkGray

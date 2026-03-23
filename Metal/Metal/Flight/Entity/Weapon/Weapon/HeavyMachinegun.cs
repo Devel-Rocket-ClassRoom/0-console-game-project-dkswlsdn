@@ -18,7 +18,7 @@ public class HeavyMachinegun : Weapon
     Point finalDir;
 
 
-    public HeavyMachinegun(Scene scene, bool isMain = true) : base(scene, isMain)
+    public HeavyMachinegun(GameScene scene, bool isMain = true) : base(scene, isMain)
     {
         Name = "HeavyMachingun";
         Cooldown = 0.30f;
@@ -67,7 +67,7 @@ public class HeavyMachinegun : Weapon
 
             if (_spreadingBulletCount == 4 || _bulletPatternCount == 4) _bulletPatternCount = 0;
 
-            Scene.AddGameObject(new HeavyMachinegunBullet(Scene, Owner.BulletPoint, finalDir, _bulletPatternCount++, _previousDirection));
+            Scene.AddGameObject(new HeavyMachinegunBullet((GameScene)Scene, Owner.BulletPoint, finalDir, _bulletPatternCount++, _previousDirection));
 
             _nextBulletCooldown = 0.06f;
             _bulletCount--;

@@ -7,7 +7,7 @@ public class Tank : EnemyEntity
 {
     public override Point BulletPoint => Position + new Point(29, 16).PointConverter(Direction);
 
-    public Tank(Scene scene, Point point, EnemyState state, Player player, int dropRate = 0) : base(scene, point, dropRate, state)
+    public Tank(GameScene scene, Point point, EnemyState state, Player player, int dropRate = 0) : base(scene, point, dropRate, state)
     {
         Type = EntityType.Enemy;
         Mask = EntityType.Bullet | EntityType.Ground | EntityType.Platform;
@@ -22,7 +22,7 @@ public class Tank : EnemyEntity
         _arms.Owner = this;
 
         _currentPixels = _combatPixels;
-        ChasingTarget = player;
+        PlayerReferance = player;
 
         Health = 400;
         _reconizePlayer = 50;
@@ -79,7 +79,7 @@ public class Tank : EnemyEntity
                 Height = 1;
                 if (IsEnd())
                 {
-                    Scene.AddGameObject(new ModenInfantryCannon(Scene, Position, EnemyState.Stun, ChasingTarget, _dropRate));
+                    Scene.AddGameObject(new ModenInfantryCannon(Scene, Position, EnemyState.Stun, PlayerReferance, _dropRate));
                     Destroy();
                 }
                 break;
@@ -100,7 +100,7 @@ public class Tank : EnemyEntity
     public override void DoSearch(float deltaTime)
     {
         _currentPixels = _combatPixels;
-        int n = ChasingTarget.Position.X - Position.X > 0 ? 1 : -1;
+        int n = PlayerReferance.Position.X - Position.X > 0 ? 1 : -1;
         Direction = (n, 0);
     }
 

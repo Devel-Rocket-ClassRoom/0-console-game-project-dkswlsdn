@@ -11,7 +11,7 @@ public class MenuScene : Scene
 
     public override void Load()
     {
-        AddGameObject(new Ending(this, (60, 40)));
+        //AddGameObject(new Ending(this, (60, 40)));
     }
 
     public override void Unload()

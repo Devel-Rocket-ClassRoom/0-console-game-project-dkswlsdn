@@ -7,7 +7,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 public class EnemyGranadeBullet : BulletEntity
 {
-    public EnemyGranadeBullet(Scene scene, Point point, Point aim) : base(scene, point, (1, 0), 5, 5)
+    public EnemyGranadeBullet(GameScene scene, Point point, Point aim) : base(scene, point, (1, 0), 5, 5)
     {
         Type = EntityType.Bullet;
         Mask = EntityType.Ground | EntityType.Player;

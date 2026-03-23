@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public class GranadeSplash : BulletEntity
 {
-    public GranadeSplash(Scene scene, Point point) : base(scene, point - (7, 0), (1, 0), 14, 28)
+    public GranadeSplash(GameScene scene, Point point) : base(scene, point - (7, 0), (1, 0), 14, 28)
     {
         Type = EntityType.Bullet;
         Mask = EntityType.Enemy;

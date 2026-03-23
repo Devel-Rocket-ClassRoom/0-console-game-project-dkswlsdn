@@ -5,7 +5,7 @@ public class GranadeBullet : BulletEntity
 {
     private bool _alreadyBounce = false;
 
-    public GranadeBullet(Scene scene, Point point, Point aim) : base(scene, point, (1, 0), 5, 5)
+    public GranadeBullet(GameScene scene, Point point, Point aim) : base(scene, point, (1, 0), 5, 5)
     {
         Type = EntityType.Bullet;
         Mask = EntityType.Ground | EntityType.Enemy;

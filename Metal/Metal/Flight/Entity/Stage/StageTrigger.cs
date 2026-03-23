@@ -7,7 +7,7 @@ public abstract class StageTrigger : EventTrigger
 {
     protected EnemyEntity _elite;
 
-    public StageTrigger(Scene scene, Point position) : base(scene, position)
+    public StageTrigger(GameScene scene, Point position) : base(scene, position)
     {
     }
 

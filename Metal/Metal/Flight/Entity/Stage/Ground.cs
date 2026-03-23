@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public static class Ground
 {
-    public static void DrawBottomGround(GameScene scene, Point position, int width)
+    public static void DrawBottomGround(StageScene scene, Point position, int width)
     {
         for (int i = 0; i < width; i += 5)
         {
@@ -14,18 +14,15 @@ public static class Ground
         }
     }
 
-    public static void DrawNormalGround(GameScene scene, Point position, int width)
+    public static void DrawNormalGround(StageScene scene, Point position, int width)
     {
-        for (int i = 0; i < width; i++)
+        for (int i = 0; i < width; i += 5)
         {
-            for (int j = 0; j < 5; j++)
-            {
-                SetGround(scene, position + (i, j));
-            }
+            SetGround(scene, position + (i, 0));
         }
     }
 
-    public static void DrawNormalPlatform(GameScene scene, Point position, int width)
+    public static void DrawNormalPlatform(StageScene scene, Point position, int width)
     {
         for (int i = 0; i < width; i += 5) 
         {
@@ -33,7 +30,7 @@ public static class Ground
         }
     }
 
-    public static void DrawNormalWall(GameScene scene, Point position, int height)
+    public static void DrawNormalWall(StageScene scene, Point position, int height)
     {
         for (int i = 0; i < height; i += 5)
         {
@@ -41,7 +38,7 @@ public static class Ground
         }
     }
 
-    public static void DrawThinWall(GameScene scene, Point position, int height)
+    public static void DrawThinWall(StageScene scene, Point position, int height)
     {
         for (int i = 0; i < height; i++)
         {
@@ -53,15 +50,15 @@ public static class Ground
 
 
 
-    public static void SetGround(GameScene scene, Point position, bool isSmall = false)
+    public static void SetGround(StageScene scene, Point position, bool isSmall = false)
     {
         scene.AddGameObject(new GroundEntity(scene, position, isSmall));
     }
-    public static void SetPlatform(GameScene scene, Point position)
+    public static void SetPlatform(StageScene scene, Point position)
     {
         scene.AddGameObject(new PlatformEntity(scene, position));
     }
-    public static void SetWall(GameScene scene, Point position)
+    public static void SetWall(StageScene scene, Point position)
     {
         scene.AddGameObject(new CameraWall(scene, position));
     }

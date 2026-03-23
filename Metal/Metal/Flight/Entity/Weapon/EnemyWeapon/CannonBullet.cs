@@ -8,7 +8,7 @@ public class CannonBullet : BulletEntity
 {
     Point _runningDirection;
 
-    public CannonBullet(Scene scene, Point point, Point aim) : base(scene, point, (1, 0), 4, 4)
+    public CannonBullet(GameScene scene, Point point, Point aim) : base(scene, point, (1, 0), 4, 4)
     {
         Type = EntityType.Bullet;
         Mask = EntityType.Player;

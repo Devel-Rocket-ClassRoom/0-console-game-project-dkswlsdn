@@ -16,7 +16,7 @@ using System.Xml.Linq;
 
         public override float Fire(Point dir)
         {
-            Scene.AddGameObject(new EnemyGranadeBullet(Scene, Owner.BulletPoint, dir));
+            Scene.AddGameObject(new EnemyGranadeBullet((GameScene)Scene, Owner.BulletPoint, dir));
             return _recoil;
         }
     }

@@ -5,7 +5,7 @@ using System.Text;
 
 public class GetShotgun : GetWeapon
 {
-    public GetShotgun(Scene scene, Point point) : base(scene, point, 20)
+    public GetShotgun(GameScene scene, Point point) : base(scene, point, 20)
     {
         Name = "Shotgun";
         _currentPixels = _idelPixels;

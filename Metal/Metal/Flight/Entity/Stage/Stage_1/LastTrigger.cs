@@ -8,12 +8,12 @@ public class LastTrigger : StageTrigger
     private float _reinforcementCooldown = 0;
     private const float k_ReinforcementInterval = 5f;
 
-    public LastTrigger(Scene scene, int position) : base(scene, (position, 0))
+    public LastTrigger(GameScene scene, int position) : base(scene, (position, 0))
     {
         Width = 5;
         Height = 80;
 
-        _elite = new Boss(Scene, (470, 60), EnemyState.Search, _player);
+        _elite = new Boss(Scene, (470, 60), EnemyState.Search, PlayerReferance);
         _elite.IsActive = false;
     }
 

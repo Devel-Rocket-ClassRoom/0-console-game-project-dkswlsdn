@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public class GroundEntity : Entity
 {
-    public GroundEntity(Scene scene, Point point, bool isSmall = true) : base(scene, point, false)
+    public GroundEntity(GameScene scene, Point point, bool isSmall = true) : base(scene, point, false)
     {
         Type = EntityType.Ground;
         Mask = EntityType.Player | EntityType.Enemy | EntityType.Bullet | EntityType.Trigger;

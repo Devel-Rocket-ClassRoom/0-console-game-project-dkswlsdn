@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public class HandgunBullet : BulletEntity
 {
-    public HandgunBullet(Scene scene, Point point, Point aim) : base(scene, point, aim, 5, 3)
+    public HandgunBullet(GameScene scene, Point point, Point aim) : base(scene, point, aim, 5, 3)
     {
         Type = EntityType.Bullet;
         Mask = EntityType.Enemy | EntityType.Ground;

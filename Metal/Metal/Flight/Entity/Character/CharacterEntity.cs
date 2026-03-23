@@ -6,7 +6,6 @@ using Framework.Engine;
 
 public abstract class CharacterEntity : Entity
 {
-    public bool IsAlive { get; private set; } = true;
     public bool IsImmune { get; set; }
     public int Health { get; protected set; }
     public Dictionary<int, long> ImmunityList { get; } = new Dictionary<int, long>();
@@ -21,8 +20,9 @@ public abstract class CharacterEntity : Entity
 
 
 
-    public CharacterEntity(Scene scene, Point point) : base(scene, point, true)
+    public CharacterEntity(GameScene scene, Point point) : base(scene, point, true)
     {
+
         Direction = (1, 0);
     }
 
@@ -51,16 +51,12 @@ public abstract class CharacterEntity : Entity
         }
 
         Health -= damage;
-
-        if (Health <= 0)
-        {
-            IsAlive = false;
-        }
+        if (Health <= 0) IsAlive = false;
 
         ImmunityList[attackId] = currentTime + 1000;
     }
 
-    public override void CollisionFromDynamic(int id = 0, int damage = 0)
+    public override void CollisionFromDynamic(int id, int damage)
     {
         TakeDamage(id, damage);
     }

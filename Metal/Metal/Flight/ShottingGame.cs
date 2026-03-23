@@ -55,7 +55,7 @@ public class ShottingGame : GameApp
 
     private void ChangeToGame()
     {
-        var game = new GameScene();
+        var game = new StageScene();
         game.ToMenuRequest += ChangeToEnding;
         scene.ChangeScene(game);
     }

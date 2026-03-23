@@ -6,7 +6,7 @@ using System.Text;
 public class HitEffect : GameObject
 {
     float life = 0.1f;
-    public HitEffect(Scene scene, Point point) : base(scene, point)
+    public HitEffect(GameScene scene, Point point) : base(scene, point)
     {
         _currentPixels = _hitPixels;
     }

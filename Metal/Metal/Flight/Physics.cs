@@ -41,7 +41,7 @@ public static class Physics
     }
     public static bool IsOverrap(Entity a, Entity b)
     {
-        if (!b.IsActive) return false;
+        if (b == null || !b.IsActive) return false;
         if (a == b) return false;
         if (!CanCollide(a, b)) return false;
 

@@ -20,7 +20,7 @@ public abstract class BulletEntity : Entity
     protected bool _isOnlyTarget = true;
     protected float _bulletSpeed;
 
-    public BulletEntity(Scene scene, Point point, Point aim, int width, int height) : base(scene, point, true)
+    public BulletEntity(GameScene scene, Point point, Point aim, int width, int height) : base(scene, point, true)
     {
         _canMove = true;
 

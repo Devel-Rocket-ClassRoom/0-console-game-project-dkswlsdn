@@ -6,7 +6,7 @@ using Framework.Engine;
 
 public class Handgun : Weapon
 {
-    public Handgun(Scene scene, CharacterEntity id, bool isMain = true) : base(scene, isMain)
+    public Handgun(GameScene scene, CharacterEntity id, bool isMain = true) : base(scene, isMain)
     {
         Name = "Handgun";
         Arms = 1000;
@@ -16,7 +16,7 @@ public class Handgun : Weapon
 
     public override float Fire(Point dir)
     {
-        Scene.AddGameObject(new HandgunBullet(Scene, Owner.BulletPoint, dir));
+        Scene.AddGameObject(new HandgunBullet((GameScene)Scene, Owner.BulletPoint, dir));
         return _recoil;
     }
 }

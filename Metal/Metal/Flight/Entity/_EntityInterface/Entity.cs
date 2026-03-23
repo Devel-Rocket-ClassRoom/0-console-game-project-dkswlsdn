@@ -6,6 +6,8 @@ public abstract class Entity : GameObject
 {
     public static int nextId = 1;
     public int ID { get; private set; }
+    public new GameScene Scene { get; }
+    public bool IsAlive { get; protected set; }
 
     public EntityType Type;
     public EntityType Mask;
@@ -39,10 +41,12 @@ public abstract class Entity : GameObject
 
 
 
-    public Entity(Scene scene, Point position, bool isDynamic)
+    public Entity(GameScene scene, Point position, bool isDynamic)
         : base(scene, position)
     {
+        Scene = scene;
         ID = nextId++;
+        IsAlive = true;
         Width = 1;
         Height = 1;
 
@@ -103,7 +107,7 @@ public abstract class Entity : GameObject
 
 
     public virtual void CollisionToStatic() { }
-    public virtual void CollisionFromDynamic(int attackid = 0, int damage = 0) { }
+    public virtual void CollisionFromDynamic(int attackid, int damage) { }
 
     
 
