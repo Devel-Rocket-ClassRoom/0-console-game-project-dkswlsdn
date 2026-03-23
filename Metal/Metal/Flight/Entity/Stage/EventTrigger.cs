@@ -22,7 +22,7 @@ public abstract class EventTrigger : Entity
     {
         base.Update(deltaTime);
 
-        if (Physics.IsOverrap(this, PlayerReferance) && !_alreadyTriggered)
+        if (Physics.IsOverrap(this, Scene.player) && !_alreadyTriggered)
         {
             WhenOverrap();
         }

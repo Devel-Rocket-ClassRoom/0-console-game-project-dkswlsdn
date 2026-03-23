@@ -20,7 +20,7 @@ public class CannonBullet : BulletEntity
 
         _currentPixels = _idelPixels;
 
-        Velocity = aim * _bulletSpeed;
+        Velocity = aim.Normalize() * _bulletSpeed;
     }
 
     public override void Update(float deltaTime)

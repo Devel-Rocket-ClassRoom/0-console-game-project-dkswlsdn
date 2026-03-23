@@ -13,7 +13,7 @@ public class LastTrigger : StageTrigger
         Width = 5;
         Height = 80;
 
-        _elite = new Boss(Scene, (570, 40), EnemyState.Search, PlayerReferance);
+        _elite = new Boss(Scene, (570, 40));
         _elite.IsActive = false;
     }
 
@@ -27,8 +27,6 @@ public class LastTrigger : StageTrigger
 
     protected override void ClearStageEvent()
     {
-        Camera.LockLeftClamp = false;
-        Camera.RightClamp = 520;
         Destroy();
     }
 
@@ -39,6 +37,13 @@ public class LastTrigger : StageTrigger
         _alreadyTriggered = true;
         _elite.IsActive = true;
         Scene.AddGameObject(_elite);
+        Camera.LeftClamp = 440;
+        Camera.RightClamp = 440;
         Camera.LockLeftClamp = true;
+    }
+
+    protected override bool IsEventClear()
+    {
+        return _elite.State == EnemyState.Dead;
     }
 }

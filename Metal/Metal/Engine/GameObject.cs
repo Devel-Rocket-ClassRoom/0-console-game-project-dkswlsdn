@@ -11,8 +11,6 @@ namespace Framework.Engine
         protected string[] _currentPixels;
         protected bool _pixelReversed;
 
-        public Player PlayerReferance;
-
 
         public virtual Point Position{ get; set; }
         private (int X, int Y) _direction = (1, 0);

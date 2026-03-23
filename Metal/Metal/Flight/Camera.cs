@@ -18,7 +18,7 @@ public class Camera : GameObject
 
 
     public new static Point Position = (0, 0);
-    public bool FollowPlayer = true;
+    public Player player;
     public Point Adjustment { get { return _adjustment; } set { _adjustment = (ShottingGame.k_Width / 2 / value.X, ShottingGame.k_Height / 2 / value.Y); } }
 
     public Camera(GameScene scene) : base(scene, (0, 0))
@@ -33,8 +33,8 @@ public class Camera : GameObject
     {
         if (Scene is GameScene game && game.player != null)
         {
-            float targetX = Math.Clamp(PlayerReferance.Position.X - ShottingGame.k_Width / 4, LeftClamp, RightClamp);
-            float targetY = Math.Max(PlayerReferance.Position.Y - ShottingGame.k_Height / 1.3f, 0);
+            float targetX = Math.Clamp(player.Position.X - ShottingGame.k_Width / 4, LeftClamp, RightClamp);
+            float targetY = Math.Max(player.Position.Y - ShottingGame.k_Height / 1.3f, 0);
 
             float lerpFactor = 5.0f * deltaTime;
             if (lerpFactor > 1.0f) lerpFactor = 1.0f;

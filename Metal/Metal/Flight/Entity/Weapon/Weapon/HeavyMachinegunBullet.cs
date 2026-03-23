@@ -30,7 +30,7 @@ public class HeavyMachinegunBullet : BulletEntity
 
         _life = 1f;
         _bulletSpeed = 150f;
-        Damage = 5;
+        Damage = 10;
 
         _interval = 0.2f;
 

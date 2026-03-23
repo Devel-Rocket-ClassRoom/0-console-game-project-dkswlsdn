@@ -31,13 +31,7 @@ public abstract class GameScene : Scene
     public void NewCoinInsert()
     {
         player = new Player(this, Camera.Position + (20, 80));
+        camera.player = player;
         AddGameObject(player);
-
-        for (int i = 0; i < DynamicEntityList.Count; i++)
-        {
-            DynamicEntityList[i].PlayerReferance = player;
-        }
-
-        camera.PlayerReferance = player;
     }
 }

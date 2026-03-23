@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Framework.Engine;
 
-
-public interface IAttackable
+public interface IGuardable
 {
-    bool Attack();
+    void DoGaurd(float deltaTime);
 }

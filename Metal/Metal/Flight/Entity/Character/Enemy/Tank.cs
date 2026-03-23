@@ -3,11 +3,22 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-public class Tank : EnemyEntity
+public class Tank : EnemyEntity, IEnemyAI, IAttackable, IMoveable, IDeadable, IPlayerDetectable
 {
     public override Point BulletPoint => Position + new Point(29, 16).PointConverter(Direction);
 
-    public Tank(GameScene scene, Point point, EnemyState state, Player player, int dropRate = 0) : base(scene, point, dropRate, state)
+    public float LeftAttackCooldown { get; private set; }
+    public float MaxAttackCooldown { get; private set; }
+
+    public float LeftDeadDuration { get; private set; }
+    public float MaxDeadDuration { get; private set; }
+
+    public int DetectRange { get; private set; }
+
+    public float LeftMoveTime { get; private set; }
+    public float MaxMoveInterval { get; private set; }
+
+    public Tank(GameScene scene, Point point, EnemyState state, GetWeapon dropItem) : base(scene, point, dropItem, state)
     {
         Type = EntityType.Enemy;
         Mask = EntityType.Bullet | EntityType.Ground | EntityType.Platform;
@@ -16,33 +27,32 @@ public class Tank : EnemyEntity
         Height = 22;
         _canMove = true;
 
-        _dropRate = dropRate;
-
-        _arms = new Cannon(scene);
+        _arms = new Cannon(scene, this);
         _arms.Owner = this;
 
-        _currentPixels = _combatPixels;
-        PlayerReferance = player;
-
         Health = 400;
-        _reconizePlayer = 50;
-        _attackBeforeDelay = 0.4f;
-        _deadDuration = 3;
-        _attackDuration = 2.5f;
+        MaxAttackCooldown = 1f;
+        MaxMoveInterval = 0.5f;
+        MaxDeadDuration = 3f;
+        DetectRange = 50;
+
         Direction = (-1, 0);
+
+        ChangeState(state);
     }
 
 
     public override void Update(float deltaTime)
     {
+        CheckTransitions();
+        ExecuteStateAction(deltaTime);
+
         base.Update(deltaTime);
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
         base.Draw(buffer);
-
-        buffer.WriteText(Position + (0, 0), _dropRate.ToString());
     }
 
     public override void CollisionFromDynamic(int id, int damage)
@@ -51,81 +61,148 @@ public class Tank : EnemyEntity
     }
 
 
-    protected override void CheckTransitions()
+    public void CheckTransitions()
     {
-        switch (_state)
+        if (Health <= 0)
         {
-            case EnemyState.Idle:
-                ChangeState(EnemyState.Chase);
+            if (State != EnemyState.Dead) ChangeState(EnemyState.Dead);
+            if (IsDeadEnd()) { DropItem(); Scene.AddGameObject(new ModenInfantryCannon(Scene, Position, EnemyState.Panic, new GetShotgun(Scene, (0, 0)))); Destroy(); }
+            return;
+        }
+        if (Scene.player == null) { ChangeState(EnemyState.Idle); return; }
+
+        switch (State)
+        {
+            case EnemyState.Move:
+                if (IsMoveEnd()) ChangeState(EnemyState.Gaurd);
                 break;
-            case EnemyState.Search:
-                if (IsPlayerNearing()) ChangeState(EnemyState.Attack);
-                else if (!IsPlayerNearing()) ChangeState(EnemyState.Chase);
-                break;
-            case EnemyState.Chase:
-                if (CanSeePlayer()) ChangeState(EnemyState.Attack);
-                else if (IsPlayerNearing()) ChangeState(EnemyState.Attack);
-                else if (IsPlayerDead()) ChangeState(EnemyState.Idle);
+            case EnemyState.Gaurd:
+                if (IsOutOfCamera()) ChangeState(EnemyState.Move);
+                else if (IsPlayerInRange()) ChangeState(EnemyState.Attack);
+                else ChangeState(EnemyState.Move);
                 break;
             case EnemyState.Attack:
-                if (IsAttackEnd()) ChangeState(EnemyState.Search);
+                if (IsAttackEnd()) ChangeState(EnemyState.Gaurd);
                 break;
-            case EnemyState.Avoid:
+        }
+    }
+
+    public void DoMove(float deltaTime)
+    {
+        Position += Direction * 10 * deltaTime;
+        LeftMoveTime -= deltaTime;
+    }
+
+    public void DoAttack(float deltaTime)
+    {
+        LeftAttackCooldown -= deltaTime;
+        if (LeftAttackCooldown > 0) return;
+
+        _arms.Fire(Direction);
+        LeftAttackCooldown = MaxAttackCooldown;
+    }
+
+    public void DoDead(float deltaTime)
+    {
+        LeftDeadDuration -= deltaTime;
+    }
+
+    public bool IsOutOfCamera()
+    {
+        return Position.X > Camera.RightClamp + ShottingGame.k_Width / 2 - 40 || Position.X < Camera.LeftClamp;
+    }
+
+
+
+
+
+    public void ChangeState(EnemyState state)
+    {
+        switch (state)
+        {
+            case EnemyState.Move:
+                _currentPixels = _combatPixels;
+                LeftMoveTime = MaxMoveInterval;
                 break;
-            case EnemyState.Stun:
+            case EnemyState.Gaurd:
+                _currentPixels = _combatPixels;
+                break;
+            case EnemyState.Attack:
+                _currentPixels = _combatPixels;
+                LeftAttackCooldown = MaxAttackCooldown;
                 break;
             case EnemyState.Dead:
-                Width = 1;
-                Height = 1;
-                if (IsEnd())
-                {
-                    Scene.AddGameObject(new ModenInfantryCannon(Scene, Position, EnemyState.Stun, _dropRate));
-                    Destroy();
-                }
+                LeftDeadDuration = MaxDeadDuration;
+                _currentPixels = _deadPixels;
                 break;
         }
 
-        if (Health <= 0) ChangeState(EnemyState.Dead);
-        else if (IsOutOfCamera()) ChangeState(EnemyState.Chase);
+        State = state;
     }
 
-    public override void DoIdle(float deltaTime)
+    public void ExecuteStateAction(float deltaTime)
     {
+        switch (State)
+        {
+            case EnemyState.Idle:
+                break;
+            case EnemyState.Move:
+                DoMove(deltaTime);
+                break;
+            case EnemyState.Attack:
+                DoAttack(deltaTime);
+                break;
+            case EnemyState.Dead:
+                DoDead(deltaTime);
+                break;
+        }
     }
 
-    public override void DoStun(float deltaTime)
+    public bool IsAttackEnd()
     {
+        return LeftAttackCooldown <= 0;
     }
 
-    public override void DoSearch(float deltaTime)
+    public bool IsMoveEnd()
     {
-        _currentPixels = _combatPixels;
-        int n = PlayerReferance.Position.X - Position.X > 0 ? 1 : -1;
-        Direction = (n, 0);
+        if (LeftMoveTime <= 0)
+        {
+            ChangeDirection();
+            return true;
+        }
+
+        return false;
+    }
+    public void ChangeDirection()
+    {
+        if (Scene.player == null) return;
+
+        Direction = (Position.CompareX(Scene.player.Position), 0);
     }
 
-    public override void DoChase(float deltaTime)
+    public bool IsDeadEnd()
     {
-        _currentPixels = _combatPixels;
-        Position += Direction * 10 * deltaTime;
+        return LeftDeadDuration <= 0;
     }
 
-    public override void DoAttack(float deltaTime)
+    public bool IsPlayerSuperNearing()
     {
-        _currentPixels = _combatPixels;
-        Aim = Direction;
-        base.DoAttack(deltaTime);
+        throw new NotImplementedException();
     }
 
-    public override void DoDead(float deltaTime)
+    public bool IsPlayerDead()
     {
-        base.DoDead(deltaTime);
-        _currentPixels = _deadPixels;
+        return !Scene.player.IsAlive;
     }
 
-    public override bool IsOutOfCamera()
+    public bool IsPlayerRebirth()
     {
-        return Position.X > Camera.RightClamp + ShottingGame.k_Width / 2 - 20 || Position.X < Camera.LeftClamp;
+        throw new NotImplementedException();
+    }
+
+    public bool IsPlayerInRange()
+    {
+        return Position.IsInDistance(Scene.player.Position, DetectRange);
     }
 
     protected new string[] _combatPixels =

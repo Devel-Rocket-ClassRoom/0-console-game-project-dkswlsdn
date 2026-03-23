@@ -15,11 +15,13 @@ public abstract class StageTrigger : EventTrigger
     {
         base.Update(deltaTime);
 
-        if (_elite.IsEnd())
+        if (IsEventClear())
         {
             ClearStageEvent();
         }
     }
 
     protected abstract void ClearStageEvent();
+
+    protected abstract bool IsEventClear();
 }

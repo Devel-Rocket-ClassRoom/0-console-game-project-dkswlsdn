@@ -15,6 +15,8 @@ public class Player : CharacterEntity
     private float _speed = 30f;
     private bool _canShot = true;
 
+    private bool _useImmune = false;
+
 
     public override Point Position
     {
@@ -40,7 +42,7 @@ public class Player : CharacterEntity
     public Player(GameScene scene, Point point) : base(scene, point)
     {
         Type = EntityType.Player;
-        Mask = EntityType.Ground | EntityType.Platform | EntityType.Bullet | EntityType.Trigger;
+        Mask = EntityType.Ground | EntityType.Platform | EntityType.Trigger;
 
         Width = 5;
         Height = 11;
@@ -50,7 +52,6 @@ public class Player : CharacterEntity
 
         mainWeapon = new Handgun(Scene, this);
         subWeapon = new Granade(Scene, this);
-        subWeapon.Arms = 20000;
 
         mainWeapon.Owner = this;
         subWeapon.Owner = this;
@@ -72,20 +73,12 @@ public class Player : CharacterEntity
         buffer.WriteText(Camera.Position + (20, 4), mainWeapon.Arms.ToString());
         buffer.WriteText(Camera.Position + (30, 5), subWeapon.Name);
         buffer.WriteText(Camera.Position + (30, 4), subWeapon.Arms.ToString());
-
-        buffer.WriteText(Camera.Position + (0, 75), Velocity.ToString());
-        buffer.WriteText(Camera.Position + (0, 73), $"Player : {Position.ToString()}");
-        buffer.WriteText(Camera.Position + (0, 72), $"Camera : {Camera.Position.ToString()}");
-        buffer.WriteText(Camera.Position + (0, 71), $"LeftClamp : {Camera.LeftClamp.ToString()}");
-
-        buffer.WriteText(Position + (0, 0), Health.ToString());
-        buffer.WriteText(Position + (0, 1), IsAlive.ToString());
-
     }
 
     public override void Update(float deltaTime)
     {
         PlayerInput(deltaTime);
+        CheatKey();
 
         Velocity = (_input.X * _speed, Velocity.Y);
         if (_input.X != 0) Direction = (_input.X, 0);
@@ -95,6 +88,8 @@ public class Player : CharacterEntity
         Aimming();
         CheckMainArms();
         _recoil -= deltaTime;
+
+        if (_isLand && !_useImmune) Mask |= EntityType.Bullet;
     }
 
 
@@ -189,6 +184,18 @@ public class Player : CharacterEntity
         {
             Jump();
         }
+    }
+
+    private void CheatKey()
+    {
+        if (!Input.IsKey(ConsoleKey.N)) return;
+
+        if (Input.IsKeyDown(ConsoleKey.D1)) { mainWeapon = new HeavyMachinegun(Scene); Scene.AddGameObject(mainWeapon); mainWeapon.Owner = this; }
+        if (Input.IsKeyDown(ConsoleKey.D2)) { mainWeapon = new Shotgun(Scene); Scene.AddGameObject(mainWeapon); mainWeapon.Owner = this; }
+        if (Input.IsKeyDown(ConsoleKey.D3)) mainWeapon.Arms = 10000;
+        if (Input.IsKeyDown(ConsoleKey.D4)) subWeapon.Arms = 10000;
+        if (Input.IsKeyDown(ConsoleKey.D5)) { _useImmune = true; Mask &= ~EntityType.Bullet; }
+        if (Input.IsKeyDown(ConsoleKey.D6)) { if (Scene is StageScene s) s.Ending(); }
     }
     public void Jump()
     {

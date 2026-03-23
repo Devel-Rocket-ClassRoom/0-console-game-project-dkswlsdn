@@ -5,11 +5,12 @@ using System.Text;
 
 public class GetShotgun : GetWeapon
 {
-    public GetShotgun(GameScene scene, Point point) : base(scene, point, 20)
+    public GetShotgun(GameScene scene, Point point) : base(scene, point)
     {
         Name = "Shotgun";
         _currentPixels = _idelPixels;
        weapon = new Shotgun(scene);
+        _arms = 10;
     }
 
     

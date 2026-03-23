@@ -24,11 +24,9 @@ public class StageScene : GameScene
         Ground.DrawNormalWall(this, (260, 0), 50);
         Ground.DrawNormalGround(this, (260, 50), 100);
 
-        AddGameObject(new ModenInfantryCannon(this, (160, 6), EnemyState.Idle, 0, 1));
-        AddGameObject(new ModenInfantryGrenade(this, (220, 31), EnemyState.Chase, 0));
-        AddGameObject(new ModenInfantryCannon(this, (240, 31), EnemyState.Idle, 0));
-        AddGameObject(new ModenInfantryCannon(this, (240, 6), EnemyState.Idle, 0));
-        AddGameObject(new GetHeavyMachinegun(this, (145, 20)));
+        
+        //AddGameObject(new GetHeavyMachinegun(this, (145, 20)));
+        AddGameObject(new ZeroTrigger(this, 30));
         AddGameObject(new FirstTrigger(this, 350));
         AddGameObject(new LastTrigger(this, 470));
     }

@@ -5,7 +5,7 @@ using System.Text;
 
 public class Ending : GameObject
 {
-    public Ending(GameScene scene, Point position) : base(scene, position)
+    public Ending(Scene scene, Point position) : base(scene, position)
     {
         _currentPixels = ending;
     }

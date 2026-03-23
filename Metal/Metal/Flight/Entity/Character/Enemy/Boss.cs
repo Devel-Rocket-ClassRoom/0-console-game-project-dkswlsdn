@@ -5,175 +5,167 @@ using System.Text;
 
 public class Boss : EnemyEntity
 {
-    Cannon _additionalArms;
-    public override Point BulletPoint => Position + new Point(3, 6).PointConverter(Direction);
-    Point _destination;
-    Point _additionalAim;
+    private float _moveSpeed = 20;
+    Point _dir = (-1, 0);
 
-    public Boss(GameScene scene, Point point, EnemyState state, Player player, int direction = -1, int dropRate = 0) : base(scene, point, dropRate, state)
+    Cannon _addBazooka_1;
+    Cannon _addBazooka_2;
+    Lazor _addLazor_1;
+    Lazor _addLazor_2;
+
+    Point _AB1_BP { get { return Position + (24, 24); } }
+    Point _AB2_BP { get { return Position + (72, 24); } }
+    Point _AL1_BP { get { return (12, -40); } }
+    Point _AL2_BP { get { return (68, -40); } }
+
+    float _AB1_CD;
+    float _AB2_CD;
+    float _AL_CD;
+
+
+
+
+    public float LeftAttackCooldown { get; private set; }
+    public float MaxAttackCooldown { get; private set; }
+
+    public float LeftMoveTime { get; private set; }
+    public float MaxMoveInterval { get; private set; }
+
+    public float LeftDeadDuration { get; private set; }
+    public float MaxDeadDuration { get; private set; }
+
+    public int DetectRange { get; private set; }
+
+    
+
+    public Boss(GameScene scene, Point point) : base(scene, point, null, EnemyState.Attack)
     {
         Type = EntityType.Enemy;
-        Mask = EntityType.Bullet | EntityType.Ground | EntityType.Platform;
+        Mask = EntityType.Bullet;
 
-        Width = 33;
-        Height = 22;
-        _canMove = true;
+        Direction = (1, 0);
+        Width = 90;
+        Height = 24;
+        _canMove = false;
+        _useGravity = false;
+        Health = 6000;
 
-        _dropRate = dropRate;
+        rand = new Random();
+        _addBazooka_1 = new Cannon(Scene, this);
+        _addBazooka_2 = new Cannon(Scene, this);
+        _addLazor_1 = new Lazor(Scene, this);
+        _addLazor_2 = new Lazor(Scene, this);
+        Scene.AddGameObject(_addBazooka_1);
+        Scene.AddGameObject(_addBazooka_2);
+        Scene.AddGameObject(_addLazor_1);
+        Scene.AddGameObject(_addLazor_2);
 
-        _arms = new Cannon(scene);
-        _additionalArms = new Cannon(scene);
-
-        _arms.Owner = this;
-        _additionalArms.Owner = this;
-
-        _deadDuration = 3f;
+        MaxMoveInterval = 1f;
+        MaxDeadDuration = 5f;
 
         _currentPixels = _combatPixels;
-        PlayerReferance = player;
-
-        Health = 5000;
-        _reconizePlayer = 1000;
-        _attackBeforeDelay = 0.4f;
-        _attackDuration = 1.5f;
-        Direction = (direction, 0);
     }
 
 
     public override void Update(float deltaTime)
     {
-        base.Update(deltaTime);
+        if (Health <= 0)
+        {
+            LeftDeadDuration += deltaTime;
+            _currentPixels = _deadPixels;
+            if (LeftDeadDuration > MaxDeadDuration)
+            {
+                if (Scene is StageScene s) s.Ending();
+            }
+            return;
+        }
+        if (Scene.player == null) return;
+
+        if (Health < 2500)
+        {
+            _moveSpeed = 32;
+        }
+
+        DoAttack(deltaTime);
+        if (LeftMoveTime <= 0) DoMove(deltaTime);
+        LeftMoveTime -= deltaTime;
     }
-
-    public override void Draw(ScreenBuffer buffer)
-    {
-        base.Draw(buffer);
-
-        buffer.WriteText(Position + (0, 0), Health.ToString());
-    }
-
     public override void CollisionFromDynamic(int id, int damage)
     {
         TakeDamage(id, damage);
     }
 
 
-    protected override void CheckTransitions()
-    {
-        switch (_state)
-        {
-            case EnemyState.Idle:
-                break;
-            case EnemyState.Search:
-                if (IsPlayerNearing()) ChangeState(EnemyState.Attack);
-                break;
-            case EnemyState.Chase:
-                break;
-            case EnemyState.Attack:
-                if (IsAttackEnd()) ChangeState(EnemyState.Search);
-                break;
-            case EnemyState.Avoid:
-                break;
-            case EnemyState.Stun:
-                break;
-            case EnemyState.Dead:
-                if (IsEnd())
-                {
-                    if (Scene is StageScene g)
-                    {
-                        g.Ending();
-                    }
 
-                    Destroy();
-                }
-                break;
+    public void DoAttack(float deltaTime)
+    {
+        if (_AB1_CD <= 0)
+        {
+            _addBazooka_1.Fire(Scene.player.Position - _AB1_BP, _AB1_BP);
+            _AB1_CD = rand.Next(4) + 2;
+        }
+        if (_AB2_CD <= 0)
+        {
+            _addBazooka_2.Fire(Scene.player.Position - _AB2_BP, _AB2_BP);
+            _AB2_CD = rand.Next(4) + 2;
+        }
+        if (_AL_CD <= 0)
+        {
+            _addLazor_1.Fire(_AL1_BP, true);
+            _addLazor_2.Fire(_AL2_BP, true);
+            _AL_CD = rand.Next(4) + 7;
         }
 
-        if (Health <= 0) ChangeState(EnemyState.Dead);
+        _AB1_CD -= deltaTime;
+        _AB2_CD -= deltaTime;
+        _AL_CD -= deltaTime;
     }
 
-    public override void DoSearch(float deltaTime)
+    public void DoMove(float deltaTime)
     {
-        _currentPixels = _combatPixels;
-        int n = PlayerReferance.Position.X - Position.X > 0 ? 1 : -1;
-        Direction = (n, 0);
+        Position += _dir * _moveSpeed * deltaTime;
+
+        if (Position.X < Camera.LeftClamp) _dir = (1, 0);
+        else if (Position.X > Camera.RightClamp + ShottingGame.k_Width / 2 - Width) _dir = (-1, 0);
     }
 
-    public override void DoAttack(float deltaTime)
-    {
-        Aim = (PlayerReferance.Position - Position).HexaNormalize();
-        _additionalAim = (PlayerReferance.Position - Position + (30, 0)).HexaNormalize();
-
-        if (_attackTimer == 0)
-        {
-            _additionalArms.Fire(_additionalAim);
-            _arms.Fire(Aim);
-        }
-
-        _attackTimer += deltaTime;
-    }
-
-    public override void DoDead(float deltaTime)
-    {
-        base.DoDead(deltaTime);
-        _currentPixels = _deadPixels;
-    }
-
-    public override void DoChase(float deltaTime)
-    {
-        base.DoChase(deltaTime);
-
-        Position += Direction * 10 * deltaTime;
-    }
-
-    public override bool IsOutOfCamera()
-    {
-        return Position.X > Camera.RightClamp + ShottingGame.k_Width / 2 || Position.X < Camera.LeftClamp;
-    }
+   
 
     protected new string[] _combatPixels =
     {
-        "            GGGGGGGG             ",
-        "         yyyyyyyyyyyyyy          ",
-        "        yyyyyyyyyyyyyyyyyyyyy    ",
-        "        yyyyyyyyyyyyyyyyyyyyy    ",
-        "        BBBBBBBBBBBBBBBB         ",
-        " BBBBBBByyyyyyyyyyyyyyyyyyyyy    ",
-        " yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy ",
-        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
-        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
-        " yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
-        "      GGGGGyyyyyyyyyyyyyyyyyyyyyy",
-        "    GG               yyyyyyyyyyy ",
-        "   G   GGG             GGG   G   ",
-        "  G   GBBBG           GBBBG   G  ",
-        "  G   GBGBG           GBGBG   G  ",
-        "  G   GBBBG           GBBBG   G  ",
-        "   G   GGG             GGG   G   ",
-        "    GG                     GG    ",
-        "      GGGGGGGGGGGGGGGGGGGGG      ",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
     };
+
 
     protected new string[] _deadPixels =
     {
-        "  R R       GGGGGGGG             ",
-        "   R     yyyyyyyyyyyyyy        R ",
-        "  R R   yyyyyyyyyyyyyyyyyyyyy RRR",
-        "        yyyyyyyyyyyyyyyyyyyyy  R ",
-        "        BBBBBBBBBBBBBBBB         ",
-        " BBBBBBByyyyyyyyyyyyyyyyyyyyy    ",
-        " yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy ",
-        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
-        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
-        " yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
-        "      GGGGGyyyyyyyyyyyyyyyyyyyyyy",
-        "    GG               yyyyyyyyyyy ",
-        "   G   GGG   R R       GGG   G   ",
-        "  G   GBBBG   R       GBBBG   G  ",
-        "  G   GBGBG  R R      GBGBG   G  ",
-        "  G   GBBBG           GBBBG   G  ",
-        "   G   GGG             GGG   G   ",
-        "    GG                     GG    ",
-        "      GGGGGGGGGGGGGGGGGGGGG      ",
+        "B   B  BBB  B   B    B B B BBB B   B ",
+        " B B  B   B B   B    B B B  B  BB  B ",
+        "  B   B   B B   B    B B B  B  B B B ",
+        "  B   B   B B   B    B B B  B  B  BB ",
+        "  B    BBB   BBB      B B  BBB B   B ",
     };
 }

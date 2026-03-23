@@ -6,12 +6,9 @@ using System.Xml.Linq;
 
     public class EnemyGranade : Weapon
     {
-        public EnemyGranade(Scene scene, CharacterEntity id) : base(scene, true)
+        public EnemyGranade(Scene scene, CharacterEntity owner) : base(scene, true)
         {
-            Name = "EnemyGranade";
-            Arms = 10;
-            _recoil = 0.2f;
-            Owner = id; 
+            Owner = owner; 
         }
 
         public override float Fire(Point dir)

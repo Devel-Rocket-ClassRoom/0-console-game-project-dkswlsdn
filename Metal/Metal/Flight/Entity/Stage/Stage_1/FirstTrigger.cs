@@ -13,7 +13,7 @@ public class FirstTrigger : StageTrigger
         Width = 5;
         Height = 80;
 
-        _elite = new Tank(Scene, (250, 6), EnemyState.Search, PlayerReferance, 100);
+        _elite = new Tank(Scene, (250, 6), EnemyState.Move, null);
         _elite.IsActive = false;
     }
 
@@ -24,7 +24,7 @@ public class FirstTrigger : StageTrigger
 
         if (_reinforcementCooldown <= 0 && _alreadyTriggered)
         {
-            Scene.AddGameObject(new ModenInfantryCannon(Scene, (460, 6), EnemyState.Chase, -1));
+            Scene.AddGameObject(new ModenInfantryCannon(Scene, (460, 6), EnemyState.Move, null, -1));
             _reinforcementCooldown = k_ReinforcementInterval;
         }
 
@@ -45,9 +45,14 @@ public class FirstTrigger : StageTrigger
 
         _alreadyTriggered = true;
         _elite.IsActive = true;
-        Scene.AddGameObject(new Tank(Scene, (460, 6), EnemyState.Search, PlayerReferance, 0));
+        Scene.AddGameObject(new Tank(Scene, (460, 6), EnemyState.Move, null));
         Scene.AddGameObject(_elite);
         Camera.LeftClamp = 300;
         Camera.LockLeftClamp = true;
+    }
+
+    protected override bool IsEventClear()
+    {
+        return _elite.State == EnemyState.Dead;
     }
 }
