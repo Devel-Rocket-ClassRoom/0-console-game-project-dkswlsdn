@@ -12,8 +12,15 @@ public class PlatformEntity : Entity
         Type = EntityType.Platform;
         Mask = EntityType.Player | EntityType.Enemy | EntityType.Trigger;
 
-        Width = 1;
-        Height = 1;
-        _currentPixels = new string[] { "B" };
+        Width = 5;
+        Height = 5;
+        _currentPixels = new string[]
+        {
+            "BBBBB",
+            "BBBBB",
+            "BBBBB",
+            "BBBBB",
+            "BBBBB",
+        };
     }
 }

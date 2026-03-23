@@ -60,7 +60,6 @@ public class ModenInfantryCannon : EnemyEntity
                 if (IsPlayerSuperNeering()) ChangeState(EnemyState.Stun);
                 else if (IsNearFriendlyDead()) ChangeState(EnemyState.Stun);
                 else if (IsNearFriendlyPanic()) ChangeState(EnemyState.Stun);
-                //else if (IsPlayerRebirth()) ChangeState(EnemyState.Stun);
                 break;
             case EnemyState.Search:
                 if (IsPlayerNearing()) ChangeState(EnemyState.Attack);

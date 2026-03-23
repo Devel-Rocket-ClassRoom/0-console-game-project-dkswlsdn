@@ -29,7 +29,7 @@ public static class Ground
     {
         for (int i = 0; i < width; i += 5) 
         {
-            SetGround(scene, position + (i, 0));
+            SetPlatform(scene, position + (i, 0));
         }
     }
 
